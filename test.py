@@ -7,7 +7,6 @@ import timm
 from validate import validate
 from networks.resnet import resnet50
 from options.test_options import TestOptions
-from eval_config import *
 
 
 # Running tests
@@ -53,6 +52,8 @@ for v_id, val in enumerate(vals):
     acc, ap, _, _, _, _ = validate(model, opt)
     rows.append([val, acc, ap])
     print("({}) acc: {}; ap: {}".format(val, acc, ap))
+
+
 
 csv_name = results_dir + '/{}.csv'.format(model_name)
 with open(csv_name, 'w') as f:
