@@ -1,6 +1,6 @@
 import argparse
 import os
-import util
+import utils.util
 import torch
 
 
@@ -97,7 +97,6 @@ class BaseOptions():
             torch.cuda.set_device(opt.gpu_ids[0])
 
         # additional
-        opt.classes = opt.classes.split(',')
         opt.rz_interp = opt.rz_interp.split(',')
         opt.blur_sig = [float(s) for s in opt.blur_sig.split(',')]
         opt.jpg_method = opt.jpg_method.split(',')

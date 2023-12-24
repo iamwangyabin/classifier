@@ -21,7 +21,9 @@ if __name__ == '__main__':
     rows = [["{} model testing on...".format(model_name)], ['testset', 'accuracy', 'avg precision']]
     print("{} model testing on...".format(model_name))
 
-    for v_id, val in enumerate(opt.sub_dirs):
+    sub_dirs = opt.sub_dirs.split(',')
+
+    for v_id, val in enumerate(sub_dirs):
         opt.dataroot = '{}/{}'.format(dataroot, val)
 
         model = timm.create_model(opt.arch, pretrained=False, num_classes=1)
@@ -34,7 +36,8 @@ if __name__ == '__main__':
         rows.append([val, acc, ap])
         print("({}) acc: {}; ap: {}".format(val, acc, ap))
 
-
+    if not os.path.exists(opt.results_dir):
+        os.makedirs(opt.results_dir)
     csv_name = opt.results_dir + '/{}.csv'.format(model_name)
     with open(csv_name, 'w') as f:
         csv_writer = csv.writer(f, delimiter=',')

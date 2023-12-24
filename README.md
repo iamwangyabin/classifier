@@ -50,6 +50,30 @@ CUDA_VISIBLE_DEVICES=3 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_pro
 CUDA_VISIBLE_DEVICES=0 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot /mnt/Data/yabin/datasets/aiart/base_session/sd --arch vit
 ```
 
+## (5) Test your models
+
+
+```
+CUDA_VISIBLE_DEVICES=0 python test.py --dataroot /mnt/Data/yabin/datasets/aiart/base_session/sd/val \
+                                        --arch vit_base_patch16_224 \
+                                        --model_path /home/yabin/CDDDet/checkpoints/vit_sd_blur_jpg_prob0.1/model_epoch_latest.pth \
+                                        --sub_dirs dalle,imagen,mj,parti,sd,sdft \
+                                        --results_dir ./sdbase
+   
+   
+CUDA_VISIBLE_DEVICES=1 python test.py --dataroot /mnt/Data/yabin/datasets/aiart/base_session/pd/val \
+                                        --arch vit_base_patch16_224 \
+                                        --model_path /home/yabin/CDDDet/checkpoints/vit_pd_blur_jpg_prob0.1/model_epoch_latest.pth \
+                                        --sub_dirs dalle,imagen,mj,parti,sd,sdft \
+                                        --results_dir ./pdbase
+                                       
+```
+
+
+
+
+
+
 ## (A) Acknowledgments
 
 This repository borrows partially from the [pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix), and the PyTorch [torchvision models](https://github.com/pytorch/vision/tree/master/torchvision/models) repositories. 

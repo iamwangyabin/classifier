@@ -5,7 +5,7 @@ import torch
 import torch.nn
 import argparse
 from PIL import Image
-# from tensorboardX import SummaryWriter
+
 
 from utils.validate import validate, get_val_opt
 from data import create_dataloader
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
             if model.total_steps % opt.loss_freq == 0:
                 print("Train loss: {} at step: {}".format(model.loss, model.total_steps))
-                train_writer.add_scalar('loss', model.loss, model.total_steps)
+                # train_writer.add_scalar('loss', model.loss, model.total_steps)
 
             if model.total_steps % opt.save_latest_freq == 0:
                 print('saving the latest model %s (epoch %d, model.total_steps %d)' %
@@ -56,8 +56,8 @@ if __name__ == '__main__':
         # Validation
         model.eval()
         acc, ap = validate(model.model, val_opt)[:2]
-        val_writer.add_scalar('accuracy', acc, model.total_steps)
-        val_writer.add_scalar('ap', ap, model.total_steps)
+        # val_writer.add_scalar('accuracy', acc, model.total_steps)
+        # val_writer.add_scalar('ap', ap, model.total_steps)
         print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
 
 
