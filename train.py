@@ -7,28 +7,24 @@ import argparse
 from PIL import Image
 # from tensorboardX import SummaryWriter
 
-from validate import validate
+from utils.validate import validate, get_val_opt
 from data import create_dataloader
 from networks.trainer import Trainer
 from options.train_options import TrainOptions
-from options.val_options import TrainOptions
 
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()
     opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split)
-    val_opt = get_val_opt()
+    val_opt = get_val_opt(opt)
 
     data_loader = create_dataloader(opt)
     dataset_size = len(data_loader)
     print('#training dataloader steps = %d' % dataset_size)
 
-    # train_writer = SummaryWriter(os.path.join(opt.checkpoints_dir, opt.name, "train"))
-    # val_writer = SummaryWriter(os.path.join(opt.checkpoints_dir, opt.name, "val"))
-
     model = Trainer(opt)
-
     model.train()
+
     for epoch in range(opt.niter):
         epoch_start_time = time.time()
         iter_data_time = time.time()
