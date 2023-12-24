@@ -5,13 +5,21 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from .datasets import dataset_folder
 
 
+# def get_dataset(opt):
+#     dset_lst = []
+#     for cls in opt.classes:
+#         root = opt.dataroot + '/' + cls
+#         dset = dataset_folder(opt, root)
+#         dset_lst.append(dset)
+#     return torch.utils.data.ConcatDataset(dset_lst)
+
+
 def get_dataset(opt):
     dset_lst = []
-    for cls in opt.classes:
-        root = opt.dataroot + '/' + cls
-        dset = dataset_folder(opt, root)
-        dset_lst.append(dset)
+    dset = dataset_folder(opt, opt.dataroot)
+    dset_lst.append(dset)
     return torch.utils.data.ConcatDataset(dset_lst)
+
 
 
 def get_bal_sampler(dataset):

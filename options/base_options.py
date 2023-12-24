@@ -10,7 +10,7 @@ class BaseOptions():
         self.initialized = False
 
     def initialize(self, parser):
-        parser.add_argument('--mode', default='binary')
+        parser.add_argument('--dataset_mode', default='binary')
         parser.add_argument('--arch', type=str, default='res50', help='architecture for binary classification')
 
         # data augmentation
@@ -22,7 +22,6 @@ class BaseOptions():
         parser.add_argument('--jpg_qual', default='75')
 
         parser.add_argument('--dataroot', default='./dataset/', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
-        parser.add_argument('--classes', default='', help='image classes to train on')
         parser.add_argument('--class_bal', action='store_true')
         parser.add_argument('--batch_size', type=int, default=64, help='input batch size')
         parser.add_argument('--loadSize', type=int, default=256, help='scale images to this size')

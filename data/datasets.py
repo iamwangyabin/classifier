@@ -6,22 +6,20 @@ import torchvision.transforms as transforms
 import torchvision.transforms.functional as TF
 from random import random, choice
 from io import BytesIO
-from PIL import Image
-from PIL import ImageFile
+from PIL import ImageFile, Image
 from scipy.ndimage.filters import gaussian_filter
 from PIL import Image
-import torch
 from torch.utils.data import Dataset
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def dataset_folder(opt, root):
-    if opt.mode == 'binary':
+    if opt.dataset_mode == 'binary':
         return binary_dataset(opt, root)
-    if opt.mode == 'filename':
+    if opt.dataset_mode == 'filename':
         return FileNameDataset(opt, root)
-    if opt.mode == 'txtfile':
+    if opt.dataset_mode == 'txtfile':
         return CustomDataset(opt, root)
     raise ValueError('opt.mode needs to be binary or filename.')
 
