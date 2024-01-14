@@ -43,11 +43,8 @@ CUDA_VISIBLE_DEVICES=0 python train.py --name vit_sd_blur_jpg_prob0.5 --blur_pro
 # Train Blur+JPEG(0.1)
 CUDA_VISIBLE_DEVICES=3 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot ~/workspace/datasets/aiart/output2/sd --arch vit
 
-CUDA_VISIBLE_DEVICES=2 python train.py --name resnet_sd_blur_jpg_prob0 --blur_prob 0 --blur_sig 0.0,3.0 --jpg_prob 0.5 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot ~/workspace/datasets/aiart/output2/sd --arch res50
+CUDA_VISIBLE_DEVICES=1 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot /home/jwang/ybwork/data/aiart/new_dddb --arch vit
 
-CUDA_VISIBLE_DEVICES=3 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot ~/workspace/datasets/aiart/output2/sd --arch vit
-
-CUDA_VISIBLE_DEVICES=0 python train.py --name vit_sd_blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot /mnt/Data/yabin/datasets/aiart/base_session/sd --arch vit
 ```
 
 ## (5) Test your models

@@ -15,8 +15,13 @@ from options.train_options import TrainOptions
 
 if __name__ == '__main__':
     opt = TrainOptions().parse()
-    opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split)
     val_opt = get_val_opt(opt)
+    opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split)
+
+
+
+
+
 
     data_loader = create_dataloader(opt)
     dataset_size = len(data_loader)
@@ -56,8 +61,6 @@ if __name__ == '__main__':
         # Validation
         model.eval()
         acc, ap = validate(model.model, val_opt)[:2]
-        # val_writer.add_scalar('accuracy', acc, model.total_steps)
-        # val_writer.add_scalar('ap', ap, model.total_steps)
         print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
 
 
