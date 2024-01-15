@@ -8,80 +8,9 @@ from random import random, choice
 from io import BytesIO
 from PIL import ImageFile, Image
 from scipy.ndimage.filters import gaussian_filter
-from PIL import Image
 from torch.utils.data import Dataset
 
-
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-
-def dataset_folder(opt, root):
-    if opt.dataset_mode == 'binary':
-        return binary_dataset(opt, root)
-    if opt.dataset_mode == 'filename':
-        return FileNameDataset(opt, root)
-    if opt.dataset_mode == 'txtfile':
-        return CustomDataset(opt, root)
-    raise ValueError('opt.mode needs to be binary or filename.')
-
-
-def binary_dataset(opt, root):
-    if opt.isTrain:
-        crop_func = transforms.RandomCrop(opt.cropSize)
-    elif opt.no_crop:
-        crop_func = transforms.Lambda(lambda img: img)
-    else:
-        crop_func = transforms.CenterCrop(opt.cropSize)
-
-    if opt.isTrain and not opt.no_flip:
-        flip_func = transforms.RandomHorizontalFlip()
-    else:
-        flip_func = transforms.Lambda(lambda img: img)
-    if not opt.isTrain and opt.no_resize:
-        rz_func = transforms.Lambda(lambda img: img)
-    else:
-        rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
-
-    dset = datasets.ImageFolder(
-            root,
-            transforms.Compose([
-                rz_func,
-                transforms.Lambda(lambda img: data_augment(img, opt)),
-                crop_func,
-                flip_func,
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            ]))
-    return dset
-
-
-class FileNameDataset(datasets.ImageFolder):
-    def name(self):
-        return 'FileNameDataset'
-
-    def __init__(self, opt, root):
-        self.opt = opt
-        super().__init__(root)
-
-    def __getitem__(self, index):
-        # Loading sample
-        path, target = self.samples[index]
-        return path
-
-
-def data_augment(img, opt):
-    img = np.array(img)
-
-    if random() < opt.blur_prob:
-        sig = sample_continuous(opt.blur_sig)
-        gaussian_blur(img, sig)
-
-    if random() < opt.jpg_prob:
-        method = sample_discrete(opt.jpg_method)
-        qual = sample_discrete(opt.jpg_qual)
-        img = jpeg_from_key(img, qual, method)
-
-    return Image.fromarray(img)
-
 
 def sample_continuous(s):
     if len(s) == 1:
@@ -122,76 +51,132 @@ def pil_jpg(img, compress_val):
     out.close()
     return img
 
+def data_augment(img, opt):
+    img = np.array(img)
 
-jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
+    if random() < opt.blur_prob:
+        sig = sample_continuous(opt.blur_sig)
+        gaussian_blur(img, sig)
+
+    if random() < opt.jpg_prob:
+        method = sample_discrete(opt.jpg_method)
+        qual = sample_discrete(opt.jpg_qual)
+        img = jpeg_from_key(img, qual, method)
+
+    return Image.fromarray(img)
+
 def jpeg_from_key(img, compress_val, key):
+    jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
     method = jpeg_dict[key]
     return method(img, compress_val)
 
 
-rz_dict = {'bilinear': Image.BILINEAR,
-           'bicubic': Image.BICUBIC,
-           'lanczos': Image.LANCZOS,
-           'nearest': Image.NEAREST}
+class BinaryMultiDatasets(Dataset):
+    def __init__(self, opt, split='train'):
+        self.dataroot = opt.dataroot
+        self.split = split
+        self.image_pathes = []
+        self.labels = []
+        self.label_mapping = {'0_real': 0, '1_fake': 1}
+        image_extensions = ('.jpg', '.jpeg', '.png')
 
-def custom_resize(img, opt):
-    interp = sample_discrete(opt.rz_interp)
-    return TF.resize(img, opt.loadSize, interpolation=rz_dict[interp])
+        for id, subfolder in enumerate(opt.subfolder_names):
+            if opt.multicalss_idx[id]:
+                classes = os.listdir(os.path.join(self.dataroot, subfolder, split))
+            else:
+                classes = ['']
+            for cls in classes:
+                root = os.path.join(self.dataroot, subfolder, split, cls)
+                for label in ['0_real', '1_fake']:
+                    label_dir = os.path.join(root, label)
+                    for img_file in os.listdir(label_dir):
+                        img_path = os.path.join(label_dir, img_file)
+                        if img_path.lower().endswith(image_extensions):
+                            self.image_pathes.append(img_path)
+                            self.labels.append(self.label_mapping[label]+id*2)
+        # import pdb;pdb.set_trace()
+        if split == 'train':
+            trsf = [
+                transforms.Resize(opt.loadSize),
+                transforms.RandomResizedCrop(opt.cropSize),
+                transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
+                transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
+                transforms.ToTensor(),
+            ]
 
-
-class CustomDataset(Dataset):
-    def __init__(self, opt, root):
-        self.opt = opt
-        self.txt_file = opt.txt_file
-        self.root = root
-        self.data = self._load_data()
-        print(len(self.data))
-        if self.opt.isTrain:
-            self.crop_func = transforms.RandomCrop(opt.cropSize)
-        elif self.opt.no_crop:
-            self.crop_func = transforms.Lambda(lambda img: img)
         else:
-            self.crop_func = transforms.CenterCrop(opt.cropSize)
+            trsf = [
+                transforms.Resize(opt.loadSize),
+                transforms.CenterCrop(opt.cropSize),
+                transforms.ToTensor(),
+            ]
 
-        if self.opt.isTrain and not self.opt.no_flip:
-            self.flip_func = transforms.RandomHorizontalFlip()
-        else:
-            self.flip_func = transforms.Lambda(lambda img: img)
-
-        if not self.opt.isTrain and self.opt.no_resize:
-            self.rz_func = transforms.Lambda(lambda img: img)
-        else:
-            self.rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
-
-        self.transform = transforms.Compose([
-            self.rz_func,
-            transforms.Lambda(lambda img: data_augment(img, opt)),
-            self.crop_func,
-            self.flip_func,
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-        ])
+        self.transform_chain = transforms.Compose(trsf)
 
     def __len__(self):
-        return len(self.data)
+        return len(self.image_pathes)
 
-    def __getitem__(self, index):
-        img_path, label = self.data[index]
-        img_path = os.path.join(self.root, img_path)
-        img = Image.open(img_path).convert("RGB")
-        img = self.transform(img)
-        #import pdb;pdb.set_trace()
-        return img, label
+    def __getitem__(self, idx):
+        img_path = self.image_pathes[idx]
+        image = Image.open(img_path).convert('RGB')
+        label = self.labels[idx]
+        image = self.transform_chain(image)
+        return image, label
 
-    def _load_data(self):
-        data = []
-        with open(self.txt_file, "r") as file:
-            lines = file.readlines()
-            for line in lines:
-                line = line.strip()
-                if line:
-                    img_path, label = line.split()
-                    data.append((img_path, int(label)))
-        #import pdb;pdb.set_trace()
-        return data
+
+# class CustomDataset(Dataset):
+#     def __init__(self, opt, root):
+#         self.opt = opt
+#         self.txt_file = opt.txt_file
+#         self.root = root
+#         self.data = self._load_data()
+#         print(len(self.data))
+#         if self.opt.isTrain:
+#             self.crop_func = transforms.RandomCrop(opt.cropSize)
+#         elif self.opt.no_crop:
+#             self.crop_func = transforms.Lambda(lambda img: img)
+#         else:
+#             self.crop_func = transforms.CenterCrop(opt.cropSize)
+#
+#         if self.opt.isTrain and not self.opt.no_flip:
+#             self.flip_func = transforms.RandomHorizontalFlip()
+#         else:
+#             self.flip_func = transforms.Lambda(lambda img: img)
+#
+#         if not self.opt.isTrain and self.opt.no_resize:
+#             self.rz_func = transforms.Lambda(lambda img: img)
+#         else:
+#             self.rz_func = transforms.Lambda(lambda img: custom_resize(img, opt))
+#
+#         self.transform = transforms.Compose([
+#             self.rz_func,
+#             transforms.Lambda(lambda img: data_augment(img, opt)),
+#             self.crop_func,
+#             self.flip_func,
+#             transforms.ToTensor(),
+#             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+#         ])
+#
+#     def __len__(self):
+#         return len(self.data)
+#
+#     def __getitem__(self, index):
+#         img_path, label = self.data[index]
+#         img_path = os.path.join(self.root, img_path)
+#         img = Image.open(img_path).convert("RGB")
+#         img = self.transform(img)
+#         #import pdb;pdb.set_trace()
+#         return img, label
+#
+#     def _load_data(self):
+#         data = []
+#         with open(self.txt_file, "r") as file:
+#             lines = file.readlines()
+#             for line in lines:
+#                 line = line.strip()
+#                 if line:
+#                     img_path, label = line.split()
+#                     data.append((img_path, int(label)))
+#         #import pdb;pdb.set_trace()
+#         return data
 

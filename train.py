@@ -1,67 +1,55 @@
 import os
-import sys
-import time
+import hydra
+import argparse
+import wandb
+import datetime
+
 import torch
 import torch.nn
-import argparse
-from PIL import Image
+from torch.utils.data import DataLoader
 
+import lightning as L
+from lightning.pytorch.loggers import WandbLogger
+from lightning.pytorch.callbacks import ModelCheckpoint
 
-from utils.validate import validate, get_val_opt
-from data import create_dataloader
+from utils.util import load_config_with_cli, archive_files
+from data.datasets import BinaryMultiDatasets
 from networks.trainer import Trainer
-from options.train_options import TrainOptions
-
 
 if __name__ == '__main__':
-    opt = TrainOptions().parse()
-    val_opt = get_val_opt(opt)
-    opt.dataroot = '{}/{}/'.format(opt.dataroot, opt.train_split)
+    parser = argparse.ArgumentParser(description='Training')
+    parser.add_argument('--cfg', type=str, default=None, required=True)
+    args, cfg_args = parser.parse_known_args()
+    conf = load_config_with_cli(args.cfg, args_list=cfg_args)
+    conf = hydra.utils.instantiate(conf)
+    wandb.login(key = 'a4d3a740e939973b02ac59fbd8ed0d6a151df34b')
 
+    train_dataset = BinaryMultiDatasets(conf.dataset.train, split='train')
+    train_loader = DataLoader(train_dataset, batch_size=conf.dataset.train.batch_size, shuffle=True,
+                              num_workers=conf.dataset.train.loader_workers)
+    val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val')
+    val_loader = DataLoader(val_dataset, batch_size=conf.dataset.val.batch_size, shuffle=False,
+                            num_workers=conf.dataset.val.loader_workers)
 
+    today_str = datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
 
+    wandb_logger = WandbLogger(name=today_str, project='DeepfakeDetection',
+                               job_type='train', group=conf.name)
 
+    archive_files(today_str, exclude_dirs=['logs', 'wandb'])
+    checkpoint_callback = ModelCheckpoint(
+        monitor='val_acc',
+        dirpath=os.path.join('logs', today_str),
+        filename='{epoch:02d}-{val_acc:.2f}',
+        save_top_k=3,
+        mode='max',
+    )
 
-
-    data_loader = create_dataloader(opt)
-    dataset_size = len(data_loader)
-    print('#training dataloader steps = %d' % dataset_size)
-
-    model = Trainer(opt)
-    model.train()
-
-    for epoch in range(opt.niter):
-        epoch_start_time = time.time()
-        iter_data_time = time.time()
-        epoch_iter = 0
-
-        for i, data in enumerate(data_loader):
-            model.total_steps += 1
-            epoch_iter += opt.batch_size
-
-            model.set_input(data)
-            model.optimize_parameters()
-
-            if model.total_steps % opt.loss_freq == 0:
-                print("Train loss: {} at step: {}".format(model.loss, model.total_steps))
-                # train_writer.add_scalar('loss', model.loss, model.total_steps)
-
-            if model.total_steps % opt.save_latest_freq == 0:
-                print('saving the latest model %s (epoch %d, model.total_steps %d)' %
-                      (opt.name, epoch, model.total_steps))
-                model.save_networks('latest')
-
-
-        if epoch % opt.save_epoch_freq == 0:
-            print('saving the model at the end of epoch %d, iters %d' %
-                  (epoch, model.total_steps))
-            model.save_networks('latest')
-            model.save_networks(epoch)
-
-        # Validation
-        model.eval()
-        acc, ap = validate(model.model, val_opt)[:2]
-        print("(Val @ epoch {}) acc: {}; ap: {}".format(epoch, acc, ap))
+    model = Trainer(opt=conf)
+    trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
+                        callbacks=[checkpoint_callback],
+                        check_val_every_n_epoch=conf.train.check_val_every_n_epoch)
+    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 
 

@@ -1,0 +1,65 @@
+arch: "vit_base_patch16_224"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
+resume: null
+name: "experiment_name"  # Name of the experiment for organizing samples and models
+# Model initialization settings
+#init_type: "normal"  # Type of weight initialization: normal, xavier, kaiming, or orthogonal
+#init_gain: 0.02  # Scaling factor for weight initialization
+
+
+train:
+  gpu_ids: [1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  train_epochs: 100  # Number of training epochs
+  gradient_accumulation_steps: 1
+  check_val_every_n_epoch: 10
+
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: True
+    lr: 1e-4
+    weight_decay: 1e-3
+ 
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: True
+    T_max: 100
+
+dataset:
+  train:
+    mode: 'binary' # Mode of dataset, e.g. binary classification TODO: current no use
+    dataroot: "/home/jwang/ybwork/data/CDDB"  # Root directory for dataset with subfolders for train and val
+    subfolder_names: ["gaugan"]
+    multicalss_idx: [0]  # [0, 1, 0, 1]
+    batch_size: 64  # Number of samples per batch
+    loader_workers: 4
+    loadSize: 256  # Size to which the images are initially resized
+    cropSize: 224  # Size to which the images are cropped after resizing
+    random_flip: true  # If true, do flip images
+
+    augment:
+      blur_prob: 0.0  # Probability of applying blur augmentation
+      blur_sig: "0.5"  # Sigma value for Gaussian blur
+      jpg_prob: 0.0  # Probability of simulating JPEG compression
+      jpg_method: "cv2"  # Method to simulate JPEG compression, e.g., using OpenCV
+      jpg_qual: "75"  # JPEG quality for compression simulation
+
+  val:
+    mode: 'binary'
+    dataroot: "/home/jwang/ybwork/data/CDDB"
+    subfolder_names: ["biggan","cyclegan","imle","deepfake","crn","wild"]
+    multicalss_idx: [0, 1, 0, 0, 0, 0]
+    batch_size: 64
+    loader_workers: 4
+    loadSize: 256
+    cropSize: 224
+
+
+  test:
+    mode: 'binary'
+    dataroot: "/home/jwang/ybwork/data/CDDB"
+    subfolder_names: ["biggan","cyclegan","imle","deepfake","crn","wild"]
+    multicalss_idx: [0, 1, 0, 0, 0, 0]
+    batch_size: 64
+    loader_workers: 4
+    loadSize: 256
+    cropSize: 224
+
