@@ -7,6 +7,12 @@ import timm
 from utils.validate import validate
 from options.test_options import TestOptions
 
+
+
+
+
+
+
 if __name__ == '__main__':
     opt = TestOptions().parse(print_options=False)
     opt.isTrain = False

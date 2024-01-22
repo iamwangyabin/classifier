@@ -38,9 +38,9 @@ if __name__ == '__main__':
 
     archive_files(today_str, exclude_dirs=['logs', 'wandb'])
     checkpoint_callback = ModelCheckpoint(
-        monitor='val_acc',
+        monitor='val_acc_epoch',
         dirpath=os.path.join('logs', today_str),
-        filename='{epoch:02d}-{val_acc:.2f}',
+        filename='{epoch:02d}-{val_acc_epoch:.2f}',
         save_top_k=3,
         mode='max',
     )
@@ -48,7 +48,8 @@ if __name__ == '__main__':
     model = Trainer(opt=conf)
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
-                        check_val_every_n_epoch=conf.train.check_val_every_n_epoch)
+                        check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
+                        precision="bf16")
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 
