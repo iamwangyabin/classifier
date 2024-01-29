@@ -35,13 +35,14 @@ class Trainer(L.LightningModule):
         test_loss = self.criterion(logits.squeeze(1), (y % 2).to(self.dtype))
         self.validation_step_outputs_preds.append(logits.squeeze(1))
         self.validation_step_outputs_gts.append(y)
-        self.log('val_loss', test_loss, on_step=True, on_epoch=True, logger=True)
+        self.log('val_loss', test_loss, on_epoch=True, logger=True)
 
     def on_validation_epoch_end(self):
-        all_preds = torch.cat(self.validation_step_outputs_preds, 0).sigmoid().flatten().cpu().numpy()
-        all_gts = torch.cat(self.validation_step_outputs_gts, 0).cpu().numpy()
+        # import pdb;pdb.set_trace()
+        all_preds = torch.cat(self.validation_step_outputs_preds, 0).to(torch.float32).sigmoid().flatten().cpu().numpy()
+        all_gts = torch.cat(self.validation_step_outputs_gts, 0).to(torch.float32).cpu().numpy()
         acc, ap = validate(all_gts % 2, all_preds)[:2]
-        self.log('val_acc', acc, logger=True)
+        self.log('val_acc_epoch', acc, logger=True)
         for i, sub_task in enumerate(self.opt.dataset.val.subfolder_names):
             mask = (all_gts >= i * 2) & (all_gts <= 1 + i * 2)
             idxes = np.where(mask)[0]
@@ -57,28 +58,3 @@ class Trainer(L.LightningModule):
         optimizer = self.opt.train.optimizer(optparams)
         scheduler = self.opt.train.scheduler(optimizer)
         return [optimizer], [scheduler]
-
-    #
-    # def init_weights(net, init_type='normal', gain=0.02):
-    #     def init_func(m):
-    #         classname = m.__class__.__name__
-    #         if hasattr(m, 'weight') and (classname.find('Conv') != -1 or classname.find('Linear') != -1):
-    #             if init_type == 'normal':
-    #                 init.normal_(m.weight.data, 0.0, gain)
-    #             elif init_type == 'xavier':
-    #                 init.xavier_normal_(m.weight.data, gain=gain)
-    #             elif init_type == 'kaiming':
-    #                 init.kaiming_normal_(m.weight.data, a=0, mode='fan_in')
-    #             elif init_type == 'orthogonal':
-    #                 init.orthogonal_(m.weight.data, gain=gain)
-    #             else:
-    #                 raise NotImplementedError('initialization method [%s] is not implemented' % init_type)
-    #             if hasattr(m, 'bias') and m.bias is not None:
-    #                 init.constant_(m.bias.data, 0.0)
-    #         elif classname.find('BatchNorm2d') != -1:
-    #             init.normal_(m.weight.data, 1.0, gain)
-    #             init.constant_(m.bias.data, 0.0)
-    #
-    #     print('initialize network with %s' % init_type)
-    #     net.apply(init_func)
-
