@@ -1,5 +1,6 @@
 from networks.clip import clip
 from PIL import Image
+import torch
 import torch.nn as nn
 
 
@@ -12,9 +13,11 @@ class CLIPModel(nn.Module):
     def __init__(self, name, num_classes=1):
         super(CLIPModel, self).__init__()
 
-        self.model, self.preprocess = clip.load(name, device="cpu") # self.preprecess will not be used during training, which is handled in Dataset class 
+        self.model, self.preprocess = clip.load(name, device="cpu")
+        for param in self.model.parameters():
+            param.requires_grad = False
         self.fc = nn.Linear(CHANNELS[name], num_classes)
- 
+        # torch.nn.init.xavier_uniform_(self.fc.weight.data)
 
     def forward(self, x, return_feature=False):
         features = self.model.encode_image(x) 

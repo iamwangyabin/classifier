@@ -1,0 +1,47 @@
+arch: "clip"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
+resume: null
+name: "clip_Ojha—PBCSG"  # Name of the experiment for organizing samples and models
+
+train:
+  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  train_epochs: 100  # Number of training epochs
+  gradient_accumulation_steps: 1
+  check_val_every_n_epoch: 1
+
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: True
+    lr: 1e-4
+    weight_decay: 1e-3
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: True
+    T_max: 100
+
+dataset:
+  train:
+    mode: 'binary'
+    dataroot: "/home/jwang/ybwork/data/aiart/new_dddb"
+    subfolder_names: ["progan","biggan","cyclegan", "stylegan", "gaugan"]
+    multicalss_idx: [0, 0, 1, 1, 0,]
+#    multicalss_idx: [0]
+    batch_size: 256
+    loader_workers: 32
+    loadSize: 256
+    cropSize: 224
+    random_flip: true
+    augment: null
+
+  val:
+    mode: 'binary'
+    dataroot: "/home/jwang/ybwork/data/CDDB"
+    subfolder_names: ["imle","deepfake","crn","wild", "whichfaceisreal", "imle", "san"]
+    multicalss_idx: [ 0, 0, 0, 0, 0, 0, 0]
+#    multicalss_idx: [0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    batch_size: 64
+    loader_workers: 4
+    loadSize: 256
+    cropSize: 224
+
+
