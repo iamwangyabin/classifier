@@ -31,61 +31,179 @@ def process_image(image_label_tuple):
 
 def process_AntifakePrompt(data_path):
     names = []
+    ################################################################################
     COCO_real = find_images(os.path.join(data_path, 'COCO'))
     labels = [0] * len(COCO_real)
     names += ['COCO'] * len(COCO_real)
     Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
-    labels += [1] * len(Flickr_real)
+    labels += [0] * len(Flickr_real)
     names += ['Flickr'] * len(Flickr_real)
+    #
     AdvAtk_fake = find_images(os.path.join(data_path, 'AdvAtk_Imagenet'))
-    labels += [2] * len(AdvAtk_fake)
+    labels += [1] * len(AdvAtk_fake)
     names += ['AdvAtk'] * len(AdvAtk_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [2] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [2] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     DALLE2_fake = (find_images(os.path.join(data_path, 'DALLE2', 'commonFake_COCO')) +
                    find_images(os.path.join(data_path, 'DALLE2', 'commonFake_Flickr')))
     labels += [3] * len(DALLE2_fake)
     names += ['DALLE2'] * len(DALLE2_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [4] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [4] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     Deeperforensics_fake = find_images(os.path.join(data_path, 'deeperforensics_faceOnly'))
-    labels += [4] * len(Deeperforensics_fake)
+    labels += [5] * len(Deeperforensics_fake)
     names += ['Deeperforensics'] * len(Deeperforensics_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [6] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [6] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     IF_fake = (find_images(os.path.join(data_path, 'IF', 'commonFake_COCO')) +
                find_images(os.path.join(data_path, 'IF', 'commonFake_Flickr')))
-    labels += [5] * len(IF_fake)
+    labels += [7] * len(IF_fake)
     names += ['IF'] * len(IF_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [8] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [8] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     lteSR4_fake = find_images(os.path.join(data_path, 'lte_SR4_224'))
-    labels += [6] * len(lteSR4_fake)
+    labels += [9] * len(lteSR4_fake)
     names += ['lteSR4'] * len(lteSR4_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [10] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [10] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     SD2Inpaint_fake = find_images(os.path.join(data_path, 'SD2Inpaint_224'))
-    labels += [7] * len(SD2Inpaint_fake)
+    labels += [11] * len(SD2Inpaint_fake)
     names += ['SD2Inpaint'] * len(SD2Inpaint_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [12] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [12] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     SDXL_fake = (find_images(os.path.join(data_path, 'SDXL', 'commonFake_COCO')) +
                  find_images(os.path.join(data_path, 'SDXL', 'commonFake_Flickr')))
-    labels += [8] * len(SDXL_fake)
+    labels += [13] * len(SDXL_fake)
     names += ['SDXL'] * len(SDXL_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [14] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [14] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     Backdoor_fake = find_images(os.path.join(data_path, 'Backdoor_Imagenet'))
-    labels += [9] * len(Backdoor_fake)
+    labels += [15] * len(Backdoor_fake)
     names += ['Backdoor'] * len(Backdoor_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [16] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [16] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     Control_fake = find_images(os.path.join(data_path, 'Control_COCO'))
-    labels += [10] * len(Control_fake)
+    labels += [17] * len(Control_fake)
     names += ['Control'] * len(Control_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [18] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [18] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     DataPoison_fake = find_images(os.path.join(data_path, 'DataPoison_Imagenet'))
-    labels += [11] * len(DataPoison_fake)
+    labels += [19] * len(DataPoison_fake)
     names += ['DataPoison'] * len(DataPoison_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [20] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [20] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     Lama_fake = find_images(os.path.join(data_path, 'lama_224'))
-    labels += [12] * len(Lama_fake)
+    labels += [21] * len(Lama_fake)
     names += ['Lama'] * len(Lama_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [22] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [22] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     SD2_fake = (find_images(os.path.join(data_path, 'SD2', 'commonFake_COCO')) +
                 find_images(os.path.join(data_path, 'SD2', 'commonFake_Flickr')))
-    labels += [13] * len(SD2_fake)
+    labels += [23] * len(SD2_fake)
     names += ['SD2'] * len(SD2_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [24] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [24] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     SD2SuperRes_fake = find_images(os.path.join(data_path, 'SD2SuperRes_SR4_224'))
-    labels += [14] * len(SD2SuperRes_fake)
+    labels += [25] * len(SD2SuperRes_fake)
     names += ['SD2SuperRes'] * len(SD2SuperRes_fake)
+    ################################################################################
+    COCO_real = find_images(os.path.join(data_path, 'COCO'))
+    labels += [26] * len(COCO_real)
+    names += ['COCO'] * len(COCO_real)
+    Flickr_real = find_images(os.path.join(data_path, 'flickr30k_224'))
+    labels += [26] * len(Flickr_real)
+    names += ['Flickr'] * len(Flickr_real)
+    #
     SGXL_fake = find_images(os.path.join(data_path, 'SGXL'))
-    labels += [15] * len(SGXL_fake)
+    labels += [27] * len(SGXL_fake)
     names += ['SGXL'] * len(SGXL_fake)
-    image_paths= (COCO_real + Flickr_real + AdvAtk_fake + DALLE2_fake + Deeperforensics_fake + IF_fake + lteSR4_fake +
-                  SD2Inpaint_fake + SDXL_fake + Backdoor_fake + Control_fake + DataPoison_fake + Lama_fake + SD2_fake +
-                  SD2SuperRes_fake + SGXL_fake)
+    ################################################################################
+    image_paths= (COCO_real + Flickr_real + AdvAtk_fake +
+                  COCO_real + Flickr_real + DALLE2_fake +
+                  COCO_real + Flickr_real + Deeperforensics_fake +
+                  COCO_real + Flickr_real + IF_fake +
+                  COCO_real + Flickr_real + lteSR4_fake +
+                  COCO_real + Flickr_real + SD2Inpaint_fake +
+                  COCO_real + Flickr_real + SDXL_fake +
+                  COCO_real + Flickr_real + Backdoor_fake +
+                  COCO_real + Flickr_real + Control_fake +
+                  COCO_real + Flickr_real + DataPoison_fake +
+                  COCO_real + Flickr_real + Lama_fake +
+                  COCO_real + Flickr_real + SD2_fake +
+                  COCO_real + Flickr_real + SD2SuperRes_fake +
+                  COCO_real + Flickr_real + SGXL_fake)
     image_label_pairs = zip(image_paths, labels)
     cores = cpu_count()
     with Pool(cores) as pool:
@@ -97,7 +215,6 @@ def process_AntifakePrompt(data_path):
         'name': names
     })
     return df
-
 
 AntDF = process_AntifakePrompt('/home/jwang/ybwork/data/deepfake_benchmark/AntifakePrompt')
 
@@ -154,26 +271,20 @@ ddict = DatasetDict({
     "Ojha": Dataset.from_pandas(OjhaDF),
 })
 
-ddict.push_to_hub("repo_id")
+
+ddict.push_to_hub("nebula/DFBenchmarkPNG")
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Celeb-DF-v1  Celeb-DF-v2  DFDCP DFFD UADFV
+#
+#
+# FaceForensics++ (FF++)
+# DeepFakeDetection (DFD)
+# DeepFake Detection Challenge (DFDC)
+# FaceShifter (Fsh)
+# DeeperForensics-1.0 (DF-1.0)
 
 
 
