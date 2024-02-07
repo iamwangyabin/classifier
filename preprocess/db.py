@@ -23,12 +23,12 @@ with open("/data/jwang/db2024/metadata/posts.json", "r") as file:
         except json.JSONDecodeError as e:
             print(f"JSONDecodeError: {e}")
 
-artist_counter = Counter()
-for item in data:
-    artist_name = item['tag_string_artist']
-    artist_counter[artist_name] += 1
+# artist_counter = Counter()
+# for item in data:
+#     artist_name = item['tag_string_artist']
+#     artist_counter[artist_name] += 1
 
-selected_artist = [aa[0] for aa in artist_counter.most_common(5000)[1:1000]]
+# selected_artist = [aa[0] for aa in artist_counter.most_common(5000)[1:1000]]
 
 def generate_tags(data_item):
     def process_tags(tag_str):
@@ -159,8 +159,6 @@ def build_file_index(src_images_dir):
     return file_index
 
 file_index = build_file_index(src_images_dir)
-
-
 
 
 
@@ -344,23 +342,27 @@ def process_image(i, file_index=file_index, dest_dir=dest_dir, selected_artist=s
         print(f"Error processing image {i['id']}: {e}")
 
 
-def process_image(i, file_index=file_index, dest_dir=dest_dir, selected_artist=selected_artist):
+
+# 生成图片 2.5m
+def process_image(i, file_index=file_index, dest_dir=dest_dir):
     try:
         if str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) > 0.92:
             if i['image_width'] >= 768 and i['image_height'] >= 768:
                 caption, tags_artist = generate_tags(i)
+                i['tag_string_artist'] = ""
                 file_path = file_index.get(str(i['id']))
                 with Image.open(file_path) as img:
-                    max_size = 4096
-                    if max(img.size) > max_size:
-                        scale = max_size / max(img.size)
-                        new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-                        img = img.resize(new_size, Image.LANCZOS)
+                    min_size = 1024
+                    scale = min_size / min(img.size)
+                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
+                    img = img.resize(new_size, Image.LANCZOS)
                     img.save(os.path.join(dest_dir, 'all', str(i['id']) + ".webp"), 'WEBP')
                     with open(os.path.join(dest_dir, 'all', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
                         file.write(caption)
     except Exception as e:
         print(f"Error processing image {i['id']}: {e}")
+
+
 
 
 
@@ -408,6 +410,7 @@ def process_image(i, file_index=file_index, dest_dir=dest_dir, selected_artist=s
 os.makedirs(dest_dir, exist_ok=True)
 os.makedirs(os.path.join(dest_dir, 'artists'), exist_ok=True)
 os.makedirs(os.path.join(dest_dir, 'general'), exist_ok=True)
+os.makedirs(os.path.join(dest_dir, 'all'), exist_ok=True)
 
 # 这么并行处理比较简单而且快速，pytorch会解决一切多进程问题
 import torch
@@ -415,20 +418,19 @@ from torch.utils.data import Dataset, DataLoader
 
 
 class SimpleDataset(Dataset):
-    def __init__(self, data, file_index=file_index, dest_dir=dest_dir, selected_artist=selected_artist):
+    def __init__(self, data, file_index=file_index, dest_dir=dest_dir):
         self.data = data
         self.file_index = file_index
         self.dest_dir = dest_dir
-        self.selected_artist = selected_artist
     def __len__(self):
         return len(self.data)
     def __getitem__(self, idx):
-        a = process_image(self.data[idx], self.file_index, self.dest_dir, self.selected_artist)
+        a = process_image(self.data[idx], self.file_index, self.dest_dir)
         return idx
 
-dataset = SimpleDataset(data, file_index, dest_dir, selected_artist)
+dataset = SimpleDataset(data, file_index, dest_dir)
 
-dataloader = DataLoader(dataset, batch_size=64, shuffle=False, num_workers=64)
+dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=8)
 
 for batch in tqdm(dataloader):
     pass
@@ -436,68 +438,8 @@ for batch in tqdm(dataloader):
 
 
 
-
-
-
-
-
-
-
-
-
-
-# # 这段代码用来生成放置在hcp中的yaml配置文件，方便使用
-# directory_path = '~/dbv2'
-# config = {'source': {}}
-# for index, folder in enumerate(sorted(os.listdir(directory_path)), start=1):
-#     if os.path.isdir(os.path.join(directory_path, folder)):
-#         config['source'][f'data_source{index}'] = {
-#             '_target_': 'hcpdiff.data.source.Text2ImageAttMapSource',
-#             'img_root': os.path.join(directory_path, folder),
-#             'prompt_template': 'prompt_tuning_template/object.txt',
-#             'caption_file': os.path.join(directory_path, folder, 'image_captions.json'),
-#             'att_mask': None,
-#             'bg_color': [255, 255, 255],
-#             'word_names': {},
-#             'text_transforms': {
-#                 '_target_': 'torchvision.transforms.Compose',
-#                 'transforms': [
-#                     {
-#                         '_target_': 'hcpdiff.utils.caption_tools.TemplateFill',
-#                         'word_names': '${....word_names}'
-#                     }
-#                 ]
-#             }
-#         }
-#
-# yaml_str = yaml.dump(config, default_flow_style=False)
-# print(yaml_str)
-# with open('data_sources_config.yaml', 'w') as file:
-#     yaml.safe_dump(config, file, default_flow_style=False)
-
-
 # 运行
 accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='fp16' -- -m hcpdiff.train_ac_single --cfg cfgs/train/ft_playground.yaml
-
-import os
-import torch
-
-directory = "/home/jwang/ybwork/data/dbv1_cache"
-
-combined_data = {}
-
-for filename in os.listdir(directory):
-    if filename.endswith(".pth"):
-        file_path = os.path.join(directory, filename)
-        data = torch.load(file_path)
-        features, image_names = data
-        for img_name, feature in zip(image_names, features):
-            combined_data[img_name] = feature
-
-torch.save(combined_data, '/home/jwang/ybwork/data/dbv1_pg_cache.pt')
-
-
-torch.save(list(combined_data.keys()), '/home/jwang/ybwork/data/dbv1_pg_cache_keys.pt')
 
 
 import os
@@ -505,8 +447,8 @@ import torch
 import h5py
 
 # 定义源目录和目标文件
-directory = "/home/jwang/ybwork/data/dbv1_cache"
-target_h5_file = '/home/jwang/ybwork/data/dbv1_pg_cache.h5'
+directory = "./data/dbv2_cache"
+target_h5_file = './data/dbv2_cache.h5'
 
 # 创建一个新的HDF5文件
 with h5py.File(target_h5_file, 'w') as h5file:
@@ -514,8 +456,8 @@ with h5py.File(target_h5_file, 'w') as h5file:
         if filename.endswith(".pth"):
             file_path = os.path.join(directory, filename)
             data = torch.load(file_path, map_location=torch.device('cpu'))
-            features, image_names = data
-            for img_name, feature in zip(image_names, features):
+            names, ls, mask, crop_info = data
+            for img_name, feature, m, c in zip(names, ls, mask, crop_info):
                 if str(img_name) in h5file:
                     print(f"Dataset '{str(img_name)}' already exists.")
                 else:
@@ -532,14 +474,9 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "dbv1_pg_cache_part_aa",
-    "dbv1_pg_cache_part_ab",
-    "dbv1_pg_cache_part_ac",
-    "dbv1_pg_cache_part_ad",
-    "dbv1_pg_cache_part_ae",
-    "dbv1_pg_cache_part_af",
-    "dbv1_pg_cache_part_ag"
-    "dbv1_pg_cache_part_ah"
+    "dbv2_00", "dbv2_01", "dbv2_02", "dbv2_03", "dbv2_04", "dbv2_05", "dbv2_06", "dbv2_07", "dbv2_08", "dbv2_09",
+    "dbv2_10", "dbv2_11", "dbv2_12", "dbv2_13", "dbv2_14", "dbv2_15", "dbv2_16", "dbv2_17", "dbv2_18", "dbv2_19",
+    "dbv2_20", "dbv2_21"
 ]
 
 # 上传文件
@@ -548,6 +485,50 @@ for filename in files_to_upload:
     response = api.upload_file(
         path_or_fileobj=f"./{filename}",
         path_in_repo=f"{filename}",
-        repo_id="nebula/db_v1",
+        repo_id="nebula/db_v2",
         repo_type="dataset"
     )
+
+
+
+
+
+
+
+accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
+
+
+
+import os
+from PIL import Image
+from tqdm import tqdm
+folder_path = '/home/jwang/ybwork/data/dbv2/all/'
+webp_files = [f for f in os.listdir(folder_path) if f.endswith('.webp')]
+total_files = len(webp_files)
+for filename in tqdm(webp_files, desc="Checking webp files", unit="file"):
+    file_path = os.path.join(folder_path, filename)
+    try:
+        with Image.open(file_path) as img:
+            img.verify()
+    except (IOError, SyntaxError) as e:
+        print('Broken file:', file_path)
+        os.remove(file_path)
+
+
+
+
+
+
+
+#  upload a folder
+from huggingface_hub import HfApi
+import os
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+api = HfApi()
+
+api.upload_folder(
+    folder_path="./images",
+    path_in_repo="./images",
+    repo_id="nebula/DFDatasets",
+    repo_type="dataset",
+)
