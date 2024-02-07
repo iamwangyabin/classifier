@@ -8,38 +8,35 @@ datasets:
   cropSize: 224
 
   source:
-    set1:
-      set_name: "ForenSynths"
+    ForenSynths:
       data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
       sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                    "stylegan", "stylegan2", "whichfaceisreal"]
 
-    set2:
-      set_name: "Ojha"
+    Ojha:
       data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Ojha"
       sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
 
-    set3:
-      set_name: "AntifakePrompt"
+    AntifakePrompt:
       data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AntifakePrompt"
       sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
                  'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 
-    set4:
-      set_name: "Celeb-DF-v1"
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
-      sub_sets: ['all']
-
-    set5:
-      set_name: "Celeb-DF-v2"
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
-      sub_sets: ['all']
-
-    set6:
-      set_name: "UADFV"
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
-      sub_sets: ['all']
-
+#    set4:
+#      set_name: "Celeb-DF-v1"
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
+#      sub_sets: ['all']
+#
+#    set5:
+#      set_name: "Celeb-DF-v2"
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
+#      sub_sets: ['all']
+#
+#    set6:
+#      set_name: "UADFV"
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
+#      sub_sets: ['all']
+#
 
 
 #    set7:

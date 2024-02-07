@@ -1,5 +1,6 @@
 import os
 import cv2
+import json
 import numpy as np
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
@@ -85,7 +86,7 @@ class BinaryJsonDatasets(Dataset):
 
         for img_rel_path, label in data[subset].items():
             img_full_path = os.path.join(self.dataroot, img_rel_path)
-            self.image_paths.append(img_full_path)
+            self.image_pathes.append(img_full_path)
             self.labels.append(label)
 
         if split == 'train':

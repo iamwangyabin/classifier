@@ -1,5 +1,6 @@
 import io
 import csv
+import argparse
 from PIL import Image
 import hydra
 import numpy as np
@@ -49,8 +50,8 @@ def validate(model, loader):
     with torch.no_grad():
         y_true, y_pred = [], []
         print("Length of dataset: %d" % (len(loader)))
-        for sample in tqdm(loader):
-            img, label = sample['image'], sample['label']
+        for img, label in tqdm(loader):
+            # img, label = sample['image'], sample['label']
             in_tens = img.cuda()
             y_pred.extend(model(in_tens).sigmoid().flatten().tolist())
             y_true.extend(label.flatten().tolist())
@@ -59,7 +60,6 @@ def validate(model, loader):
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
     best_thres = find_best_threshold(y_true, y_pred)
     r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
-    print(f"AP: {ap:.4f},\tAcc0: {acc0:.4f},\tAcc1: {acc1:.4f},\tBestThres: {best_thres:.4f}")
     return ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres
 
 if __name__ == '__main__':
@@ -82,46 +82,21 @@ if __name__ == '__main__':
 
     model.eval()
     model.cuda()
+
     all_results = []
 
+    for set_name, source_conf in conf.datasets.source.items():
+        data_root = source_conf.data_root
+        for subset in source_conf.sub_sets:
+            dataset = BinaryJsonDatasets(conf.datasets, data_root, subset, split='test')
+            data_loader = torch.utils.data.DataLoader(dataset, batch_size=conf.datasets.batch_size,
+                                                      num_workers=conf.datasets.loader_workers)
+            ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres = validate(model, data_loader)
+            print(f"{set_name} {subset}")
+            print(f"AP: {ap:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
+            all_results.append([set_name, subset, ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres])
 
-
-    for source_conf in conf.datasets.sources:
-
-
-        for
-        
-        dataset = BinaryJsonDatasets(source_conf, split='test')
-
-
-        dataset = load_dataset('json', data_files=source, split='test', cache_dir=conf.dataset.cache_dir)
-        data_loader = torch.utils.data.DataLoader(dataset, batch_size=128, num_workers=4)
-        results = validate(model, data_loader)
-        all_results.extend(results)
-
-
-
-
-
-
-    for subdata in ['ForenSynths', 'DiffusionForensics', 'AntifakePrompt', 'Ojha']:
-
-
-
-
-
-
-
-
-
-
-
-
-        data_loader = torch.utils.data.DataLoader(dataset, batch_size=128, num_workers=4)
-        results = validate(model, data_loader, subdata, sub_names=subfolder_names[subdata])
-        all_results.extend(results)
-
-    columns = ['dataset', 'model', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres']
+    columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres']
     with open('model_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(columns)
