@@ -2,12 +2,9 @@ import os
 import cv2
 import json
 import numpy as np
-import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-import torchvision.transforms.functional as TF
 from random import random, choice
 from io import BytesIO
-from PIL import ImageFile, Image
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
 from PIL import ImageFile, Image
@@ -97,6 +94,7 @@ class BinaryJsonDatasets(Dataset):
                 transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
+                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ]
 
         else:
@@ -105,6 +103,7 @@ class BinaryJsonDatasets(Dataset):
                 transforms.CenterCrop(opt.cropSize),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
+                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ]
 
         self.transform_chain = transforms.Compose(trsf)
