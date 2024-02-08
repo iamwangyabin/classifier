@@ -143,7 +143,6 @@ class BinaryJsonDatasets(Dataset):
                 transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
                 transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
             ]
 
         else:
@@ -151,7 +150,6 @@ class BinaryJsonDatasets(Dataset):
                 transforms.Resize(opt.loadSize),
                 transforms.CenterCrop(opt.cropSize),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
             ]
 
         self.transform_chain = transforms.Compose(trsf)
@@ -200,7 +198,6 @@ def validate(model, loader):
         y_true, y_pred = [], []
         print("Length of dataset: %d" % (len(loader)))
         for img, label in tqdm(loader):
-            in_tens = img.cuda()
             output = model.FENet(img)
             mask1_fea, mask1_binary, out0, out1, out2, out3 = model.SegNet(output, img)
             res, prob = one_hot_label_new(out3)
