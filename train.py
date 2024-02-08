@@ -13,7 +13,7 @@ from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
 
 from utils.util import load_config_with_cli, archive_files
-from data.datasets import BinaryMultiDatasets
+from data.binary_datasets import BinaryMultiDatasets
 from networks.trainer import Trainer
 
 if __name__ == '__main__':

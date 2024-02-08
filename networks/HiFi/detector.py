@@ -1,16 +1,11 @@
 # Copy this file to HiFi project, and run it
 
-import io
 import os
 import csv
-import cv2
 import json
 import numpy as np
-from io import BytesIO
-from random import random, choice
 from copy import deepcopy
 from tqdm import tqdm
-from scipy.ndimage.filters import gaussian_filter
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from PIL import ImageFile, Image
 from omegaconf import OmegaConf, ListConfig
@@ -62,64 +57,6 @@ def load_config_with_cli(path, args_list=None, remove_undefined=True):
     return cfg
 
 
-def sample_continuous(s):
-    if len(s) == 1:
-        return s[0]
-    if len(s) == 2:
-        rg = s[1] - s[0]
-        return random() * rg + s[0]
-    raise ValueError("Length of iterable s should be 1 or 2.")
-
-def sample_discrete(s):
-    if len(s) == 1:
-        return s[0]
-    return choice(s)
-
-
-def gaussian_blur(img, sigma):
-    gaussian_filter(img[:,:,0], output=img[:,:,0], sigma=sigma)
-    gaussian_filter(img[:,:,1], output=img[:,:,1], sigma=sigma)
-    gaussian_filter(img[:,:,2], output=img[:,:,2], sigma=sigma)
-
-
-def cv2_jpg(img, compress_val):
-    img_cv2 = img[:,:,::-1]
-    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), compress_val]
-    result, encimg = cv2.imencode('.jpg', img_cv2, encode_param)
-    decimg = cv2.imdecode(encimg, 1)
-    return decimg[:,:,::-1]
-
-
-def pil_jpg(img, compress_val):
-    out = BytesIO()
-    img = Image.fromarray(img)
-    img.save(out, format='jpeg', quality=compress_val)
-    img = Image.open(out)
-    # load from memory before ByteIO closes
-    img = np.array(img)
-    out.close()
-    return img
-
-def data_augment(img, opt):
-    img = np.array(img)
-
-    if random() < opt.blur_prob:
-        sig = sample_continuous(opt.blur_sig)
-        gaussian_blur(img, sig)
-
-    if random() < opt.jpg_prob:
-        method = sample_discrete(opt.jpg_method)
-        qual = sample_discrete(opt.jpg_qual)
-        img = jpeg_from_key(img, qual, method)
-
-    return Image.fromarray(img)
-
-def jpeg_from_key(img, compress_val, key):
-    jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
-    method = jpeg_dict[key]
-    return method(img, compress_val)
-
-
 class BinaryJsonDatasets(Dataset):
     def __init__(self, opt, data_root, subset='all', split='train'):
         self.dataroot = data_root
@@ -136,21 +73,12 @@ class BinaryJsonDatasets(Dataset):
             self.image_pathes.append(img_full_path)
             self.labels.append(label)
 
-        if split == 'train':
-            trsf = [
-                transforms.Resize(opt.loadSize),
-                transforms.RandomResizedCrop(opt.cropSize),
-                transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
-                transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
-                transforms.ToTensor(),
-            ]
 
-        else:
-            trsf = [
-                transforms.Resize(opt.loadSize),
-                transforms.CenterCrop(opt.cropSize),
-                transforms.ToTensor(),
-            ]
+        trsf = [
+            transforms.Resize(opt.loadSize),
+            transforms.CenterCrop(opt.cropSize),
+            transforms.ToTensor(),
+        ]
 
         self.transform_chain = transforms.Compose(trsf)
 
@@ -198,6 +126,7 @@ def validate(model, loader):
         y_true, y_pred = [], []
         print("Length of dataset: %d" % (len(loader)))
         for img, label in tqdm(loader):
+            img = img.cuda()
             output = model.FENet(img)
             mask1_fea, mask1_binary, out0, out1, out2, out3 = model.SegNet(output, img)
             res, prob = one_hot_label_new(out3)
@@ -244,6 +173,85 @@ if __name__ == '__main__':
         writer.writerow(columns)
         for values in all_results:
             writer.writerow(values)
+
+#
+#
+# def validate(model, loader, set_name, sub_names=None):
+#     with torch.no_grad():
+#         y_true, y_pred = [], []
+#         print("Length of dataset: %d" % (len(loader)))
+#         for sample in loader:
+#             img, label = sample['image'], sample['label']
+#             img = img.cuda()
+#             output = model.FENet(img)
+#             mask1_fea, mask1_binary, out0, out1, out2, out3 = model.SegNet(output, img)
+#             res, prob = one_hot_label_new(out3)
+#             # res = level_1_convert(res)[0]
+#             y_pred.extend(prob)
+#             y_true.extend(label.flatten().tolist())
+#     y_true, y_pred = np.array(y_true), np.array(y_pred)
+#     all_results = []
+#     for i, sub_task in enumerate(sub_names):
+#         mask = (y_true >= i * 2) & (y_true <= 1 + i * 2)
+#         idxes = np.where(mask)[0]
+#         if len(idxes) == 0:
+#             continue
+#         ap = average_precision_score(y_true[idxes] % 2, y_pred[idxes])
+#         r_acc0, f_acc0, acc0 = calculate_acc(y_true[idxes] % 2, y_pred[idxes], 0.5)
+#         best_thres = find_best_threshold(y_true[idxes] % 2, y_pred[idxes])
+#         r_acc1, f_acc1, acc1 = calculate_acc(y_true[idxes] % 2, y_pred[idxes], best_thres)
+#         all_results.append([set_name, sub_task, ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres])
+#         print(f"Subtask: {sub_task}\tAP: {ap:.4f},\tAcc0: {acc0:.4f},\tAcc1: {acc1:.4f},\tBestThres: {best_thres:.4f}")
+#     return all_results
+#
+# subfolder_names = {
+#     'ForenSynths': ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+#                    "stylegan", "stylegan2", "whichfaceisreal"],
+#     'DiffusionForensics': ["adm", "ddpm", "diff-stylegan", "if", "midjourney", "projectedgan", "sdv1_new2",
+#             "stylegan_official", "dalle2", "diff-projectedgan", "iddpm", "ldm", "pndm", "sdv1_new", "sdv2", "vqdiffusion"],
+#     'Ojha': ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"],
+#     'AntifakePrompt': ['AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lteSR4', 'SD2Inpaint', 'SDXL', 'Backdoor',
+#                        'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
+#     }
+#
+# if __name__ == '__main__':                                                                                                        [782/1913]
+#     model = HiFi_Net()
+#     print("Model loaded.")
+#     # model.eval()
+#     # model.cuda()
+#     all_results = []
+#     for subdata in ['ForenSynths', 'DiffusionForensics', 'AntifakePrompt', 'Ojha']:
+#         dataset = load_dataset('nebula/DFBenchmarkPNG', cache_dir='/data/jwang/cache', split=subdata, num_proc=8)
+#         dataset.set_format("torch")
+#         trans = transforms.Compose([
+#             transforms.Resize(256),
+#             transforms.CenterCrop(224),
+#             transforms.ToTensor(),
+#         ])
+#
+#         def custom_trans(examples):
+#             images = []
+#             keys = []
+#             for image, key in zip(examples["image"], examples["label"]):
+#                 image = io.BytesIO(image)
+#                 image = Image.open(image)
+#                 images.append(trans(image.convert("RGB")))
+#                 keys.append(key)
+#             examples['image'] = images
+#             examples['label'] = keys
+#             return examples
+#         dataset.set_transform(custom_trans)
+#         data_loader = torch.utils.data.DataLoader(dataset, batch_size=128, num_workers=4)
+#
+#         results = validate(model, data_loader, subdata, sub_names=subfolder_names[subdata])
+#         all_results.extend(results)
+#
+#     columns = ['dataset', 'model', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres']
+#     with open('model_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+#         writer = csv.writer(csvfile)
+#         writer.writerow(columns)
+#         for values in all_results:
+#             writer.writerow(values)
 
 
 

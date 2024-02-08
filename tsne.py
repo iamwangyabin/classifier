@@ -4,10 +4,22 @@ import argparse
 import hydra
 import torch.utils.data
 
+
 from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from utils.util import load_config_with_cli, archive_files
 from utils.validate import validate
 from data.json_datasets import BinaryJsonDatasets
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -19,24 +31,11 @@ if __name__ == '__main__':
 
     print("Model loaded..")
 
-    # model = CLIPModel('ViT-L/14')
-    # state_dict = torch.load('networks/UniversalFakeDetect/fc_weights.pth', map_location='cpu')
-    # model.fc.load_state_dict(state_dict)
-
-    # model = CLIPModel_inc('ViT-L/14')
-    # state_dict = torch.load('/home/jwang/ybwork/classifier/logs/20240129_20_21_23/epoch=41-val_acc_epoch=0.84.ckpt', map_location='cpu')
-    # model.fc.weight.data = state_dict['state_dict']['model.fc.weight']
-    # model.fc.bias.data = state_dict['state_dict']['model.fc.bias']
-
-    from networks.resnet import resnet50
-    model = resnet50(num_classes=1)
-    state_dict = torch.load('networks/CNNSpot/blur_jpg_prob0.1.pth', map_location='cpu')
-    model.load_state_dict(state_dict['model'])
-
-
-
-    model.cuda()
+    model = CLIPModel('ViT-L/14')
+    state_dict = torch.load('networks/UniversalFakeDetect/fc_weights.pth', map_location='cpu')
+    model.fc.load_state_dict(state_dict)
     model.eval()
+    model.cuda()
 
     all_results = []
 
