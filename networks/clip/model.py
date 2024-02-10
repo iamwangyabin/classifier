@@ -234,6 +234,10 @@ class VisionTransformer(nn.Module):
         x = x.permute(0, 2, 1)  # shape = [*, grid ** 2, width]
         x = torch.cat([self.class_embedding.to(x.dtype) + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device), x], dim=1)  # shape = [*, grid ** 2 + 1, width]
         x = x + self.positional_embedding.to(x.dtype)
+        # positional_embedding = self.positional_embedding.unsqueeze(0).unsqueeze(0)
+        # positional_embedding = F.interpolate(positional_embedding, size=(x.size(1), positional_embedding.size(-1)), mode='nearest')
+        # positional_embedding = positional_embedding.squeeze()
+        # x = x + positional_embedding.to(x.dtype)
         x = self.ln_pre(x)
 
         x = x.permute(1, 0, 2)  # NLD -> LND

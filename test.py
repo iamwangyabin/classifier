@@ -28,6 +28,9 @@ if __name__ == '__main__':
     # model.fc.weight.data = state_dict['state_dict']['model.fc.weight']
     # model.fc.bias.data = state_dict['state_dict']['model.fc.bias']
 
+
+'/home/jwang/ybwork/classifier/logs/20240209_23_25_04/epoch=93-val_acc_epoch=0.86.ckpt'
+
     from networks.resnet import resnet50
     model = resnet50(num_classes=1)
     state_dict = torch.load('networks/CNNSpot/blur_jpg_prob0.1.pth', map_location='cpu')

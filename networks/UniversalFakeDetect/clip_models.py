@@ -7,7 +7,9 @@ import torch.nn as nn
 
 CHANNELS = {
     "RN50" : 1024,
-    "ViT-L/14" : 768
+    "ViT-L/14" : 768,
+    "RN50x64": 1024,
+    "ViT-L/14@336px": 768,
 }
 
 class CLIPModel(nn.Module):
