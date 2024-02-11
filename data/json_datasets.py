@@ -86,27 +86,29 @@ class BinaryJsonDatasets(Dataset):
             self.image_pathes.append(img_full_path)
             self.labels.append(label)
 
-        if split == 'train':
-            trsf = [
-                transforms.Resize(opt.loadSize),
-                transforms.RandomResizedCrop(opt.cropSize),
-                transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
-                transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
-                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            ]
+        # if split == 'train':
+        #     trsf = [
+        #         transforms.Resize(opt.loadSize),
+        #         transforms.RandomResizedCrop(opt.cropSize),
+        #         transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
+        #         transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
+        #         transforms.ToTensor(),
+        #         transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
+        #         # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        #     ]
+        #
+        # else:
+        #     trsf = [
+        #         transforms.Resize(opt.loadSize),
+        #         transforms.CenterCrop(opt.cropSize),
+        #         transforms.ToTensor(),
+        #         transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
+        #         # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        #     ]
+        #
+        # self.transform_chain = transforms.Compose(trsf)
 
-        else:
-            trsf = [
-                transforms.Resize(opt.loadSize),
-                transforms.CenterCrop(opt.cropSize),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
-                # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            ]
-
-        self.transform_chain = transforms.Compose(trsf)
+        self.transform_chain = transforms.Compose(opt.trsf)
 
     def __len__(self):
         return len(self.image_pathes)

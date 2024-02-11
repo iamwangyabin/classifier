@@ -23,9 +23,9 @@ import cv2
 from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
-parser.add_argument('--input_dir', default='/home/jwang/ybwork/data/deepfake_benchmark/AIGCDetect',
+parser.add_argument('--input_dir', default='/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths',
                     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/AIGCDetect',
+parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/ForenSynths', 
                     type=str, help='Directory for results')
 parser.add_argument('--weights', default='./sidd_rgb.pth',
                     type=str, help='Path to weights')

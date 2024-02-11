@@ -4,11 +4,35 @@ import argparse
 import hydra
 import torch.utils.data
 
-from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from utils.util import load_config_with_cli, archive_files
 from utils.validate import validate
 from data.json_datasets import BinaryJsonDatasets
 
+
+def get_model(conf):
+    print("Model loaded..")
+    if conf.arch == 'clip':
+        from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
+        model = CLIPModel('ViT-L/14')
+        state_dict = torch.load('networks/UniversalFakeDetect/fc_weights.pth', map_location='cpu')
+        model.fc.load_state_dict(state_dict)
+        # model = CLIPModel_inc('ViT-L/14')
+        # state_dict = torch.load('/home/jwang/ybwork/classifier/logs/20240129_20_21_23/epoch=41-val_acc_epoch=0.84.ckpt',
+        #                         map_location='cpu')
+        # model.fc.weight.data = state_dict['state_dict']['model.fc.weight']
+        # model.fc.bias.data = state_dict['state_dict']['model.fc.bias']
+    elif conf.arch == 'cnn':
+        from networks.resnet import resnet50
+        model = resnet50(num_classes=1)
+        state_dict = torch.load('networks/CNNSpot/blur_jpg_prob0.1.pth', map_location='cpu')
+        model.load_state_dict(state_dict['model'])
+    elif conf.arch == 'lnp':
+        from networks.resnet import resnet50
+        model = resnet50(num_classes=1)
+        state_dict = torch.load('/home/jwang/ybwork/AIGCDetectBenchmark/weights/LNP.pth', map_location='cpu')
+        model.load_state_dict(state_dict['model'])
+
+    return model
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Testing')
@@ -17,30 +41,10 @@ if __name__ == '__main__':
     conf = load_config_with_cli(args.cfg, args_list=cfg_args)
     conf = hydra.utils.instantiate(conf)
 
-    print("Model loaded..")
-
-    # model = CLIPModel('ViT-L/14')
-    # state_dict = torch.load('networks/UniversalFakeDetect/fc_weights.pth', map_location='cpu')
-    # model.fc.load_state_dict(state_dict)
-
-    # model = CLIPModel_inc('ViT-L/14')
-    # state_dict = torch.load('/home/jwang/ybwork/classifier/logs/20240129_20_21_23/epoch=41-val_acc_epoch=0.84.ckpt', map_location='cpu')
-    # model.fc.weight.data = state_dict['state_dict']['model.fc.weight']
-    # model.fc.bias.data = state_dict['state_dict']['model.fc.bias']
-
-
-'/home/jwang/ybwork/classifier/logs/20240209_23_25_04/epoch=93-val_acc_epoch=0.86.ckpt'
-
-    from networks.resnet import resnet50
-    model = resnet50(num_classes=1)
-    state_dict = torch.load('networks/CNNSpot/blur_jpg_prob0.1.pth', map_location='cpu')
-    model.load_state_dict(state_dict['model'])
-
-
-
+    model = get_model(conf)
     model.cuda()
     model.eval()
-
+    # import pdb;pdb.set_trace()
     all_results = []
 
     for set_name, source_conf in conf.datasets.source.items():
