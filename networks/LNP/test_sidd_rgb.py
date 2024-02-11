@@ -25,7 +25,7 @@ from skimage import img_as_ubyte
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
 parser.add_argument('--input_dir', default='/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths',
                     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/ForenSynths', 
+parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/ForenSynths',
                     type=str, help='Directory for results')
 parser.add_argument('--weights', default='./sidd_rgb.pth',
                     type=str, help='Path to weights')
@@ -45,14 +45,10 @@ for dirpath, dirnames, filenames in os.walk(args.input_dir):
     print(dirpath)
     print(dirnames)
 
-    # if '0_real' in dirpath or '1_fake' in dirpath:
     image_paths = []
     for file in filenames:
         if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.PNG', '.JPEG')):
             image_paths.append(os.path.join(dirpath, file))
-    # else:
-    #     continue
-
 
     test_dataset = get_validation_data(image_paths, args.noise_type)
     test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False, num_workers=0, drop_last=False)
