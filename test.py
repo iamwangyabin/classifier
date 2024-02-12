@@ -14,22 +14,17 @@ def get_model(conf):
     if conf.arch == 'clip':
         from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
         model = CLIPModel('ViT-L/14')
-        state_dict = torch.load('networks/UniversalFakeDetect/fc_weights.pth', map_location='cpu')
+        state_dict = torch.load(conf.resume, map_location='cpu')
         model.fc.load_state_dict(state_dict)
-        # model = CLIPModel_inc('ViT-L/14')
-        # state_dict = torch.load('/home/jwang/ybwork/classifier/logs/20240129_20_21_23/epoch=41-val_acc_epoch=0.84.ckpt',
-        #                         map_location='cpu')
-        # model.fc.weight.data = state_dict['state_dict']['model.fc.weight']
-        # model.fc.bias.data = state_dict['state_dict']['model.fc.bias']
     elif conf.arch == 'cnn':
         from networks.resnet import resnet50
         model = resnet50(num_classes=1)
-        state_dict = torch.load('networks/CNNSpot/blur_jpg_prob0.1.pth', map_location='cpu')
+        state_dict = torch.load(conf.resume, map_location='cpu')
         model.load_state_dict(state_dict['model'])
     elif conf.arch == 'lnp':
         from networks.resnet import resnet50
         model = resnet50(num_classes=1)
-        state_dict = torch.load('/home/jwang/ybwork/AIGCDetectBenchmark/weights/LNP.pth', map_location='cpu')
+        state_dict = torch.load(conf.resume, map_location='cpu')
         model.load_state_dict(state_dict['model'])
 
     return model
@@ -61,7 +56,7 @@ if __name__ == '__main__':
 
     columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres',
                'num_real', 'num_fake']
-    with open('model_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(conf.test_name+'_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(columns)
         for values in all_results:
