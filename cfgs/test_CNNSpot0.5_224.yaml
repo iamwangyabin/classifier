@@ -1,0 +1,59 @@
+arch: "cnn"
+resume: 'networks/CNNSpot/blur_jpg_prob0.5.pth'
+test_name: "CNN05_224"
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+
+  trsf:
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+  source:
+    DiffusionForensics:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/DiffusionForensics"
+      sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
+                 'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
+                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
+                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
+                 'celebahq_dalle2', 'celebahq_midjourney']
+
+    AIGCDetect:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIGCDetect"
+      sub_sets: ['stylegan', 'stylegan2', 'wukong', 'DALLE2', 'cyclegan', 'Midjourney',
+                 'stable_diffusion_v_1_5', 'stargan', 'whichfaceisreal', 'ADM', 'biggan', 'Glide', 'gaugan',
+                 'progan', 'stable_diffusion_v_1_4', 'VQDM']
+
+    ForenSynths:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
+      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                   "stylegan", "stylegan2", "whichfaceisreal"]
+
+    Ojha:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Ojha"
+      sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
+
+    AntifakePrompt:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AntifakePrompt"
+      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
+                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
+
+
+    Celeb-DF-v1:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
+      sub_sets: ['all']
+
+    Celeb-DF-v2:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
+      sub_sets: ['all']
+
+    UADFV:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
+      sub_sets: ['all']
