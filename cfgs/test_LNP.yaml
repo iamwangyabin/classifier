@@ -1,5 +1,6 @@
 arch: "lnp"
-resume: null
+resume: '/home/jwang/ybwork/AIGCDetectBenchmark/weights/LNP.pth'
+test_name: "LNP_noresize"
 
 datasets:
   batch_size: 1
@@ -38,4 +39,7 @@ datasets:
       sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
                  'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 
-
+    ForenSynths:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
+      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                   "stylegan", "stylegan2", "whichfaceisreal"]
