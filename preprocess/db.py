@@ -13,6 +13,9 @@ from torch.utils.data import Dataset, DataLoader
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 
+src_images_dir = "/data/jwang/db2024extracted"
+dest_dir = "/home/jwang/ybwork/data/dbv3"
+
 
 data = []
 with open("/data/jwang/db2024/metadata/posts.json", "r") as file:
@@ -22,13 +25,6 @@ with open("/data/jwang/db2024/metadata/posts.json", "r") as file:
             data.append(json_obj)
         except json.JSONDecodeError as e:
             print(f"JSONDecodeError: {e}")
-
-# artist_counter = Counter()
-# for item in data:
-#     artist_name = item['tag_string_artist']
-#     artist_counter[artist_name] += 1
-
-# selected_artist = [aa[0] for aa in artist_counter.most_common(5000)[1:1000]]
 
 def generate_tags(data_item):
     def process_tags(tag_str):
@@ -57,22 +53,19 @@ def generate_tags(data_item):
     except (ValueError, AttributeError):
         print("Invalid or missing created_at date.")
         year_tag = "unknown"
-    # rating = data_item.get("rating")
     score = data_item.get("score")
     tags_general = process_tags(data_item.get("tag_string_general", ""))
     tags_character = process_tags(data_item.get("tag_string_character", ""))
-    # tags_character = data_item.get("tag_string_character", "")
     if tags_character == "original":
         tags_character = ""
     else:
         tags_character = tags_character
-    # tags_copyright = process_tags(data_item.get("tag_string_copyright", ""))
     tags_artist = data_item.get("tag_string_artist", "")
     if tags_artist == "":
         tags_artist = ""
     else:
-        tags_artist = "artist:"+tags_artist # tags_artist = process_tags(data_item.get("tag_string_artist", ""))
-        # tags_artist = tags_artist # tags_artist = process_tags(data_item.get("tag_string_artist", ""))
+        # tags_artist = process_tags(data_item.get("tag_string_artist", ""))
+        tags_artist = tags_artist
     tags_meta = process_tags(data_item.get("tag_string_meta", ""))
     quality_tag = ""
     if score > 150:
@@ -89,14 +82,6 @@ def generate_tags(data_item):
         quality_tag = "low quality"
     elif score < -5:
         quality_tag = "worst quality"
-    # if rating in "q":
-    #     nsfw_tags = "rating: questionable, nsfw"
-    # elif rating in "e":
-    #     nsfw_tags = "rating: explicit, nsfw"
-    # elif rating in "s":
-    #     nsfw_tags = "rating: sensitive"
-    # else:
-    #     nsfw_tags = "rating: general"
     tags_general_list = tags_general.split(', ')
     special_tags = [
         "1girl", "2girls", "3girls", "4girls", "5girls", "6+girls", "multiple girls",
@@ -112,14 +97,10 @@ def generate_tags(data_item):
     post_separator_tags = []
     if tags_character:
         pre_separator_tags.append(tags_character)
-    # if tags_copyright:
-    #     pre_separator_tags.append(tags_copyright)
     if tags_artist != "":
         pre_separator_tags.append(tags_artist)
     if first_general_tag:
         pre_separator_tags.append(first_general_tag)
-    # if nsfw_tags:
-    #     post_separator_tags.append(nsfw_tags)
     if rest_general_tags:
         post_separator_tags.append(rest_general_tags)
     if year_tag:
@@ -133,22 +114,7 @@ def generate_tags(data_item):
     caption = f"{pre_separator_str}, {post_separator_str}"
     return caption, tags_artist
 
-# 统计选中图片数量
-# number = 0
-# selected_post = []
-# for i in data:
-#     if i['tag_string_artist'] in selected_artist:
-#         if i['image_width'] >= 1024 or i['image_height'] >= 1024:
-#             number += 1
-#             selected_post.append(i['id'])
-#     elif i['tag_string_artist'] == '' or i['tag_string_artist'] not in selected_artist:
-#         if i['score'] > 50:
-#             if i['image_width'] >= 1024 or i['image_height'] >= 1024:
-#                 number += 1
-#                 selected_post.append(i['id'])
 
-src_images_dir = "/data/jwang/db2024extracted"
-dest_dir = "/home/jwang/ybwork/data/dbv2"
 
 def build_file_index(src_images_dir):
     file_index = {}
@@ -160,6 +126,96 @@ def build_file_index(src_images_dir):
 
 file_index = build_file_index(src_images_dir)
 
+
+def get_processed_file_aesthetic(csv_file):
+    file_aesthetic = {}
+    try:
+        with open(csv_file, mode='r', newline='') as file:
+            reader = csv.reader(file)
+            next(reader)
+            for row in reader:
+                if row:
+                    file_aesthetic[row[0]] = row[2]
+    except FileNotFoundError:
+        pass
+    return file_aesthetic
+
+# 以美学指标生成图片
+file_aesthetic = get_processed_file_aesthetic('aesthetic_scores.csv')
+
+# 生成图片 2.5m
+def process_image(i, file_index=file_index, dest_dir=dest_dir):
+    try:
+        if str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) > 0.9 and float(file_aesthetic[str(i['id'])]) < 0.93:
+            if i['image_width'] >= 768 and i['image_height'] >= 768:
+                caption, tags_artist = generate_tags(i)
+                i['tag_string_artist'] = ""
+                file_path = file_index.get(str(i['id']))
+                with Image.open(file_path) as img:
+                    min_size = 1024
+                    scale = min_size / min(img.size)
+                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
+                    img = img.resize(new_size, Image.LANCZOS)
+                    img.save(os.path.join(dest_dir, 's1', str(i['id']) + ".jpg"), 'JPEG')
+                    with open(os.path.join(dest_dir, 's1', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
+                        file.write(caption)
+        elif str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) >= 0.93 and float(file_aesthetic[str(i['id'])]) < 0.95:
+            if i['image_width'] >= 768 and i['image_height'] >= 768:
+                caption, tags_artist = generate_tags(i)
+                i['tag_string_artist'] = ""
+                file_path = file_index.get(str(i['id']))
+                with Image.open(file_path) as img:
+                    min_size = 1024
+                    scale = min_size / min(img.size)
+                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
+                    img = img.resize(new_size, Image.LANCZOS)
+                    img.save(os.path.join(dest_dir, 's2', str(i['id']) + ".jpg"), 'JPEG')
+                    with open(os.path.join(dest_dir, 's2', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
+                        file.write(caption)
+        elif str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) >= 0.95:
+            if i['image_width'] >= 768 and i['image_height'] >= 768:
+                caption, tags_artist = generate_tags(i)
+                i['tag_string_artist'] = ""
+                file_path = file_index.get(str(i['id']))
+                with Image.open(file_path) as img:
+                    min_size = 1024
+                    scale = min_size / min(img.size)
+                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
+                    img = img.resize(new_size, Image.LANCZOS)
+                    img.save(os.path.join(dest_dir, 's3', str(i['id']) + ".jpg"), 'JPEG')
+                    with open(os.path.join(dest_dir, 's3', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
+                        file.write(caption)
+    except Exception as e:
+        print(f"Error processing image {i['id']}: {e}")
+
+
+
+os.makedirs(dest_dir, exist_ok=True)
+os.makedirs(os.path.join(dest_dir, 's2'), exist_ok=True)
+os.makedirs(os.path.join(dest_dir, 's3'), exist_ok=True)
+os.makedirs(os.path.join(dest_dir, 's1'), exist_ok=True)
+
+# 这么并行处理比较简单而且快速，pytorch会解决一切多进程问题
+import torch
+from torch.utils.data import Dataset, DataLoader
+
+class SimpleDataset(Dataset):
+    def __init__(self, data, file_index=file_index, dest_dir=dest_dir):
+        self.data = data
+        self.file_index = file_index
+        self.dest_dir = dest_dir
+    def __len__(self):
+        return len(self.data)
+    def __getitem__(self, idx):
+        a = process_image(self.data[idx], self.file_index, self.dest_dir)
+        return idx
+
+dataset = SimpleDataset(data, file_index, dest_dir)
+
+dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=8)
+
+for batch in tqdm(dataloader):
+    pass
 
 
 def get_aesthetic():
@@ -260,180 +316,8 @@ def get_aesthetic():
                 aesthetic_scores = outputs['logits'][idx].softmax(-1).cpu().tolist()
                 csv_writer.writerow([file_id] + aesthetic_scores)
 
-def get_processed_file_aesthetic(csv_file):
-    file_aesthetic = {}
-    try:
-        with open(csv_file, mode='r', newline='') as file:
-            reader = csv.reader(file)
-            next(reader)
-            for row in reader:
-                if row:
-                    file_aesthetic[row[0]] = row[2]
-    except FileNotFoundError:
-        pass
-    return file_aesthetic
-
-# 以美学指标生成图片
-file_aesthetic = get_processed_file_aesthetic('aesthetic_scores.csv')
-
-# number = 0
-# for i in data:
-#     if i['tag_string_artist'] in selected_artist:
-#         try:
-#             if float(file_aesthetic[str(i['id'])]) > 0.8:
-#                 if i['image_width'] >= 768 or i['image_height'] >= 768:
-#                     number += 1
-#         except:
-#             pass
-#     elif i['tag_string_artist'] == '' or i['tag_string_artist'] not in selected_artist:
-#         try:
-#             if float(file_aesthetic[str(i['id'])]) > 0.98:
-#                 if i['image_width'] >= 1000 or i['image_height'] >= 1000:
-#                     number += 1
-#         except:
-#             pass
-
-def process_image(i, file_index=file_index, dest_dir=dest_dir, selected_artist=selected_artist):
-    try:
-        if os.path.exists(os.path.join(dest_dir, 'artists', str(i['id']) + ".webp")) or os.path.exists(os.path.join(dest_dir, 'general', str(i['id']) + ".webp")):
-            return None
-        if i['tag_string_artist'] in selected_artist:
-            if str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) > 0.7:
-                if i['image_width'] >= 768 and i['image_height'] >= 768:
-                    caption, tags_artist = generate_tags(i)
-                    file_path = file_index.get(str(i['id']))
-                    with Image.open(file_path) as img:
-                        max_size = 4096
-                        if max(img.size) > max_size:
-                            scale = max_size / max(img.size)
-                            new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-                            img = img.resize(new_size, Image.LANCZOS)
-                        img.save(os.path.join(dest_dir, 'artists', str(i['id']) + ".webp"), 'WEBP')
-                        with open(os.path.join(dest_dir, 'artists', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-                            file.write(caption)
-        elif i['tag_string_artist'] == '' or i['tag_string_artist'] not in selected_artist:
-            if str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) > 0.98:
-                if i['image_width'] >= 1000 or i['image_height'] >= 1000:
-                    i['tag_string_artist'] = ""
-                    caption, _ = generate_tags(i)
-                    file_path = file_index.get(str(i['id']))
-                    with Image.open(file_path) as img:
-                        max_size = 4096
-                        if max(img.size) > max_size:
-                            scale = max_size / max(img.size)
-                            new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-                            img = img.resize(new_size, Image.LANCZOS)
-                        img.save(os.path.join(dest_dir, 'general', str(i['id']) + ".webp"), 'WEBP')
-                        with open(os.path.join(dest_dir, 'general', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-                            file.write(caption)
-        elif i['tag_string_artist'] == 'putong_xiao_gou':
-            caption, tags_artist = generate_tags(i)
-            file_path = file_index.get(str(i['id']))
-            with Image.open(file_path) as img:
-                max_size = 4096
-                if max(img.size) > max_size:
-                    scale = max_size / max(img.size)
-                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-                    img = img.resize(new_size, Image.LANCZOS)
-                img.save(os.path.join(dest_dir, 'artists', str(i['id']) + ".webp"), 'WEBP')
-                with open(os.path.join(dest_dir, 'artists', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-                    file.write(caption)
-    except Exception as e:
-        print(f"Error processing image {i['id']}: {e}")
 
 
-
-# 生成图片 2.5m
-def process_image(i, file_index=file_index, dest_dir=dest_dir):
-    try:
-        if str(i['id']) in file_aesthetic and float(file_aesthetic[str(i['id'])]) > 0.92:
-            if i['image_width'] >= 768 and i['image_height'] >= 768:
-                caption, tags_artist = generate_tags(i)
-                i['tag_string_artist'] = ""
-                file_path = file_index.get(str(i['id']))
-                with Image.open(file_path) as img:
-                    min_size = 1024
-                    scale = min_size / min(img.size)
-                    new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-                    img = img.resize(new_size, Image.LANCZOS)
-                    img.save(os.path.join(dest_dir, 'all', str(i['id']) + ".webp"), 'WEBP')
-                    with open(os.path.join(dest_dir, 'all', str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-                        file.write(caption)
-    except Exception as e:
-        print(f"Error processing image {i['id']}: {e}")
-
-
-
-
-
-# # 生成图片 很粗暴的筛选，没用美学指标
-# def process_image(i, file_index=file_index, dest_dir=dest_dir, selected_artist=selected_artist):
-#     try:
-#         if i['tag_string_artist'] in selected_artist:
-#             if i['image_width'] >= 1024 or i['image_height'] >= 1024:
-#                 caption, tags_artist = generate_tags(i)
-#                 artist_path = os.path.join(dest_dir, i['tag_string_artist'])
-#                 os.makedirs(artist_path, exist_ok=True)
-#                 # if i['file_ext'] not in ('gif', 'mp4', 'zip', 'webm', 'avif', 'swf'):
-#                 file_path = file_index.get(str(i['id']))
-#                 with Image.open(file_path) as img:
-#                     max_size = 4096
-#                     if max(img.size) > max_size:
-#                         scale = max_size / max(img.size)
-#                         new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-#                         img = img.resize(new_size, Image.LANCZOS)
-#                     img.save(os.path.join(artist_path, str(i['id']) + ".webp"), 'WEBP')
-#                     with open(os.path.join(artist_path, str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-#                         file.write(caption)
-#         elif i['tag_string_artist'] == '' or i['tag_string_artist'] not in selected_artist:
-#             if i['score'] >= 30:
-#                 if i['image_width'] >= 768 or i['image_height'] >= 1024:
-#                     caption, _ = generate_tags(i)
-#                     general_path = os.path.join(dest_dir, "general")
-#                     os.makedirs(general_path, exist_ok=True)
-#                     file_path = file_index.get(str(i['id']))
-#                     # print(os.path.join(src_images_dir, str(i['id']) + "." + i['file_ext']))
-#                     # if i['file_ext'] not in ('gif', 'mp4', 'zip', 'webm', 'avif', 'swf'):
-#                     with Image.open(file_path) as img:
-#                         max_size = 4096
-#                         if max(img.size) > max_size:
-#                             scale = max_size / max(img.size)
-#                             new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-#                             img = img.resize(new_size, Image.LANCZOS)
-#                         img.save(os.path.join(general_path, str(i['id']) + ".webp"), 'WEBP')
-#                         with open(os.path.join(general_path, str(i['id']) + '.txt'), 'w', encoding='utf-8') as file:
-#                             file.write(caption)
-#     except Exception as e:
-#         print(f"Error processing image {i['id']}: {e}")
-
-
-os.makedirs(dest_dir, exist_ok=True)
-os.makedirs(os.path.join(dest_dir, 'artists'), exist_ok=True)
-os.makedirs(os.path.join(dest_dir, 'general'), exist_ok=True)
-os.makedirs(os.path.join(dest_dir, 'all'), exist_ok=True)
-
-# 这么并行处理比较简单而且快速，pytorch会解决一切多进程问题
-import torch
-from torch.utils.data import Dataset, DataLoader
-
-
-class SimpleDataset(Dataset):
-    def __init__(self, data, file_index=file_index, dest_dir=dest_dir):
-        self.data = data
-        self.file_index = file_index
-        self.dest_dir = dest_dir
-    def __len__(self):
-        return len(self.data)
-    def __getitem__(self, idx):
-        a = process_image(self.data[idx], self.file_index, self.dest_dir)
-        return idx
-
-dataset = SimpleDataset(data, file_index, dest_dir)
-
-dataloader = DataLoader(dataset, batch_size=8, shuffle=False, num_workers=8)
-
-for batch in tqdm(dataloader):
-    pass
 
 
 
@@ -464,7 +348,7 @@ with h5py.File(target_h5_file, 'w') as h5file:
                     feature_np = feature.numpy()
                     h5file.create_dataset(str(img_name), data=feature_np)
 
-
+python -c "from huggingface_hub.hf_api import HfFolder; HfFolder.save_token('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')"
 
 # accelerate launch --num_processes=4 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
 
@@ -474,9 +358,13 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "dbv2_00", "dbv2_01", "dbv2_02", "dbv2_03", "dbv2_04", "dbv2_05", "dbv2_06", "dbv2_07", "dbv2_08", "dbv2_09",
-    "dbv2_10", "dbv2_11", "dbv2_12", "dbv2_13", "dbv2_14", "dbv2_15", "dbv2_16", "dbv2_17", "dbv2_18", "dbv2_19",
-    "dbv2_20", "dbv2_21"
+    "1.tar",
+    "2.tar",
+    "3.tar",
+    "4.tar",
+    "5.tar",
+    "6.tar",
+    "7.tar",
 ]
 
 # 上传文件
@@ -485,19 +373,12 @@ for filename in files_to_upload:
     response = api.upload_file(
         path_or_fileobj=f"./{filename}",
         path_in_repo=f"{filename}",
-        repo_id="nebula/db_v2",
+        repo_id="nebula/Danbooru2023-WEBP",
         repo_type="dataset"
     )
 
 
-
-
-
-
-
 accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
-
-
 
 import os
 from PIL import Image
@@ -515,11 +396,6 @@ for filename in tqdm(webp_files, desc="Checking webp files", unit="file"):
         os.remove(file_path)
 
 
-
-
-
-
-
 #  upload a folder
 from huggingface_hub import HfApi
 import os
@@ -527,8 +403,9 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 api.upload_folder(
-    folder_path="./images",
-    path_in_repo="./images",
-    repo_id="nebula/DFDatasets",
+    folder_path="./DFLIP",
+    path_in_repo="./",
+    repo_id="nebula/Danbooru2023-WEBP",
     repo_type="dataset",
 )
+

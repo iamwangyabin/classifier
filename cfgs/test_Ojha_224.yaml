@@ -45,15 +45,14 @@ datasets:
       sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
                  'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 
-
-    Celeb-DF-v1:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
-      sub_sets: ['all']
-
-    Celeb-DF-v2:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
-      sub_sets: ['all']
-
-    UADFV:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
-      sub_sets: ['all']
+#    Celeb-DF-v1:
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
+#      sub_sets: ['all']
+#
+#    Celeb-DF-v2:
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
+#      sub_sets: ['all']
+#
+#    UADFV:
+#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
+#      sub_sets: ['all']

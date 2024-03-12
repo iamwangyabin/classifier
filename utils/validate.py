@@ -36,17 +36,34 @@ def calculate_acc(y_true, y_pred, thres):
 
 def validate(model, loader):
     with torch.no_grad():
-        y_true, y_pred = [], []
+        y_true, y_pred, y_logits = [], [], []
         print("Length of dataset: %d" % (len(loader)))
         for img, label in tqdm(loader):
             in_tens = img.cuda()
-            y_pred.extend(model(in_tens).sigmoid().flatten().tolist())
+            logits = model(in_tens)
+            y_logits.extend(logits.flatten().tolist())
+            y_pred.extend(logits.sigmoid().flatten().tolist())
             y_true.extend(label.flatten().tolist())
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    y_true, y_pred, y_logits = np.array(y_true), np.array(y_pred), np.array(y_logits)
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
     best_thres = find_best_threshold(y_true, y_pred)
     r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
     num_real = (y_true == 0).sum()
     num_fake = (y_true == 1).sum()
-    return ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres, num_real, num_fake
+    result_dict = {
+        'ap': ap,
+        'r_acc0': r_acc0,
+        'f_acc0': f_acc0,
+        'acc0': acc0,
+        'r_acc1': r_acc1,
+        'f_acc1': f_acc1,
+        'acc1': acc1,
+        'best_thres': best_thres,
+        'num_real': num_real,
+        'num_fake': num_fake,
+        'y_true': y_true,
+        'y_pred': y_pred,
+        'y_logits': y_logits
+    }
+    return result_dict
