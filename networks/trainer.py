@@ -11,21 +11,7 @@ from torch.nn import init
 from torch.optim import lr_scheduler
 
 from utils.util import validate
-
-def get_network(arch_name):
-    if arch_name == 'clip':
-        from networks.UniversalFakeDetect.clip_models import CLIPModel
-        model = CLIPModel('ViT-L/14')
-    elif arch_name == 'clip_res':
-        from networks.UniversalFakeDetect.clip_models import CLIPModel
-        model = CLIPModel('RN50x64')
-    elif arch_name == 'clip_vit336':
-        from networks.UniversalFakeDetect.clip_models import CLIPModel
-        model = CLIPModel('ViT-L/14@336px')
-    else:
-        model = timm.create_model(arch_name, pretrained=True, num_classes=1)
-        torch.nn.init.xavier_uniform_(model.head.weight.data)
-    return model
+from utils.network_factory import get_model
 
 
 class Trainer(L.LightningModule):
@@ -33,7 +19,7 @@ class Trainer(L.LightningModule):
         super().__init__()
         self.save_hyperparameters()
         self.opt = opt
-        self.model = get_network(opt.arch)
+        self.model = get_model(opt)
         self.validation_step_outputs_gts, self.validation_step_outputs_preds = [], []
         self.criterion = nn.BCEWithLogitsLoss()
 

@@ -1,9 +1,9 @@
-arch: "clip_vit336"
+arch: "dino"
 resume: null
-name: "Ojha—Progan"  # Name of the experiment for organizing samples and models
+name: "dino—Progan"  # Name of the experiment for organizing samples and models
 
 train:
-  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [0,1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 100  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -23,11 +23,9 @@ dataset:
   train:
     mode: 'binary'
     dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
-#    subfolder_names: ["progan","biggan","cyclegan", "stylegan", "gaugan"]
     subfolder_names: ["ForenSynths"]
-#    multicalss_idx: [0, 0, 1, 1, 0,]
     multicalss_idx: [1]
-    batch_size: 256
+    batch_size: 512
     loader_workers: 32
     loadSize: 368
     cropSize: 336
@@ -38,7 +36,7 @@ dataset:
     mode: 'binary'
     dataroot: "/home/jwang/ybwork/data/CDDB"
     subfolder_names: ["imle","deepfake","crn","wild", "whichfaceisreal", "imle", "san"]
-    multicalss_idx: [ 0, 0, 0, 0, 0, 0, 0]
+    multicalss_idx: [0, 0, 0, 0, 0, 0, 0]
     batch_size: 64
     loader_workers: 4
     loadSize: 368

@@ -9,31 +9,8 @@ from utils.util import load_config_with_cli, archive_files
 from utils.validate import validate
 from data.json_datasets import BinaryJsonDatasets
 
-from networks.resnet import resnet50
-from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
-from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
+from utils.network_factory import get_model
 
-def get_model(conf):
-    print("Model loaded..")
-    if conf.arch == 'clip':
-        model = CLIPModel('ViT-L/14')
-        state_dict = torch.load(conf.resume, map_location='cpu')
-        model.fc.load_state_dict(state_dict)
-    elif conf.arch == 'ms_clip':
-        model = MultiscaleCLIPModel('ViT-L/14', patch_sizes=conf.patch_sizes, strides=conf.strides)
-        state_dict = torch.load(conf.resume, map_location='cpu')
-        model.fc.load_state_dict(state_dict)
-    elif conf.arch == 'cnn':
-        model = resnet50(num_classes=1)
-        state_dict = torch.load(conf.resume, map_location='cpu')
-        model.load_state_dict(state_dict['model'])
-    elif conf.arch == 'lnp':
-        model = resnet50(num_classes=1)
-        state_dict = torch.load(conf.resume, map_location='cpu')
-        model.load_state_dict(state_dict['model'])
-
-
-    return model
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Testing')
