@@ -316,12 +316,6 @@ def get_aesthetic():
                 aesthetic_scores = outputs['logits'][idx].softmax(-1).cpu().tolist()
                 csv_writer.writerow([file_id] + aesthetic_scores)
 
-
-
-
-
-
-
 # 运行
 accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='fp16' -- -m hcpdiff.train_ac_single --cfg cfgs/train/ft_playground.yaml
 
@@ -348,7 +342,6 @@ with h5py.File(target_h5_file, 'w') as h5file:
                     feature_np = feature.numpy()
                     h5file.create_dataset(str(img_name), data=feature_np)
 
-python -c "from huggingface_hub.hf_api import HfFolder; HfFolder.save_token('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')"
 
 # accelerate launch --num_processes=4 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
 
