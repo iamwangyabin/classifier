@@ -29,6 +29,17 @@ def get_model(conf):
             model.load_state_dict(state_dict['model'])
     elif conf.arch == 'dino':
         model = DINOModel('dinov2_l')
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
+            new_state_dict = {}
+            for key, value in state_dict.items():
+                if key.startswith('model.'):
+                    new_key = key[6:] # remove `model.` from key
+                    new_state_dict[new_key] = value
+                else:
+                    new_state_dict[key] = value
+            model.load_state_dict(new_state_dict)
+
     elif conf.arch == 'clip_res':
         model = CLIPModel('RN50x64')
     elif conf.arch == 'clip_vit336':

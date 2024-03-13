@@ -1,9 +1,6 @@
-arch: "ms_clip"
-resume: 'networks/UniversalFakeDetect/fc_weights.pth'
-test_name: "ms_clip"
-
-patch_sizes: [512, 224]
-strides: [2]
+arch: "dino"
+resume: '/home/jwang/ybwork/classifier/logs/20240312_17_22_42/epoch=28-val_acc_epoch=0.78.ckpt'
+test_name: "dino"
 
 datasets:
   batch_size: 32
@@ -11,11 +8,13 @@ datasets:
 
   trsf:
     - _target_: torchvision.transforms.Resize
-      size: 368
-    - _target_: torchvision.transforms.CenterCrop
       size: 512
+    - _target_: torchvision.transforms.CenterCrop
+      size: 336
     - _target_: torchvision.transforms.ToTensor
-
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
 
   source:
     DiffusionForensics:
