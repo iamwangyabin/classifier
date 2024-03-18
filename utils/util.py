@@ -65,6 +65,7 @@ def load_config_with_cli(path, args_list=None, remove_undefined=True):
 
 
 def archive_files(log_name, exclude_dirs):
+    print("tar files")
     log_dir = os.path.join('./logs', log_name)
     os.makedirs(log_dir, exist_ok=True)
     archive_name = os.path.join(log_dir, log_name)
@@ -84,3 +85,14 @@ def archive_files(log_name, exclude_dirs):
 
         # Create an archive of the temporary directory
         shutil.make_archive(archive_name, 'tar', tmpdirname)
+
+
+from torchvision import transforms
+from PIL import Image
+
+class ResizeToNearest14(object):
+    def __call__(self, img):
+        width, height = img.size
+        new_width = (width // 14) * 14
+        new_height = (height // 14) * 14
+        return img.resize((new_width, new_height), resample=Image.BICUBIC)

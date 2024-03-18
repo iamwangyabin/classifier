@@ -1,6 +1,9 @@
 arch: "clip"
-resume: 'networks/UniversalFakeDetect/fc_weights.pth'
-test_name: "Ojha_224"
+#resume: 'networks/UniversalFakeDetect/fc_weights.pth'
+#resume: 'logs/Ojha—ProganPart1_20240315_08_28_33/epoch=78-val_acc_epoch=0.79.ckpt' # part1
+#resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
+resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
+test_name: "clip_part3_224"
 
 datasets:
   batch_size: 32

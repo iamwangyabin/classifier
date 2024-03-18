@@ -345,6 +345,14 @@ with h5py.File(target_h5_file, 'w') as h5file:
 
 # accelerate launch --num_processes=4 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
 
+
+
+
+
+
+
+
+
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"

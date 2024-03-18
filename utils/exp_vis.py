@@ -51,7 +51,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
-with open('CNN01_224.pkl', 'rb') as file:
+with open('clip_part3_224.pkl', 'rb') as file:
     loaded_dict = pickle.load(file)
 
 # session_names = list(loaded_dict.keys())
@@ -87,7 +87,7 @@ for i in range(num_rows):
         axs[i, j].text(0.5, -0.5, text, ha='center', fontsize=5, transform=axs[i, j].transAxes)
 
 plt.tight_layout()
-plt.savefig('result.pdf', format='pdf', bbox_inches='tight')
+plt.savefig('clip_part3.pdf', format='pdf', bbox_inches='tight')
 
 plt.show()
 

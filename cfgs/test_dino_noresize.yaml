@@ -1,16 +1,13 @@
 arch: "dino"
-resume: '/home/jwang/ybwork/classifier/logs/20240312_17_22_42/epoch=28-val_acc_epoch=0.78.ckpt'
-test_name: "dino_224_ep28"
+resume: '/home/jwang/ybwork/classifier/logs/20240313_12_19_10/epoch=63-val_acc_epoch=0.80.ckpt'
+test_name: "dino_noresize"
 
 datasets:
-  batch_size: 32
+  batch_size: 1
   loader_workers: 8
 
   trsf:
-    - _target_: torchvision.transforms.Resize
-      size: 256
-    - _target_: torchvision.transforms.CenterCrop
-      size: 224
+    - _target_: utils.util.ResizeToNearest14
     - _target_: torchvision.transforms.ToTensor
     - _target_: torchvision.transforms.Normalize
       mean: [0.48145466, 0.4578275, 0.40821073]
