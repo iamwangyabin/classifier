@@ -359,13 +359,11 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "1.tar",
-    "2.tar",
-    "3.tar",
-    "4.tar",
-    "5.tar",
-    "6.tar",
-    "7.tar",
+    "AIGCDetect.tar",
+    "AntifakePrompt.tar",
+    "DiffusionForensics.tar",
+    "ForenSynths.tar",
+    "Ojha.tar",
 ]
 
 # 上传文件
@@ -374,7 +372,7 @@ for filename in files_to_upload:
     response = api.upload_file(
         path_or_fileobj=f"./{filename}",
         path_in_repo=f"{filename}",
-        repo_id="nebula/Danbooru2023-WEBP",
+        repo_id="nebula/dfbenchmark",
         repo_type="dataset"
     )
 

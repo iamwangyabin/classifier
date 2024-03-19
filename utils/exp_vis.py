@@ -92,17 +92,6 @@ plt.savefig('clip_part3.pdf', format='pdf', bbox_inches='tight')
 plt.show()
 
 
-
-
-
-
-
-
-
-
-
-
-
 # 查看一下不同阈值的精度
 import pickle
 import numpy as np

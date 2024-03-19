@@ -4,6 +4,7 @@ from networks.resnet import resnet50
 from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
+from networks.SPrompts.slinet import SliNet_lp
 
 def get_model(conf):
     print("Model loaded..")
@@ -46,6 +47,19 @@ def get_model(conf):
             for key, value in state_dict.items():
                 if key.startswith('model.'):
                     new_key = key[6:] # remove `model.` from key
+                    new_state_dict[new_key] = value
+                else:
+                    new_state_dict[key] = value
+            model.load_state_dict(new_state_dict)
+
+    elif conf.arch == 'sp_l':
+        model = SliNet_lp()
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
+            new_state_dict = {}
+            for key, value in state_dict.items():
+                if key.startswith('model.'):
+                    new_key = key[6:]
                     new_state_dict[new_key] = value
                 else:
                     new_state_dict[key] = value
