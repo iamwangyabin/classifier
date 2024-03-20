@@ -11,7 +11,7 @@ train:
   optimizer:
     _target_: torch.optim.AdamW
     _partial_: True
-    lr: 1e-4
+    lr: 1e-2
     weight_decay: 1e-3
 
   scheduler:
@@ -23,8 +23,11 @@ dataset:
   train:
     mode: 'binary'
     dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
-    subfolder_names: ["Progan_part3"]
+    subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
+#    dataroot: "/home/jwang/ybwork/data/CDDB"
+#    subfolder_names: ["imle"]
+#    multicalss_idx: [0]
     batch_size: 256
     loader_workers: 32
     loadSize: 256

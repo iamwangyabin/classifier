@@ -5,6 +5,7 @@ from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
 from networks.SPrompts.slinet import SliNet_lp
+from networks.NPR.detector import NPRModel
 
 def get_model(conf):
     print("Model loaded..")
@@ -31,6 +32,11 @@ def get_model(conf):
             model.fc.load_state_dict(state_dict)
     elif conf.arch == 'cnn':
         model = resnet50(num_classes=1)
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')
+            model.load_state_dict(state_dict['model'])
+    elif conf.arch == 'npr':
+        model = NPRModel(num_classes=1)
         if conf.resume:
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict['model'])
