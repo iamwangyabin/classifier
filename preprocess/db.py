@@ -359,7 +359,8 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "ForenSynths.tar",
+    "ForenSynths.part.aa",
+    "ForenSynths.part.ab",
 ]
 
 # 上传文件
