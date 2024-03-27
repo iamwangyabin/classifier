@@ -123,16 +123,9 @@ class BinaryMultiDatasets(Dataset):
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
-        # if max(image.size) > 1024:
-        #     ratio = 1024 / max(image.size)
-        #     new_size = (round(image.size[0] * ratio), round(image.size[1] * ratio))
-        #     resized_image = image.resize(new_size, Image.ANTIALIAS)
-        #     resized_image.save(img_path)
         label = self.labels[idx]
         image = self.transform_chain(image)
         return image, label
-
-
 
 
 class BinarySingleDataset(Dataset):

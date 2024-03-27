@@ -24,14 +24,14 @@ class Trainer(L.LightningModule):
         self.validation_step_outputs_gts, self.validation_step_outputs_preds = [], []
 
         self.criterion = nn.BCEWithLogitsLoss()
-        if opt.arch == 'sp_l':
-            self.criterion = nn.CrossEntropyLoss()
-
-            enabled = set()
-            for name, param in self.model.named_parameters():
-                if param.requires_grad:
-                    enabled.add(name)
-            print(f"Parameters to be updated: {enabled}")
+        # if opt.arch == 'sp_l':
+        #     self.criterion = nn.CrossEntropyLoss()
+        #
+        #     enabled = set()
+        #     for name, param in self.model.named_parameters():
+        #         if param.requires_grad:
+        #             enabled.add(name)
+        #     print(f"Parameters to be updated: {enabled}")
 
 
     def training_step(self, batch):
@@ -46,33 +46,34 @@ class Trainer(L.LightningModule):
 
     def validation_step(self, batch):
         x, y = batch
-        logits = self.model(x)
-        if self.opt.arch == 'sp_l':
-            test_loss = F.cross_entropy(logits, y%2)
-            self.validation_step_outputs_preds.append(torch.softmax(logits,1)[:,0])
-        else:
-            test_loss = self.criterion(logits.squeeze(1), (y % 2).to(self.dtype))
-            self.validation_step_outputs_preds.append(logits.squeeze(1))
+        keyargwords={'inference': True}
+        logits = self.model(x, **keyargwords)
+        # if self.opt.arch == 'sp_l':
+        #     test_loss = F.cross_entropy(logits, y%2)
+        #     self.validation_step_outputs_preds.append(torch.softmax(logits,1)[:,0])
+        # else:
+        # test_loss = self.criterion(logits.squeeze(1), (y % 2).to(self.dtype))
+        self.validation_step_outputs_preds.append(logits.squeeze(1))
         self.validation_step_outputs_gts.append(y)
-        self.log('val_loss', test_loss, on_epoch=True, logger=True)
+        # self.log('val_loss', test_loss, on_epoch=True, logger=True)
 
     def on_validation_epoch_end(self):
-        if self.opt.arch == 'sp_l':
-            all_preds = torch.cat(self.validation_step_outputs_preds, 0).to(
-                torch.float32).flatten().cpu().numpy()
-        else:
-            all_preds = torch.cat(self.validation_step_outputs_preds, 0).to(
+        # if self.opt.arch == 'sp_l':
+        #     all_preds = torch.cat(self.validation_step_outputs_preds, 0).to(
+        #         torch.float32).flatten().cpu().numpy()
+        # else:
+        all_preds = torch.cat(self.validation_step_outputs_preds, 0).to(
                 torch.float32).sigmoid().flatten().cpu().numpy()
         all_gts = torch.cat(self.validation_step_outputs_gts, 0).to(torch.float32).cpu().numpy()
         acc, ap = validate(all_gts % 2, all_preds)[:2]
-        self.log('val_acc_epoch', acc, logger=True)
+        self.log('val_acc_epoch', acc, logger=True, sync_dist=True)
         for i, sub_task in enumerate(self.opt.dataset.val.subfolder_names):
             mask = (all_gts >= i * 2) & (all_gts <= 1 + i * 2)
             idxes = np.where(mask)[0]
             if len(idxes) == 0:
                 continue
             acc, ap = validate(all_gts[idxes] % 2, all_preds[idxes])[:2]
-            self.log(f'val_acc_{sub_task}', acc, logger=True)
+            self.log(f'val_acc_{sub_task}', acc, logger=True, sync_dist=True)
         self.validation_step_outputs_preds.clear()
         self.validation_step_outputs_gts.clear()
 

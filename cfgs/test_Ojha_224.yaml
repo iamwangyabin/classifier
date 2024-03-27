@@ -2,8 +2,24 @@ arch: "clip"
 #resume: 'networks/UniversalFakeDetect/fc_weights.pth'
 #resume: 'logs/Ojha—ProganPart1_20240315_08_28_33/epoch=78-val_acc_epoch=0.79.ckpt' # part1
 #resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
-resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
-test_name: "clip_part3_224"
+#resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
+#resume: 'logs/Ojha—Progan_less_20240324_19_24_35/epoch=12-val_acc_epoch=0.69-v1.ckpt' # less
+resume: 'logs/Ojha—SD15_20240327_13_56_09/last.ckpt' # 使用sd1.5作为base训练集
+test_name: "Ojha_SD15_224"
+
+dataset:
+  train:
+    mode: 'binary'
+    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    subfolder_names: ["ForenSynths"]
+    multicalss_idx: [1]
+    batch_size: 256
+    loader_workers: 32
+    loadSize: 256
+    cropSize: 224
+    random_flip: true
+    augment: null
+
 
 datasets:
   batch_size: 32

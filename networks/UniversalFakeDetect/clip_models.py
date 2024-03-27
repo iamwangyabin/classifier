@@ -1,5 +1,4 @@
 from networks.clip import clip
-from PIL import Image
 import os
 import torch
 import torch.nn as nn
@@ -22,11 +21,12 @@ class CLIPModel(nn.Module):
         self.fc = nn.Linear(CHANNELS[name], num_classes)
         # torch.nn.init.xavier_uniform_(self.fc.weight.data)
 
-    def forward(self, x, return_feature=False):
+    def forward(self, x, return_feature=False, **kwargs):
         features = self.model.encode_image(x) 
         if return_feature:
-            return features
+            return self.fc(features), features
         return self.fc(features)
+
 
 class CLIPModel_inc(nn.Module):
     def __init__(self, name, num_classes=1):

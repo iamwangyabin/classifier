@@ -359,11 +359,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "AIGCDetect.tar",
-    "AntifakePrompt.tar",
-    "DiffusionForensics.tar",
     "ForenSynths.tar",
-    "Ojha.tar",
 ]
 
 # 上传文件
@@ -375,6 +371,9 @@ for filename in files_to_upload:
         repo_id="nebula/dfbenchmark",
         repo_type="dataset"
     )
+
+
+
 
 
 accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml

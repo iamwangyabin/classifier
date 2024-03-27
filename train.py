@@ -42,17 +42,21 @@ if __name__ == '__main__':
         monitor='val_acc_epoch',
         dirpath=os.path.join('logs', today_str),
         filename='{epoch:02d}-{val_acc_epoch:.2f}',
-        save_top_k=3,
+        save_top_k=1,
         mode='max',
     )
 
     model = Trainer(opt=conf)
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
-                        check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
-                        precision="32")
+                        val_check_interval=0.1,
+                        # check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
+                        precision="16")
+
+
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
+    trainer.save_checkpoint(os.path.join('logs', today_str, "last.ckpt"))
 
 
 
