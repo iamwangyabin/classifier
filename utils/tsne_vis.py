@@ -296,6 +296,73 @@ plt.savefig('all_compare.pdf', bbox_inches='tight')
 
 
 
+# 只可视化progan训练集的real图片特征，看看能不能发现类别不同：
+
+
+
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+import umap.umap_ as umap
+from sklearn.manifold import MDS, Isomap, TSNE
+
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.size'] = 12
+plt.rcParams['pdf.fonttype'] = 42
+
+
+with open('clip_progan_train_multicls_features.pkl', 'rb') as file:
+    loaded_train_dict = pickle.load(file)
+
+def scatter_subplot(ax, reduced_features, labels, title):
+    unique_labels = np.unique(labels)
+    num_cold = len(unique_labels)
+    colors = plt.cm.tab20(np.linspace(0.9, 0.1, num_cold))
+    for label, color in zip(unique_labels, colors):
+        indices = labels == label
+        ax.scatter(reduced_features[indices, 0], reduced_features[indices, 1], c=[color], label=label, alpha=0.7)
+    ax.set_title(title)
+
+
+train_features = loaded_train_dict['ProGAN_train_real'][0]
+train_labels = loaded_train_dict['ProGAN_train_real'][1]
+
+chosen_indices = np.random.choice(len(train_labels), size=5000, replace=False)
+train_features = train_features[chosen_indices]
+train_labels = train_labels[chosen_indices]
+
+features = train_features
+labels = train_labels
+
+tsne = TSNE(n_components=2, random_state=0)
+tsne_reduced_features = tsne.fit_transform(features)
+umap_instance = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=0)
+umap_reduced_features = umap_instance.fit_transform(features)
+mds = MDS(n_components=2, random_state=0)
+mds_reduced_features = mds.fit_transform(features)
+
+fig = plt.figure(figsize=(12, 12))
+fig.suptitle(session_name, fontsize=24)
+ax1 = fig.add_subplot(2, 2, 1)
+scatter_subplot(ax1, tsne_reduced_features, labels, 't-SNE visualization')
+ax3 = fig.add_subplot(2, 2, 2)
+scatter_subplot(ax3, umap_reduced_features, labels, 'UMAP visualization')
+ax4 = fig.add_subplot(2, 2, 3)
+scatter_subplot(ax4, mds_reduced_features, labels, 'PCA visualization')
+
+ax4.legend()
+
+plt.tight_layout()
+plt.savefig('progan_real.pdf', bbox_inches='tight')
+
+
+
+
+
+
+
+
 
 
 

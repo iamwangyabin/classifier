@@ -2,9 +2,8 @@ import torch
 import torch.nn as nn
 import copy
 
-from networks.SPrompts.clip.prompt_learner import load_clip_to_cpu, TextEncoder, PromptLearner
-
-
+from networks.SPrompts.clip import load
+from networks.SPrompts.textprompt_learner import PromptLearner
 class cfgc(object):
     backbonename = 'ViT-B/16'
     NCTX = 16
@@ -13,21 +12,22 @@ class cfgc(object):
     CLASS_TOKEN_POSITION = 'end'
 
 
-class SliNet_lp(nn.Module):
+# AnomalyCLIP_parameters = {"Prompt_length": args.n_ctx, "learnabel_text_embedding_depth": args.depth,
+#                           "learnabel_text_embedding_length": args.t_n_ctx}
+
+
+
+
+
+
+class PromptCLIP(nn.Module):
 
     def __init__(self):
-        super(SliNet_lp, self).__init__()
-        self.cfg = cfgc()
-        clip_model = load_clip_to_cpu(self.cfg)
-        self.clip_model = clip_model
-        self.image_encoder = clip_model.visual
-        self.logit_scale = clip_model.logit_scale
-        self.dtype = clip_model.dtype
-        self.text_encoder = TextEncoder(clip_model)
-
-        self.l_prompt = PromptLearner(self.cfg, ['real image', 'deepfake image'], self.clip_model)
-
-        self.v_prompt = nn.Linear(768, 10, bias=False)
+        super(PromptCLIP, self).__init__()
+        model, _ = load("ViT-L/14@336px", device=device)
+        model.eval()
+        prompt_learner = PromptLearner(model.to("cpu"), configs)
+        self.dtype = model.dtype
 
         for name, param in self.named_parameters():
             param.requires_grad_(False)
@@ -35,6 +35,8 @@ class SliNet_lp(nn.Module):
                 param.requires_grad_(True)
             if "v_prompt" in name:
                 param.requires_grad_(True)
+
+
 
     def forward(self, image, inference=False):
         # image_features = self.image_encoder(image.type(self.dtype))

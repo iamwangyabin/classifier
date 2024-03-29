@@ -1,6 +1,6 @@
 arch: "clip"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "Ojha—SD15"  # Name of the experiment for organizing samples and models
+name: "CLIP-fullft—SD15"  # Name of the experiment for organizing samples and models
 
 train:
   gpu_ids: [1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
@@ -11,7 +11,7 @@ train:
   optimizer:
     _target_: torch.optim.AdamW
     _partial_: True
-    lr: 1e-3
+    lr: 1e-5
     weight_decay: 1e-3
  
   scheduler:
@@ -28,7 +28,7 @@ dataset:
 #    dataroot: "/home/jwang/ybwork/data/CDDB"
 #    subfolder_names: ["imle"]
 #    multicalss_idx: [0]
-    batch_size: 256
+    batch_size: 128
     loader_workers: 32
     loadSize: 256
     cropSize: 224

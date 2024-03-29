@@ -4,7 +4,7 @@ from networks.resnet import resnet50
 from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
-from networks.SPrompts.slinet import SliNet_lp
+# from networks.SPrompts.slinet import SliNet_lp
 from networks.NPR.detector import NPRModel
 
 def get_model(conf):

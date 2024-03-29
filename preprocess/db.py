@@ -346,21 +346,14 @@ with h5py.File(target_h5_file, 'w') as h5file:
 # accelerate launch --num_processes=4 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
 
 
-
-
-
-
-
-
-
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "ForenSynths.part.aa",
-    "ForenSynths.part.ab",
+    "GenImg_SD15.part.aa",
+    "GenImg_SD15.part.ab",
 ]
 
 # 上传文件
@@ -372,9 +365,6 @@ for filename in files_to_upload:
         repo_id="nebula/dfbenchmark",
         repo_type="dataset"
     )
-
-
-
 
 
 accelerate launch --num_processes=1 --num_machines=1 --mixed_precision='bf16' -m hcpdiff.train_ac --cfg cfgs/train/ft_playground.yaml
