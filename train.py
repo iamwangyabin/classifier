@@ -27,7 +27,8 @@ if __name__ == '__main__':
     train_dataset = BinaryMultiDatasets(conf.dataset.train, split='train')
     train_loader = DataLoader(train_dataset, batch_size=conf.dataset.train.batch_size, shuffle=True,
                               num_workers=conf.dataset.train.loader_workers)
-    val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val')
+    # val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val') # for cddb
+    val_dataset = BinaryMultiDatasets(conf.dataset.val, split='')
     val_loader = DataLoader(val_dataset, batch_size=conf.dataset.val.batch_size, shuffle=False,
                             num_workers=conf.dataset.val.loader_workers)
 
