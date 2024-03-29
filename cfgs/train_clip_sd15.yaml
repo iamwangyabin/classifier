@@ -1,9 +1,9 @@
 arch: "clip"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "CLIP-fullft—SD15"  # Name of the experiment for organizing samples and models
+name: "Ojha—SD15"  # Name of the experiment for organizing samples and models
 
 train:
-  gpu_ids: [1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 20  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -11,7 +11,7 @@ train:
   optimizer:
     _target_: torch.optim.AdamW
     _partial_: True
-    lr: 1e-5
+    lr: 1e-4
     weight_decay: 1e-3
  
   scheduler:
@@ -22,12 +22,9 @@ train:
 dataset:
   train:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
     subfolder_names: ["GenImg_SD15"]
     multicalss_idx: [0]
-#    dataroot: "/home/jwang/ybwork/data/CDDB"
-#    subfolder_names: ["imle"]
-#    multicalss_idx: [0]
     batch_size: 128
     loader_workers: 32
     loadSize: 256
@@ -37,7 +34,7 @@ dataset:
 
   val:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/CDDB"
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
     subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
     multicalss_idx: [0, 0, 0, 0]
     batch_size: 64
