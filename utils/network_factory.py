@@ -7,7 +7,7 @@ from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
 # from networks.SPrompts.slinet import SliNet_lp
 from networks.NPR.detector import NPRModel
-
+from networks.ViTDetector.detector import ViTModel
 
 
 def get_model(conf):
@@ -78,7 +78,8 @@ def get_model(conf):
         model = CLIPModel('RN50x64')
     elif conf.arch == 'clip_vit336':
         model = CLIPModel('ViT-L/14@336px')
-
+    elif conf.arch == 'vit_l':
+        model = ViTModel('vit_large_patch16_224')
     else:
         model = timm.create_model(conf.arch, pretrained=True, num_classes=1)
         torch.nn.init.xavier_uniform_(model.head.weight.data)

@@ -7,7 +7,7 @@ dataset:
     mode: 'binary'
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
     subfolder_names: ["ForenSynths"]
-    multicalss_idx: [0]
+    multicalss_idx: [1]
     batch_size: 128
     loader_workers: 32
     loadSize: 256
