@@ -16,9 +16,9 @@ train_labels = loaded_train_dict['ProGAN_train'][1]
 # scale_pos_weight = sum(train_labels == 0) / sum(train_labels == 1)        scale_pos_weight=scale_pos_weight,
 xgb_classifier = xgb.XGBClassifier(objective='binary:logistic', use_label_encoder=False, eval_metric='logloss',
                                    verbose_eval=True,
-                                   n_estimators=50,
-                                   learning_rate=0.1,
-                                   max_depth=10,
+                                   # n_estimators=50,
+                                   # learning_rate=0.1,
+                                   # max_depth=10,
                                    )
 
 xgb_classifier.fit(train_features, train_labels)
@@ -41,7 +41,7 @@ for session_name in session_names:
 
 
 columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0']
-with open('sgboost_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+with open('sgboost_results_test1.csv', 'w', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(columns)
     for values in save_raw_results:
@@ -70,6 +70,7 @@ plt.ylabel('Importance Score')
 plt.xticks([])
 plt.show()
 
+sorted_importance = dict(sorted(importance.items(), key=lambda item: item[1], reverse=True))
 
 
 
