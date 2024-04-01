@@ -4,8 +4,8 @@ arch: "clip"
 #resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
 #resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
 #resume: 'logs/Ojha—Progan_less_20240324_19_24_35/epoch=12-val_acc_epoch=0.69-v1.ckpt' # less
-resume: '/home/yw26g23/classifier/logs/Ojha—SD15_20240329_18_26_10/last.ckpt' # 使用sd1.5作为base训练集
-test_name: "Ojha_SD15_224"
+resume: '/home/yw26g23/classifier/logs/Ojha—SD15_20240329_18_26_10/epoch=04-val_acc_epoch=0.71.ckpt' # 使用sd1.5作为base训练集
+test_name: "Ojha_SD15_best_224"
 
 dataset:
   train:
