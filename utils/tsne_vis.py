@@ -312,7 +312,7 @@ plt.rcParams['font.size'] = 12
 plt.rcParams['pdf.fonttype'] = 42
 
 
-with open('clip_progan_train_multicls_features.pkl', 'rb') as file:
+with open('clip_progan_train_multicls_fake_features.pkl', 'rb') as file:
     loaded_train_dict = pickle.load(file)
 
 def scatter_subplot(ax, reduced_features, labels, title):
@@ -325,8 +325,8 @@ def scatter_subplot(ax, reduced_features, labels, title):
     ax.set_title(title)
 
 
-train_features = loaded_train_dict['ProGAN_train_real'][0]
-train_labels = loaded_train_dict['ProGAN_train_real'][1]
+train_features = loaded_train_dict['ProGAN_train_fake'][0]
+train_labels = loaded_train_dict['ProGAN_train_fake'][1]
 
 chosen_indices = np.random.choice(len(train_labels), size=5000, replace=False)
 train_features = train_features[chosen_indices]
@@ -354,7 +354,7 @@ scatter_subplot(ax4, mds_reduced_features, labels, 'PCA visualization')
 ax4.legend()
 
 plt.tight_layout()
-plt.savefig('progan_real.pdf', bbox_inches='tight')
+plt.savefig('progan_fake.pdf', bbox_inches='tight')
 
 
 

@@ -7,6 +7,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --time=60:00:00
 
+export WANDB_MODE="offline"
+
 module load cuda/11.8
 module load anaconda/py3.10
 eval "$(conda shell.bash hook)"

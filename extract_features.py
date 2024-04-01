@@ -16,6 +16,7 @@ from utils.validate import validate
 from data.json_datasets import BinaryJsonDatasets
 from data.binary_datasets import BinaryMultiDatasets
 from utils.network_factory import get_model
+from networks.UniversalFakeDetect.clip_models import CLIPModel
 
 
 class DeepFakeBenchmarkDataset(Dataset):
@@ -51,7 +52,6 @@ dataset = DeepFakeBenchmarkDataset(root_dir='../data/deepfake_benchmark/ForenSyn
 
 data_loader = DataLoader(dataset, batch_size=512, shuffle=False)
 
-from networks.UniversalFakeDetect.clip_models import CLIPModel
 model = CLIPModel('ViT-L/14')
 model.cuda()
 model.eval()

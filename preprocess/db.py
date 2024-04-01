@@ -398,3 +398,89 @@ api.upload_folder(
     repo_type="dataset",
 )
 
+
+
+
+
+
+import os
+from PIL import Image, UnidentifiedImageError
+from tqdm import tqdm
+from concurrent.futures import ThreadPoolExecutor
+
+
+def convert_file(file_data):
+    src_path, dst_path = file_data
+    try:
+        Image.MAX_IMAGE_PIXELS = None
+        with Image.open(src_path) as image:
+            width, height = image.size
+            max_size = 8192
+            if width > max_size or height > max_size:
+                scale = max_size / max(width, height)
+                new_width = int(width * scale)
+                new_height = int(height * scale)
+                image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                # image = image.resize((new_width, new_height), Image.ANTIALIAS)
+            ext = os.path.splitext(src_path)[1].lower()
+            if ext == '.png':
+                image.save(dst_path, 'WEBP', lossless=True)
+            else:
+                image.save(dst_path, 'WEBP', quality=100)
+    except (UnidentifiedImageError, OSError) as e:
+        print(f"无法处理文件 {src_path}: {str(e)}")
+
+
+def convert_to_webp(src_folder, dst_folder, batch_size=100000):
+    if not os.path.exists(dst_folder):
+        os.makedirs(dst_folder)
+    files = os.listdir(src_folder)
+    valid_extensions = ['.jpg', '.png', '.webp', '.jpeg']
+    valid_files = [f for f in files if os.path.splitext(f)[1].lower() in valid_extensions]
+    valid_files.sort(key=lambda x: int(os.path.splitext(x)[0]))
+    total_files = len(valid_files)
+    num_batches = (total_files + batch_size - 1) // batch_size
+    progress_bar = tqdm(total=total_files, unit='file')
+    def update_progress(future):
+        progress_bar.update(1)
+    for batch in range(num_batches):
+        start_index = batch * batch_size
+        end_index = min((batch + 1) * batch_size, total_files)
+        batch_files = valid_files[start_index:end_index]
+        file_data = []
+        for file in batch_files:
+            src_path = os.path.join(src_folder, file)
+            dst_path = os.path.join(dst_folder, os.path.splitext(file)[0] + '.webp')
+            if not os.path.exists(dst_path):
+                file_data.append((src_path, dst_path))
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            for data in file_data:
+                future = executor.submit(convert_file, data)
+                future.add_done_callback(lambda _: update_progress(future))
+                futures.append(future)
+            for future in futures:
+                future.result()
+    progress_bar.close()
+
+src_folder = '/data/jwang/db2024extracted'
+dst_folder = '/data/jwang/db2023/all_files'
+
+convert_to_webp(src_folder, dst_folder)
+
+
+
+
+
+
+db_existed = os.path.exists("danbooru2023.db")
+db = load_db("danbooru2023.db")
+if db_existed:
+    # run sanity check
+    post = Post.get_by_id(1)
+    print_post_info(post)
+    tag = Tag.select().where(Tag.name == "kousaka_kirino").get()
+    print(f"Tag {tag} has {len(tag.posts)} posts")
+    # get last post
+    post = Post.select().order_by(Post.id.desc()).limit(1).get()
+    print_post_info(post)

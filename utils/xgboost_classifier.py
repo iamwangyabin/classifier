@@ -26,6 +26,27 @@ xgb_classifier = xgb.XGBClassifier(objective='binary:logistic', scale_pos_weight
 
 xgb_classifier.fit(train_features, train_labels)
 
+from xgboost import plot_importance
+
+fig, ax = plt.subplots(figsize=(10, 15))
+plot_importance(xgb_classifier, ax=ax, max_num_features=20)
+plt.show()
+
+
+
+booster = xgb_classifier.get_booster()
+importance = booster.get_score(importance_type='weight')
+sorted_features = sorted(importance.items())
+features, importances = zip(*sorted_features)
+plt.figure(figsize=(10, 6))
+plt.bar(range(len(importances)), importances, align='center')
+plt.title('Feature Importances')
+plt.xlabel('Features')
+plt.ylabel('Importance Score')
+plt.xticks([])
+plt.show()
+
+
 # # 在测试集上进行预测
 # y_pred = xgb_classifier.predict(X_test)
 # y_pred_proba = xgb_classifier.predict_proba(X_test)[:, 1]
@@ -35,6 +56,10 @@ xgb_classifier.fit(train_features, train_labels)
 # roc_auc = roc_auc_score(y_test, y_pred_proba)
 # print(f"Model accuracy: {accuracy:.2f}")
 # print(f"ROC AUC score: {roc_auc:.2f}")
+
+
+
+
 from sklearn.metrics import accuracy_score, average_precision_score
 
 session_names = [key for key in loaded_test_dict.keys()]
@@ -51,6 +76,9 @@ for session_name in session_names:
     ap = average_precision_score(y_true, y_pred)
     save_raw_results.append([session_name.split(' ')[0], session_name.split(' ')[1], ap, r_acc, f_acc, acc])
     print([ap, r_acc, f_acc, acc])
+
+
+
 
 import csv
 
