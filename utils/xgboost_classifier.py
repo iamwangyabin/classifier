@@ -72,7 +72,8 @@ plt.show()
 
 sorted_importance = dict(sorted(importance.items(), key=lambda item: item[1], reverse=True))
 
-
+for key, value in sorted_importance.items():
+    print(f'{key}: {value}')
 
 
 

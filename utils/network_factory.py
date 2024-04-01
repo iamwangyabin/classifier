@@ -1,4 +1,5 @@
 import torch
+import timm
 
 from networks.resnet import resnet50
 from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
@@ -6,6 +7,8 @@ from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
 # from networks.SPrompts.slinet import SliNet_lp
 from networks.NPR.detector import NPRModel
+
+
 
 def get_model(conf):
     print("Model loaded..")
@@ -75,6 +78,7 @@ def get_model(conf):
         model = CLIPModel('RN50x64')
     elif conf.arch == 'clip_vit336':
         model = CLIPModel('ViT-L/14@336px')
+
     else:
         model = timm.create_model(conf.arch, pretrained=True, num_classes=1)
         torch.nn.init.xavier_uniform_(model.head.weight.data)

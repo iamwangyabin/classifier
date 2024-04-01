@@ -1,5 +1,5 @@
 arch: "dino"
-resume: None
+resume: false
 test_name: "dino_224"
 
 dataset:
