@@ -18,6 +18,6 @@ class ViTModel(nn.Module):
         with torch.no_grad():
             features = self.backbone.forward_features(x)
         if return_feature:
-            return features
+            return self.fc(features), features
         return self.fc(features)
 

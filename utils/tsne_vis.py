@@ -176,10 +176,10 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 12
 plt.rcParams['pdf.fonttype'] = 42
 
-with open('clip_features_test.pkl', 'rb') as file:
+with open('dino_test_features.pkl', 'rb') as file:
     loaded_test_dict = pickle.load(file)
 
-with open('clip_progan_train_features.pkl', 'rb') as file:
+with open('dino_progan_train_features.pkl', 'rb') as file:
     loaded_train_dict = pickle.load(file)
 
 session_names = [key for key in loaded_test_dict.keys() if not key.startswith('AntifakePrompt')]

@@ -45,6 +45,6 @@ class DINOModel(nn.Module):
         with torch.no_grad():
             features = self.backbone.forward_features(x)['x_norm_clstoken']
         if return_feature:
-            return features
+            return self.fc(features), features
         return self.fc(features)
 
