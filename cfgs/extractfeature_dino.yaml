@@ -1,6 +1,7 @@
-arch: "dino"
+#arch: "dino"
+arch: "vit_l"
 resume: false
-test_name: "dino_224"
+test_name: "vitl_224"
 
 dataset:
   train:
@@ -30,7 +31,7 @@ datasets:
       mean: [0.48145466, 0.4578275, 0.40821073]
       std: [0.26862954, 0.26130258, 0.27577711]
 
-  source: 
+  source:
     DiffusionForensics:
       data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/DiffusionForensics"
       sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
