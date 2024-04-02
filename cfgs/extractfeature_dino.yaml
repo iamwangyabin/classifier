@@ -1,7 +1,8 @@
-#arch: "dino"
-arch: "vit_l"
+arch: "dino"
+#arch: "vit_l"
 resume: false
-test_name: "vitl_224"
+#test_name: "vitl_224"
+test_name: "dino_224"
 
 dataset:
   train:
@@ -9,7 +10,7 @@ dataset:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
     subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
-    batch_size: 128
+    batch_size: 256
     loader_workers: 32
     loadSize: 256
     cropSize: 224
@@ -18,8 +19,8 @@ dataset:
 
 
 datasets:
-  batch_size: 32
-  loader_workers: 8
+  batch_size: 256
+  loader_workers: 32
 
   trsf:
     - _target_: torchvision.transforms.Resize
