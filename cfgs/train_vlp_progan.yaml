@@ -31,7 +31,7 @@ model:
 dataset:
   train:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
     subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
 #    dataroot: "/home/jwang/ybwork/data/CDDB"
@@ -46,7 +46,7 @@ dataset:
 
   val:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
     subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
     multicalss_idx: [0, 0, 0, 0]
     batch_size: 64
