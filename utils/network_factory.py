@@ -7,7 +7,8 @@ from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
 from networks.NPR.detector import NPRModel
 from networks.ViTDetector.detector import ViTModel
-
+from networks.SPrompts.independentVL import IndepVLPCLIP
+from networks.SPrompts.coop import CoOpCLIP
 
 def resume_lightning(model, conf):
     if conf.resume:
@@ -53,8 +54,11 @@ def get_model(conf):
     elif conf.arch == 'dino':
         model = DINOModel('dinov2_l')
         resume_lightning(model, conf)
-    elif conf.arch == 'sp_l':
+    elif conf.arch == 'vlp':
         model = IndepVLPCLIP(conf)
+        resume_lightning(model, conf)
+    elif conf.arch == 'coop':
+        model = CoOpCLIP(conf)
         resume_lightning(model, conf)
     elif conf.arch == 'clip_res':
         model = CLIPModel('RN50x64')

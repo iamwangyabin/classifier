@@ -47,7 +47,7 @@ if __name__ == '__main__':
         mode='max',
     )
 
-    if conf.arch == 'sp_l':
+    if conf.arch == 'vlp' or conf.arch == 'coop':
         from networks.trainer import Trainer_multicls
         model = Trainer_multicls(opt=conf)
     else:
