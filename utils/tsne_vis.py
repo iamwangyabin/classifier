@@ -11,11 +11,11 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 12
 plt.rcParams['pdf.fonttype'] = 42  # 确保PDF保存时嵌入字体
 
-# with open('clip_features_test.pkl', 'rb') as file:
-#     loaded_dict = pickle.load(file)
-
-with open('clip_progan_train_features.pkl', 'rb') as file:
+with open('vitl_test_features.pkl', 'rb') as file:
     loaded_dict = pickle.load(file)
+
+# with open('clip_progan_train_features.pkl', 'rb') as file:
+#     loaded_dict = pickle.load(file)
 
 session_names = [key for key in loaded_dict.keys() if not key.startswith('AntifakePrompt')]
 
@@ -32,8 +32,8 @@ for session_name in session_names:
     print(session_name)
     features = loaded_dict[session_name][0]
     labels = loaded_dict[session_name][1]
-    if len(labels) > 5000:
-        chosen_indices = np.random.choice(len(labels), size=5000, replace=False)
+    if len(labels) > 1000:
+        chosen_indices = np.random.choice(len(labels), size=1000, replace=False)
         features = features[chosen_indices]
         labels = labels[chosen_indices]
     tsne = TSNE(n_components=2, random_state=0)
@@ -60,7 +60,6 @@ for session_name in session_names:
     scatter_subplot(ax5, mds_reduced_features, labels, 'MDS visualization')
     ax6 = fig.add_subplot(3, 2, 6)
     scatter_subplot(ax6, isomap_reduced_features, labels, 'Isomap visualization')
-
     ax2 = fig.add_subplot(3, 2, 3)
     lda_jitter_y = 0.1 * np.random.rand(len(lda_reduced_features)) - 0.05
     unique_labels = np.unique(labels)
@@ -68,12 +67,13 @@ for session_name in session_names:
     for label, color in zip(unique_labels, colors):
         indices = labels == label
         ax2.scatter(lda_reduced_features[indices], lda_jitter_y[indices], c=[color], label=label, alpha=0.5)
-
     ax2.set_title('LDA visualization')
     ax2.legend()
-
     plt.tight_layout()
     plt.savefig("VisTSNE_"+session_name+'.pdf', bbox_inches='tight')
+
+
+
 
 
 ##################################################################################################################################

@@ -3,7 +3,7 @@ resume: null
 name: "SP_L—Progan"  # Name of the experiment for organizing samples and models
 
 train:
-  gpu_ids: [1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 100  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -19,6 +19,16 @@ train:
     _partial_: True
     T_max: 100
 
+model:
+  NAME: "ViT-L/14"
+#  NAME: "ViT-B/16"
+  N_CTX_VISION: 2
+  N_CTX_TEXT: 2
+  CTX_INIT: "a photo of a"
+  PROMPT_DEPTH_VISION: 2
+  PROMPT_DEPTH_TEXT: 2
+
+
 dataset:
   train:
     mode: 'binary'
@@ -28,7 +38,7 @@ dataset:
 #    dataroot: "/home/jwang/ybwork/data/CDDB"
 #    subfolder_names: ["imle"]
 #    multicalss_idx: [0]
-    batch_size: 512
+    batch_size: 128
     loader_workers: 32
     loadSize: 256
     cropSize: 224
@@ -37,8 +47,8 @@ dataset:
 
   val:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/CDDB"
-    subfolder_names: ["biggan", "deepfake", "wild", "whichfaceisreal"]
+    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
+    subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
     multicalss_idx: [0, 0, 0, 0]
     batch_size: 64
     loader_workers: 4

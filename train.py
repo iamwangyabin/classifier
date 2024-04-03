@@ -47,7 +47,12 @@ if __name__ == '__main__':
         mode='max',
     )
 
-    model = Trainer(opt=conf)
+    if conf.arch == 'sp_l':
+        from networks.trainer import Trainer_multicls
+        model = Trainer_multicls(opt=conf)
+    else:
+        model = Trainer(opt=conf)
+
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
                         val_check_interval=0.1,

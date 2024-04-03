@@ -5,29 +5,31 @@ from networks.resnet import resnet50
 from networks.UniversalFakeDetect.clip_models import CLIPModel, CLIPModel_inc
 from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel
 from networks.DINO.detector import DINOModel
-# from networks.SPrompts.slinet import SliNet_lp
 from networks.NPR.detector import NPRModel
 from networks.ViTDetector.detector import ViTModel
+
+
+def resume_lightning(model, conf):
+    if conf.resume:
+        # for ojha fc weight
+        # state_dict = torch.load(conf.resume, map_location='cpu')
+        # model.fc.load_state_dict(state_dict)
+        state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
+        new_state_dict = {}
+        for key, value in state_dict.items():
+            if key.startswith('model.'):
+                new_key = key[6:]  # remove `model.` from key
+                new_state_dict[new_key] = value
+            else:
+                new_state_dict[key] = value
+        model.load_state_dict(new_state_dict)
 
 
 def get_model(conf):
     print("Model loaded..")
     if conf.arch == 'clip':
         model = CLIPModel('ViT-L/14')
-        if conf.resume:
-            # for ojha fc weight
-            # state_dict = torch.load(conf.resume, map_location='cpu')
-            # model.fc.load_state_dict(state_dict)
-            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
-            new_state_dict = {}
-            for key, value in state_dict.items():
-                if key.startswith('model.'):
-                    new_key = key[6:] # remove `model.` from key
-                    new_state_dict[new_key] = value
-                else:
-                    new_state_dict[key] = value
-            model.load_state_dict(new_state_dict)
-
+        resume_lightning(model, conf)
     elif conf.arch == 'ms_clip':
         model = MultiscaleCLIPModel('ViT-L/14', patch_sizes=conf.patch_sizes, strides=conf.strides)
         if conf.resume:
@@ -50,30 +52,10 @@ def get_model(conf):
             model.load_state_dict(state_dict['model'])
     elif conf.arch == 'dino':
         model = DINOModel('dinov2_l')
-        if conf.resume:
-            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
-            new_state_dict = {}
-            for key, value in state_dict.items():
-                if key.startswith('model.'):
-                    new_key = key[6:] # remove `model.` from key
-                    new_state_dict[new_key] = value
-                else:
-                    new_state_dict[key] = value
-            model.load_state_dict(new_state_dict)
-
+        resume_lightning(model, conf)
     elif conf.arch == 'sp_l':
-        model = SliNet_lp()
-        if conf.resume:
-            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
-            new_state_dict = {}
-            for key, value in state_dict.items():
-                if key.startswith('model.'):
-                    new_key = key[6:]
-                    new_state_dict[new_key] = value
-                else:
-                    new_state_dict[key] = value
-            model.load_state_dict(new_state_dict)
-
+        model = IndepVLPCLIP(conf)
+        resume_lightning(model, conf)
     elif conf.arch == 'clip_res':
         model = CLIPModel('RN50x64')
     elif conf.arch == 'clip_vit336':
