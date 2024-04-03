@@ -4,6 +4,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --partition=a100
 #SBATCH --account=ecsstaff
+#SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:1
 #SBATCH --time=60:00:00
 
