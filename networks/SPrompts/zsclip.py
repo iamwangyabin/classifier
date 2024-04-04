@@ -14,7 +14,7 @@ class ZeroshotCLIP(nn.Module):
         cfg = self.cfg
         n_cls = len(classnames)
 
-        print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
+        print(f"Loading CLIP (backbone: {cfg.model.NAME})")
         clip_model = load_clip_to_cpu(cfg)
         clip_model.to(device)
         for params in clip_model.parameters():
@@ -32,7 +32,7 @@ class ZeroshotCLIP(nn.Module):
         self.text_features = text_features
         self.clip_model = clip_model
 
-    def forward(self):
+    def forward(self, image):
         image_features = self.clip_model.encode_image(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
         logit_scale = self.clip_model.logit_scale.exp()
@@ -50,17 +50,15 @@ class ZeroshotCLIP_PE(nn.Module):
 
     def __init__(self, cfg, classnames, device):
         super().__init__()
-        cfg = self.cfg
         n_cls = len(classnames)
 
-        print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
+        print(f"Loading CLIP (backbone: {cfg.model.NAME})")
         clip_model = load_clip_to_cpu(cfg)
         clip_model.to(device)
 
         for params in clip_model.parameters():
             params.requires_grad_(False)
 
-        self.templates +=  "a photo of a {}."
         num_temp = len(self.templates)
         print(f"Prompt ensembling (n={num_temp})")
 
@@ -77,7 +75,7 @@ class ZeroshotCLIP_PE(nn.Module):
         self.text_features = mean_text_features
         self.clip_model = clip_model
 
-    def forward(self):
+    def forward(self, image):
         image_features = self.clip_model.encode_image(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
         logit_scale = self.clip_model.logit_scale.exp()
