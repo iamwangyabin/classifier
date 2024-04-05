@@ -36,7 +36,7 @@ dataset:
 #    dataroot: "/home/jwang/ybwork/data/CDDB"
 #    subfolder_names: ["imle"]
 #    multicalss_idx: [0]
-    batch_size: 128
+    batch_size: 512
     loader_workers: 32
     loadSize: 256
     cropSize: 224
@@ -48,7 +48,7 @@ dataset:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
     subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
     multicalss_idx: [0, 0, 0, 0]
-    batch_size: 64
+    batch_size: 512
     loader_workers: 4
     loadSize: 256
     cropSize: 224

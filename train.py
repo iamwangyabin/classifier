@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
-                        val_check_interval=0.1,
+                        val_check_interval=0.9,
                         # check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
                         precision="16")
 
