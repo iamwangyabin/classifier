@@ -72,10 +72,6 @@ for session_name in session_names:
     plt.tight_layout()
     plt.savefig("VisTSNE_"+session_name+'.pdf', bbox_inches='tight')
 
-
-
-
-
 ##################################################################################################################################
 # 就是tsne分别可视化每个session的real fake分布，但是都包括training set
 
@@ -159,12 +155,6 @@ for session_name in session_names:
     ax2.legend()
     plt.tight_layout()
     plt.savefig("VisCompare_"+session_name+'.pdf', bbox_inches='tight')
-
-
-
-
-
-
 
 ##################################################################################################################################
 

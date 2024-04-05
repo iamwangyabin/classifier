@@ -1,16 +1,20 @@
 #arch: "dino"
-arch: "vit_l"
+#arch: "vit_l"
+arch: "clip"
 resume: false
-test_name: "vitl_224"
+#test_name: "vitl_224"
+test_name: "clip_224"
 #test_name: "dino_224"
 
 dataset:
   train:
     mode: 'binary'
-    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
-    subfolder_names: ["ForenSynths"]
-    multicalss_idx: [1]
+#    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
+    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+#    subfolder_names: ["ForenSynths"]
+    subfolder_names: ["GenImg_SD15"]
+#    multicalss_idx: [1]
+    multicalss_idx: [0]
     batch_size: 256
     loader_workers: 32
     loadSize: 256
