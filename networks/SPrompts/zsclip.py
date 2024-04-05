@@ -11,7 +11,6 @@ from .imagenet_templates import IMAGENET_TEMPLATES, IMAGENET_TEMPLATES_SELECT
 class ZeroshotCLIP(nn.Module):
     def __init__(self, cfg, classnames, device):
         super().__init__()
-        cfg = self.cfg
         n_cls = len(classnames)
 
         print(f"Loading CLIP (backbone: {cfg.model.NAME})")

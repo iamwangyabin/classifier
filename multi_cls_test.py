@@ -8,13 +8,12 @@ import hydra
 import pickle
 from tqdm import tqdm
 from utils.util import load_config_with_cli, archive_files
+from networks.SPrompts.zsclip import ZeroshotCLIP_PE, ZeroshotCLIP
 
 import torch
 import torch.utils.data
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
-
-
 
 class LSUNDeepfakeBenchmarkDataset(Dataset):
 
@@ -51,10 +50,10 @@ if __name__ == '__main__':
     conf = load_config_with_cli(args.cfg, args_list=cfg_args)
     conf = hydra.utils.instantiate(conf)
 
-
-
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+        # transforms.Resize(256),
+        # transforms.CenterCrop((224,224)),
+        transforms.Resize((224,224)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
     ])
@@ -63,13 +62,12 @@ if __name__ == '__main__':
                      "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
     class_to_idx = {class_name: i for i, class_name in enumerate(order_classes)}
 
-    from networks.SPrompts.zsclip import ZeroshotCLIP_PE
     model = ZeroshotCLIP_PE(conf, order_classes, "cuda:0")
     model.cuda()
     model.eval()
     root_dir = "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/val"
 
-    dataset = LSUNDeepfakeBenchmarkDataset(root_dir, class_to_idx, selected_labels=["1_fake"], transform=transform)
+    dataset = LSUNDeepfakeBenchmarkDataset(root_dir, class_to_idx, selected_labels=["0_real"], transform=transform)
 
 
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=conf.dataset.train.batch_size,
@@ -89,13 +87,14 @@ if __name__ == '__main__':
     accuracy = correct_predictions / len(y_true)
     print(f'Accuracy: {accuracy:.4f}')
 
+# 可以看出来，fake图片也能识别很高精度
+# Accuracy: 0.9008 real          0.8413 fake
 
-# Accuracy: 0.9008 real
-# Accuracy: 0.8413 fake
-# 可以看出来，fake图片也能识别出一些精度
+# Accuracy: 0.8370 fake No ensemple
 
+# coop accuracy: real:0.922249972820282    fake: 0.8615000247    相比较人工设计的prompt都能提升一些，但是仅仅是拟合prompt
 
-
+# 极限是多少呢？ 可能需要更多的微调
 
 
 
