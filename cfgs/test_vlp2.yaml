@@ -1,6 +1,6 @@
 arch: "vlp"
 resume: '/home/yw26g23/classifier/logs/vlp-ViTL-Progan_20240405_21_31_55/last.ckpt'
-name: "vlp-ViTL—Progan"
+test_name: "vlp-ViTL—Progan"
 
 model:
   NAME: "ViT-L/14"

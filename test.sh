@@ -5,6 +5,7 @@
 #SBATCH --partition=a100
 #SBATCH --account=ecsstaff
 #SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=32
 #SBATCH --time=60:00:00
 
 export WANDB_MODE="offline"

@@ -1,6 +1,6 @@
 arch: "coop"
 resume: '/home/yw26g23/classifier/logs/coop-ViTL-Progan_20240405_17_13_50/last.ckpt'
-name: "coop-ViTL—Progan"
+test_name: "coop-ViTL—Progan"
 
 model:
   NAME: "ViT-L/14"
