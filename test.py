@@ -8,7 +8,6 @@ import pickle
 from utils.util import load_config_with_cli, archive_files
 from utils.validate import validate, validate_multicls
 from data.json_datasets import BinaryJsonDatasets
-
 from utils.network_factory import get_model
 
 
