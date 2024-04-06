@@ -87,10 +87,10 @@ plt.rcParams['font.family'] = 'Times New Roman'
 plt.rcParams['font.size'] = 12
 plt.rcParams['pdf.fonttype'] = 42
 
-with open('dino_test_features.pkl', 'rb') as file:
+with open('clip_test_features.pkl', 'rb') as file:
     loaded_test_dict = pickle.load(file)
 
-with open('dino_progan_train_features.pkl', 'rb') as file:
+with open('clip_sd15_train_features.pkl', 'rb') as file:
     loaded_train_dict = pickle.load(file)
 
 session_names = [key for key in loaded_test_dict.keys() if not key.startswith('AntifakePrompt')]
@@ -104,8 +104,8 @@ def scatter_subplot(ax, reduced_features, labels, title):
     ax.set_title(title)
 
 
-train_features = loaded_train_dict['ProGAN_train'][0]
-train_labels = loaded_train_dict['ProGAN_train'][1]
+train_features = loaded_train_dict['SD15_train'][0]
+train_labels = loaded_train_dict['SD15_train'][1]
 chosen_indices = np.random.choice(len(train_labels), size=1000, replace=False)
 train_features = train_features[chosen_indices]
 train_labels = train_labels[chosen_indices]
@@ -155,6 +155,7 @@ for session_name in session_names:
     ax2.legend()
     plt.tight_layout()
     plt.savefig("VisCompare_"+session_name+'.pdf', bbox_inches='tight')
+
 
 ##################################################################################################################################
 

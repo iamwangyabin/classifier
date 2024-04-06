@@ -16,12 +16,17 @@ conda init bash
 conda activate timm
 
 
-python test.py --cfg cfgs/test_Ojha_224.yaml
+python test.py --cfg cfgs/test_coop.yaml
+
+python test.py --cfg cfgs/test_coop2.yaml
+
+python test.py --cfg cfgs/test_vlp.yaml
+
+python test.py --cfg cfgs/test_vlp2.yaml
 
 
 
 
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test_CNNSpot0.1_224.yaml
 
 
 
