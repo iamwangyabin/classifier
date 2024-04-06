@@ -326,10 +326,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "GenImg_MJ.part.ab",
-    "GenImg_MJ.part.ac",
-    "GenImg_MJ.part.ad",
-    "GenImg_MJ.part.ae",
+    "GenImg_Biggan.tar",
 ]
 
 for filename in files_to_upload:

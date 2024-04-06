@@ -3,7 +3,7 @@ resume: '/home/yw26g23/classifier/logs/coop-ViTB-Progan_20240405_19_40_42/last.c
 name: "coop-ViTB—Progan"
 
 model:
-  NAME: "ViT-L/14"
+  NAME: "ViT-B/16"
   N_CTX: 16
   CSC: False
   CTX_INIT: "a photo of a"

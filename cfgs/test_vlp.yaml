@@ -3,7 +3,7 @@ resume: '/home/yw26g23/classifier/logs/vlp-ViTB-Progan_20240406_02_22_15/last.ck
 name: "vlp-ViTB—Progan"
 
 model:
-  NAME: "ViT-L/14"
+  NAME: "ViT-B/16"
   N_CTX_VISION: 2
   N_CTX_TEXT: 2
   CTX_INIT: "a photo of a"

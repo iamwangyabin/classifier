@@ -6,7 +6,7 @@ import torch.utils.data
 import pickle
 
 from utils.util import load_config_with_cli, archive_files
-from utils.validate import validate
+from utils.validate import validate, validate_multicls
 from data.json_datasets import BinaryJsonDatasets
 
 from utils.network_factory import get_model
@@ -31,7 +31,11 @@ if __name__ == '__main__':
             data_loader = torch.utils.data.DataLoader(dataset, batch_size=conf.datasets.batch_size,
                                                       num_workers=conf.datasets.loader_workers)
 
-            result = validate(model, data_loader)
+            if conf.arch == 'vlp' or conf.arch == 'coop':
+                result = validate_multicls(model, data_loader)
+            else:
+                result = validate(model, data_loader)
+
             ap = result['ap']
             r_acc0 = result['r_acc0']
             f_acc0 = result['f_acc0']
