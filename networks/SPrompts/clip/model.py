@@ -341,8 +341,7 @@ class Transformer(nn.Module):
         current_trainer = design_details['trainer']
         if current_trainer == 'IVLP' or current_trainer == 'VPT':
             self.resblocks = nn.Sequential(*[ResidualAttentionBlock_IVLP(width, heads, attn_mask, True,
-                                                                         text_layer, i,
-                                                                         design_details) if prompts_needed > i
+                                                            text_layer, i, design_details) if prompts_needed > i
                                              else ResidualAttentionBlock_IVLP(width, heads, attn_mask, False,
                                                                               text_layer, i, design_details)
                                              for i in range(layers)])
