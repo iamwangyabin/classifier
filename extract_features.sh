@@ -2,11 +2,11 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=a100
+#SBATCH --partition=gpu
 #SBATCH --account=ecsstaff
 #SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:1
-#SBATCH --time=60:00:00
+#SBATCH --time=30:00:00
 
 export WANDB_MODE="offline"
 
