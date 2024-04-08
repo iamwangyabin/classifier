@@ -326,7 +326,8 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "GenImg_Biggan.tar",
+    "HIFI_Dataset.part.aa",
+    "HIFI_Dataset.part.ab",
 ]
 
 for filename in files_to_upload:
@@ -337,22 +338,6 @@ for filename in files_to_upload:
         repo_id="nebula/dfbenchmark",
         repo_type="dataset"
     )
-
-
-import os
-from PIL import Image
-from tqdm import tqdm
-folder_path = '/home/jwang/ybwork/data/dbv2/all/'
-webp_files = [f for f in os.listdir(folder_path) if f.endswith('.webp')]
-total_files = len(webp_files)
-for filename in tqdm(webp_files, desc="Checking webp files", unit="file"):
-    file_path = os.path.join(folder_path, filename)
-    try:
-        with Image.open(file_path) as img:
-            img.verify()
-    except (IOError, SyntaxError) as e:
-        print('Broken file:', file_path)
-        os.remove(file_path)
 
 
 #  upload a folder

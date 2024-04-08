@@ -81,57 +81,60 @@ if __name__ == '__main__':
             data = json.load(f)
 
         for subset in source_conf.sub_sets:
-            print(f"{set_name} {subset}")
-            clip_feature_extractor = CLIPFeatureExtractor()
-            dino_feature_extractor = DINOv2FeatureExtractor()
-            inception_feature_extractor = InceptionFeatureExtractor()
+            try:
+                print(f"{set_name} {subset}")
+                clip_feature_extractor = CLIPFeatureExtractor()
+                dino_feature_extractor = DINOv2FeatureExtractor()
+                inception_feature_extractor = InceptionFeatureExtractor()
 
-            gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
-            real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
+                gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
+                real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
 
-            clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
-            clip_real_feat = clip_feature_extractor.get_features(real_dataset)
+                clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
+                clip_real_feat = clip_feature_extractor.get_features(real_dataset)
 
-            # import pdb;pdb.set_trace()
-            dino_gen_feat = dino_feature_extractor.get_features(gen_dataset)
-            dino_real_feat = dino_feature_extractor.get_features(real_dataset)
-            # inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
-            # inception_real_feat = inception_feature_extractor.get_features(real_dataset)
+                # import pdb;pdb.set_trace()
+                dino_gen_feat = dino_feature_extractor.get_features(gen_dataset)
+                dino_real_feat = dino_feature_extractor.get_features(real_dataset)
+                # inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
+                # inception_real_feat = inception_feature_extractor.get_features(real_dataset)
 
-            clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
-            clip_kid = KID().compute_metric(clip_real_feat, None, clip_gen_feat)
-            clip_precision = PrecisionRecall(mode="Precision").compute_metric(clip_real_feat, None, clip_gen_feat)
-            clip_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(clip_real_feat, None, clip_gen_feat)
+                clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
+                clip_kid = KID().compute_metric(clip_real_feat, None, clip_gen_feat)
+                clip_precision = PrecisionRecall(mode="Precision").compute_metric(clip_real_feat, None, clip_gen_feat)
+                clip_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(clip_real_feat, None, clip_gen_feat)
 
-            dino_fid = FID().compute_metric(dino_real_feat, None, dino_gen_feat)
-            dino_kid = KID().compute_metric(dino_real_feat, None, dino_gen_feat)
-            dino_precision = PrecisionRecall(mode="Precision").compute_metric(dino_real_feat, None, dino_gen_feat)
-            dino_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(dino_real_feat, None, dino_gen_feat)
+                dino_fid = FID().compute_metric(dino_real_feat, None, dino_gen_feat)
+                dino_kid = KID().compute_metric(dino_real_feat, None, dino_gen_feat)
+                dino_precision = PrecisionRecall(mode="Precision").compute_metric(dino_real_feat, None, dino_gen_feat)
+                dino_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(dino_real_feat, None, dino_gen_feat)
 
 
-            minsize = min(clip_real_feat.size(0), clip_gen_feat.size(0), dino_real_feat.size(0), dino_gen_feat.size(0))
-            clip_score = F.cosine_similarity(clip_real_feat[:minsize, :], clip_gen_feat[:minsize, :], dim=1).mean()
-            dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean()
+                minsize = min(clip_real_feat.size(0), clip_gen_feat.size(0), dino_real_feat.size(0), dino_gen_feat.size(0))
+                clip_score = F.cosine_similarity(clip_real_feat[:minsize, :], clip_gen_feat[:minsize, :], dim=1).mean()
+                dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean()
 
-            # fisher_score(clip_gen_feat, clip_real_feat)
+                # fisher_score(clip_gen_feat, clip_real_feat)
 
-            all_results.append([set_name, subset, clip_fid, clip_kid, clip_precision, clip_reacall,
-                                dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
-            # inception_fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
-            # inception_kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
-            # inception_precision = PrecisionRecall(mode="Precision").compute_metric(inception_real_feat, None, inception_gen_feat)
-            # inception_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(inception_real_feat, None, inception_gen_feat)
+                all_results.append([set_name, subset, clip_fid, clip_kid, clip_precision, clip_reacall,
+                                    dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
+                # inception_fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                # inception_kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                # inception_precision = PrecisionRecall(mode="Precision").compute_metric(inception_real_feat, None, inception_gen_feat)
+                # inception_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(inception_real_feat, None, inception_gen_feat)
 
-            # score = 100 * (clip_real_feat * clip_gen_feat).sum(axis=-1)
+                # score = 100 * (clip_real_feat * clip_gen_feat).sum(axis=-1)
 
-        columns = ['dataset', 'sub_set', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall',
-                   'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall',
-                   'clip_score', 'dino_score']
-        with open('dataset_analysis_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(columns)
-            for values in all_results:
-                writer.writerow(values)
+                columns = ['dataset', 'sub_set', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall',
+                           'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall',
+                           'clip_score', 'dino_score']
+                with open('dataset_analysis_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+                    writer = csv.writer(csvfile)
+                    writer.writerow(columns)
+                    for values in all_results:
+                        writer.writerow(values)
+            except:
+                print("failed")
 
 
 
