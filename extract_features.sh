@@ -18,7 +18,7 @@ conda activate timm
 
 
 #python extract_features.py --cfg cfgs/extractfeature_dino.yaml
-python dataset_analys.py.py --cfg cfgs/test_coop.yaml
+python dataset_analys.py --cfg cfgs/test_coop.yaml
 
 
 
