@@ -1,6 +1,7 @@
 # plz install https://github.com/marcojira/fld.git
 
 import os
+import csv
 import json
 import hydra
 import argparse
@@ -111,13 +112,12 @@ if __name__ == '__main__':
 
 
                 minsize = min(clip_real_feat.size(0), clip_gen_feat.size(0), dino_real_feat.size(0), dino_gen_feat.size(0))
-                clip_score = F.cosine_similarity(clip_real_feat[:minsize, :], clip_gen_feat[:minsize, :], dim=1).mean()
-                dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean()
+                clip_score = F.cosine_similarity(clip_real_feat[:minsize, :], clip_gen_feat[:minsize, :], dim=1).mean().item()
+                dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean().item()
 
                 # fisher_score(clip_gen_feat, clip_real_feat)
 
-                all_results.append([set_name, subset, clip_fid, clip_kid, clip_precision, clip_reacall,
-                                    dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
+                all_results.append([set_name, subset, clip_fid, clip_kid, clip_precision, clip_reacall, dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
                 # inception_fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
                 # inception_kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
                 # inception_precision = PrecisionRecall(mode="Precision").compute_metric(inception_real_feat, None, inception_gen_feat)
@@ -125,16 +125,16 @@ if __name__ == '__main__':
 
                 # score = 100 * (clip_real_feat * clip_gen_feat).sum(axis=-1)
 
-                columns = ['dataset', 'sub_set', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall',
-                           'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall',
-                           'clip_score', 'dino_score']
+                columns = ['dataset', 'sub_set', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall', 'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall', 'clip_score', 'dino_score']
                 with open('dataset_analysis_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(columns)
                     for values in all_results:
                         writer.writerow(values)
+
             except:
-                print("failed")
+                all_results.append(['null', 'null', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
 
 
 

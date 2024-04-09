@@ -1,6 +1,6 @@
 arch: "coop"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "coop-ViTB-SD15"  # Name of the experiment for organizing samples and models
+name: "coop-ViTB-MJ"  # Name of the experiment for organizing samples and models
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
@@ -32,7 +32,8 @@ dataset:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
 #    subfolder_names: ["ForenSynths"]
 #    multicalss_idx: [1]
-    subfolder_names: ["GenImg_SD15"]
+#    subfolder_names: ["GenImg_SD15"]
+    subfolder_names: ["GenImg_MJ"]
     multicalss_idx: [0]
     batch_size: 512
     loader_workers: 32

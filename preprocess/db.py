@@ -347,10 +347,10 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 api.upload_folder(
-    folder_path="./DFLIP",
+    folder_path="./logs",
     path_in_repo="./",
-    repo_id="nebula/Danbooru2023-WEBP",
-    repo_type="dataset",
+    repo_id="nebula/testmodel",
+    repo_type="model",
 )
 
 
