@@ -11,6 +11,7 @@ from utils.util import load_config_with_cli
 import torch
 from torch.utils.data import Dataset
 import torch.nn.functional as F
+import torchvision.transforms as transforms
 
 from fld.features.DINOv2FeatureExtractor import DINOv2FeatureExtractor
 from fld.features.CLIPFeatureExtractor import CLIPFeatureExtractor
@@ -91,14 +92,23 @@ if __name__ == '__main__':
                 gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
                 real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
 
+                inception_feature_extractor.preprocess = transforms.Compose(
+                        [transforms.Resize(299, interpolation=transforms.InterpolationMode.BICUBIC),
+                         transforms.CenterCrop(299),
+                         transforms.ToTensor(),]
+                    )
+
+                inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
+                inception_real_feat = inception_feature_extractor.get_features(real_dataset)
+
+
                 clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
                 clip_real_feat = clip_feature_extractor.get_features(real_dataset)
 
-                # import pdb;pdb.set_trace()
+
                 dino_gen_feat = dino_feature_extractor.get_features(gen_dataset)
                 dino_real_feat = dino_feature_extractor.get_features(real_dataset)
-                # inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
-                # inception_real_feat = inception_feature_extractor.get_features(real_dataset)
+
 
                 clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
                 clip_kid = KID().compute_metric(clip_real_feat, None, clip_gen_feat)
@@ -116,16 +126,17 @@ if __name__ == '__main__':
                 dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean().item()
 
                 # fisher_score(clip_gen_feat, clip_real_feat)
+                fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
 
-                all_results.append([set_name, subset, clip_fid, clip_kid, clip_precision, clip_reacall, dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
-                # inception_fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                # inception_kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                all_results.append([set_name, subset, fid, kid, clip_fid, clip_kid, clip_precision, clip_reacall, dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
+
                 # inception_precision = PrecisionRecall(mode="Precision").compute_metric(inception_real_feat, None, inception_gen_feat)
                 # inception_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(inception_real_feat, None, inception_gen_feat)
 
                 # score = 100 * (clip_real_feat * clip_gen_feat).sum(axis=-1)
 
-                columns = ['dataset', 'sub_set', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall', 'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall', 'clip_score', 'dino_score']
+                columns = ['dataset', 'sub_set', 'fid', 'kid', 'clip_fid', 'clip_kid', 'clip_precision', 'clip_reacall', 'dino_fid', 'dino_kid', 'dino_precision', 'dino_reacall', 'clip_score', 'dino_score']
                 with open('dataset_analysis_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
                     writer = csv.writer(csvfile)
                     writer.writerow(columns)
@@ -133,7 +144,7 @@ if __name__ == '__main__':
                         writer.writerow(values)
 
             except:
-                all_results.append(['null', 'null', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+                all_results.append([set_name, subset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
 
 
