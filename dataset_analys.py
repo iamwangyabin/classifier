@@ -7,9 +7,11 @@ import hydra
 import argparse
 from PIL import ImageFile, Image
 from utils.util import load_config_with_cli
+from tqdm import tqdm
+
 
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from pytorch_fid.inception import InceptionV3
@@ -23,19 +25,19 @@ from fld.metrics.FID import FID
 from fld.metrics.FLD import FLD
 from fld.metrics.KID import KID
 from fld.metrics.PrecisionRecall import PrecisionRecall
+from torchmetrics.image.fid import FrechetInceptionDistance
+
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-
-
-
 class JsonDatasets(Dataset):
-    def __init__(self, opt, data_root, subset='all', split='train', selected_label=0):
+    def __init__(self, opt, data_root, subset='all', split='train', selected_label=0, transform=None):
         self.dataroot = data_root
         self.split = split
         self.image_pathes = []
         self.labels = []
+        self.transform = transform
 
         json_file = os.path.join(self.dataroot, f'{split}.json')
         with open(json_file, 'r') as f:
@@ -53,6 +55,8 @@ class JsonDatasets(Dataset):
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
+        if self.transform:
+            image = self.transform(image)
         label = self.labels[idx]
         return image, label
 
@@ -129,8 +133,38 @@ if __name__ == '__main__':
                 gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
                 real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
 
-                inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
-                inception_real_feat = inception_feature_extractor.get_features(real_dataset)
+                fid = FrechetInceptionDistance(feature=768)
+                trans = transforms.Compose([
+                    transforms.Resize((256, 256)),
+                    transforms.ToTensor(),
+                ])
+                gen_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=1, transform=trans)
+                real_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=0, transform=trans)
+                gen_dataloader = DataLoader(gen_dataset2, batch_size=256, num_workers=8)
+                real_dataloader = DataLoader(real_dataset2, batch_size=256, num_workers=8)
+                for batch in tqdm(gen_dataloader):
+                    images = (batch[0] * 255).to(dtype=torch.uint8)
+                    fid.update(images, real=False)
+                for batch in tqdm(real_dataloader):
+                    images = (batch[0] * 255).to(dtype=torch.uint8)
+                    fid.update(images, real=True)
+                fid = fid.compute().item()
+                # print(fid)
+
+                kid = 0
+                # try:
+                #     fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                # except:
+                #     print("faild fid")
+                #     fid = 0
+                # try:
+                #     kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                # except:
+                #     print("faild kid")
+                #     kid = 0
+
+            #     inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
+            #     inception_real_feat = inception_feature_extractor.get_features(real_dataset)
 
                 clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
                 clip_real_feat = clip_feature_extractor.get_features(real_dataset)
@@ -138,16 +172,6 @@ if __name__ == '__main__':
                 dino_gen_feat = dino_feature_extractor.get_features(gen_dataset)
                 dino_real_feat = dino_feature_extractor.get_features(real_dataset)
 
-                try:
-                    fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                except:
-                    print("faild fid")
-                    fid = 0
-                try:
-                    kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                except:
-                    print("faild kid")
-                    kid = 0
 
                 try:
                     clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
