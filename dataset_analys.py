@@ -12,14 +12,22 @@ import torch
 from torch.utils.data import Dataset
 import torch.nn.functional as F
 import torchvision.transforms as transforms
+from pytorch_fid.inception import InceptionV3
+
 
 from fld.features.DINOv2FeatureExtractor import DINOv2FeatureExtractor
 from fld.features.CLIPFeatureExtractor import CLIPFeatureExtractor
-from fld.features.InceptionFeatureExtractor import InceptionFeatureExtractor
+# from fld.features.InceptionFeatureExtractor import InceptionFeatureExtractor
+from fld.features.ImageFeatureExtractor import ImageFeatureExtractor
 from fld.metrics.FID import FID
 from fld.metrics.FLD import FLD
 from fld.metrics.KID import KID
 from fld.metrics.PrecisionRecall import PrecisionRecall
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+
 
 
 class JsonDatasets(Dataset):
@@ -68,6 +76,35 @@ def fisher_score(feature1, feature2):
     return w
 
 
+class InceptionFeatureExtractor(ImageFeatureExtractor):
+    def __init__(self, save_path=None):
+        self.name = "inception"
+
+        super().__init__(save_path)
+
+        self.features_size = 768
+        self.preprocess = transforms.Compose([
+            transforms.Resize(299, interpolation=transforms.InterpolationMode.BILINEAR),
+            transforms.CenterCrop((299,299)),
+            transforms.ToTensor(),])
+
+        block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[768]
+        self.model = InceptionV3(
+            [block_idx], resize_input=True, normalize_input=True
+        ).to(DEVICE)
+        self.model.eval()
+        return
+
+    def get_feature_batch(self, img_batch):
+        assert img_batch.max() <= 1
+        assert img_batch.min() >= 0
+        with torch.no_grad():
+            features = self.model(img_batch)[0]   #
+            features = F.adaptive_avg_pool2d(features, (1, 1)).squeeze()
+        return features
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Testing')
     parser.add_argument('--cfg', type=str, default=None, required=True)
@@ -92,42 +129,56 @@ if __name__ == '__main__':
                 gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
                 real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
 
-                inception_feature_extractor.preprocess = transforms.Compose(
-                        [transforms.Resize(299, interpolation=transforms.InterpolationMode.BICUBIC),
-                         transforms.CenterCrop(299),
-                         transforms.ToTensor(),]
-                    )
-
                 inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
                 inception_real_feat = inception_feature_extractor.get_features(real_dataset)
-
 
                 clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
                 clip_real_feat = clip_feature_extractor.get_features(real_dataset)
 
-
                 dino_gen_feat = dino_feature_extractor.get_features(gen_dataset)
                 dino_real_feat = dino_feature_extractor.get_features(real_dataset)
 
+                try:
+                    fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                except:
+                    print("faild fid")
+                    fid = 0
+                try:
+                    kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                except:
+                    print("faild kid")
+                    kid = 0
 
-                clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
-                clip_kid = KID().compute_metric(clip_real_feat, None, clip_gen_feat)
+                try:
+                    clip_fid = FID().compute_metric(clip_real_feat, None, clip_gen_feat)
+                except:
+                    clip_fid = 0
+
+                try:
+                    clip_kid = KID().compute_metric(clip_real_feat, None, clip_gen_feat)
+                except:
+                    clip_kid=0
                 clip_precision = PrecisionRecall(mode="Precision").compute_metric(clip_real_feat, None, clip_gen_feat)
                 clip_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(clip_real_feat, None, clip_gen_feat)
 
-                dino_fid = FID().compute_metric(dino_real_feat, None, dino_gen_feat)
-                dino_kid = KID().compute_metric(dino_real_feat, None, dino_gen_feat)
+                try:
+                    dino_fid = FID().compute_metric(dino_real_feat, None, dino_gen_feat)
+                except:
+                    dino_fid = 0
+
+                try:
+                    dino_kid = KID().compute_metric(dino_real_feat, None, dino_gen_feat)
+                except:
+                    dino_kid = 0
+
                 dino_precision = PrecisionRecall(mode="Precision").compute_metric(dino_real_feat, None, dino_gen_feat)
                 dino_reacall = PrecisionRecall(mode="Recall", num_neighbors=5).compute_metric(dino_real_feat, None, dino_gen_feat)
-
 
                 minsize = min(clip_real_feat.size(0), clip_gen_feat.size(0), dino_real_feat.size(0), dino_gen_feat.size(0))
                 clip_score = F.cosine_similarity(clip_real_feat[:minsize, :], clip_gen_feat[:minsize, :], dim=1).mean().item()
                 dino_score = F.cosine_similarity(dino_real_feat[:minsize, :], dino_gen_feat[:minsize, :], dim=1).mean().item()
 
                 # fisher_score(clip_gen_feat, clip_real_feat)
-                fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
 
                 all_results.append([set_name, subset, fid, kid, clip_fid, clip_kid, clip_precision, clip_reacall, dino_fid, dino_kid, dino_precision, dino_reacall, clip_score, dino_score])
 
@@ -145,22 +196,7 @@ if __name__ == '__main__':
 
             except:
                 all_results.append([set_name, subset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                print('failed')
 
 
 
