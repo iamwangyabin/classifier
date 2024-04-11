@@ -9,13 +9,11 @@ from PIL import ImageFile, Image
 from utils.util import load_config_with_cli
 from tqdm import tqdm
 
-
 import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 import torchvision.transforms as transforms
 from pytorch_fid.inception import InceptionV3
-
 
 from fld.features.DINOv2FeatureExtractor import DINOv2FeatureExtractor
 from fld.features.CLIPFeatureExtractor import CLIPFeatureExtractor
@@ -26,6 +24,9 @@ from fld.metrics.FLD import FLD
 from fld.metrics.KID import KID
 from fld.metrics.PrecisionRecall import PrecisionRecall
 from torchmetrics.image.fid import FrechetInceptionDistance
+
+# from cleanfid import fid
+# score = fid.compute_fid("/home/jwang/ybwork/data/deepfake_benchmark/DiffusionForensics/lsun_bedroom/real", "/home/jwang/ybwork/data/deepfake_benchmark/DiffusionForensics/lsun_bedroom/sdv1_new1")
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,6 +62,7 @@ class JsonDatasets(Dataset):
         return image, label
 
 
+
 def fisher_score(feature1, feature2):
     mean_A = torch.mean(feature1, dim=0)
     mean_B = torch.mean(feature2, dim=0)
@@ -80,19 +82,20 @@ def fisher_score(feature1, feature2):
     return w
 
 
+
 class InceptionFeatureExtractor(ImageFeatureExtractor):
     def __init__(self, save_path=None):
         self.name = "inception"
 
         super().__init__(save_path)
 
-        self.features_size = 768
+        self.features_size = 2048
         self.preprocess = transforms.Compose([
             transforms.Resize(299, interpolation=transforms.InterpolationMode.BILINEAR),
             transforms.CenterCrop((299,299)),
             transforms.ToTensor(),])
 
-        block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[768]
+        block_idx = InceptionV3.BLOCK_INDEX_BY_DIM[2048]
         self.model = InceptionV3(
             [block_idx], resize_input=True, normalize_input=True
         ).to(DEVICE)
@@ -133,38 +136,53 @@ if __name__ == '__main__':
                 gen_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=1)
                 real_dataset = JsonDatasets(conf, data_root, subset, split='test', selected_label=0)
 
-                fid = FrechetInceptionDistance(feature=768)
-                trans = transforms.Compose([
-                    transforms.Resize((256, 256)),
-                    transforms.ToTensor(),
-                ])
-                gen_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=1, transform=trans)
-                real_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=0, transform=trans)
-                gen_dataloader = DataLoader(gen_dataset2, batch_size=256, num_workers=8)
-                real_dataloader = DataLoader(real_dataset2, batch_size=256, num_workers=8)
-                for batch in tqdm(gen_dataloader):
-                    images = (batch[0] * 255).to(dtype=torch.uint8)
-                    fid.update(images, real=False)
-                for batch in tqdm(real_dataloader):
-                    images = (batch[0] * 255).to(dtype=torch.uint8)
-                    fid.update(images, real=True)
-                fid = fid.compute().item()
+                # fid = FrechetInceptionDistance(feature=64)
+                # trans = transforms.Compose([
+                #     transforms.Resize((256, 256)),
+                #     transforms.ToTensor(),
+                # ])
+                # gen_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=1, transform=trans)
+                # real_dataset2 = JsonDatasets(conf, data_root, subset, split='test', selected_label=0, transform=trans)
+                # gen_dataloader = DataLoader(gen_dataset2, batch_size=256, num_workers=8)
+                # real_dataloader = DataLoader(real_dataset2, batch_size=256, num_workers=8)
+                # for batch in tqdm(gen_dataloader):
+                #     images = (batch[0] * 255).to(dtype=torch.uint8)
+                #     fid.update(images, real=False)
+                # for batch in tqdm(real_dataloader):
+                #     images = (batch[0] * 255).to(dtype=torch.uint8)
+                #     fid.update(images, real=True)
+                # fid = fid.compute().item()
                 # print(fid)
+                # kid = 0
 
-                kid = 0
-                # try:
-                #     fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                # except:
-                #     print("faild fid")
-                #     fid = 0
-                # try:
-                #     kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
-                # except:
-                #     print("faild kid")
-                #     kid = 0
+                inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
+                inception_real_feat = inception_feature_extractor.get_features(real_dataset)
 
-            #     inception_gen_feat = inception_feature_extractor.get_features(gen_dataset)
-            #     inception_real_feat = inception_feature_extractor.get_features(real_dataset)
+                target_feature_count = 2048
+
+                if inception_gen_feat.size(0) < target_feature_count:
+                    repeat_times = target_feature_count // inception_gen_feat.size(0)
+                    additional_copies = repeat_times - 1
+                    if additional_copies > 0:
+                        inception_gen_feat = torch.cat([inception_gen_feat] * (additional_copies + 1), dim=0)
+                    inception_gen_feat = inception_gen_feat[:target_feature_count]
+
+                if inception_real_feat.size(0) < target_feature_count:
+                    repeat_times = target_feature_count // inception_real_feat.size(0)
+                    additional_copies = repeat_times - 1
+                    if additional_copies > 0:
+                        inception_real_feat = torch.cat([inception_real_feat] * (additional_copies + 1), dim=0)
+                    inception_real_feat = inception_real_feat[:target_feature_count]
+                try:
+                    fid = FID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                except:
+                    print("faild fid")
+                    fid = 0
+                try:
+                    kid = KID().compute_metric(inception_real_feat, None, inception_gen_feat)
+                except:
+                    print("faild kid")
+                    kid = 0
 
                 clip_gen_feat = clip_feature_extractor.get_features(gen_dataset)
                 clip_real_feat = clip_feature_extractor.get_features(real_dataset)

@@ -317,9 +317,6 @@ def get_aesthetic():
                 csv_writer.writerow([file_id] + aesthetic_scores)
 
 
-
-
-
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"

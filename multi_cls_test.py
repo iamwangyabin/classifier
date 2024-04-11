@@ -44,6 +44,7 @@ class LSUNDeepfakeBenchmarkDataset(Dataset):
 
 
 if __name__ == '__main__':
+    # python multi_cls_test.py --cfg cfgs/train_mc_coop_progan.yaml
     parser = argparse.ArgumentParser(description='Testing')
     parser.add_argument('--cfg', type=str, default=None, required=True)
     args, cfg_args = parser.parse_known_args()
@@ -67,7 +68,7 @@ if __name__ == '__main__':
     model.eval()
     root_dir = "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/val"
 
-    dataset = LSUNDeepfakeBenchmarkDataset(root_dir, class_to_idx, selected_labels=["0_real"], transform=transform)
+    dataset = LSUNDeepfakeBenchmarkDataset(root_dir, class_to_idx, selected_labels=["1_fake"], transform=transform)
 
 
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=conf.dataset.train.batch_size,
@@ -87,14 +88,17 @@ if __name__ == '__main__':
     accuracy = correct_predictions / len(y_true)
     print(f'Accuracy: {accuracy:.4f}')
 
-# 可以看出来，fake图片也能识别很高精度
-# Accuracy: 0.9008 real          0.8413 fake
-
-# Accuracy: 0.8370 fake No ensemple
-
+# vit/l
+# Prompt ensemble: Accuracy: 0.9008 real    0.8413 fake
+# No ensempl: Accuracy:                    0.8370 fake
 # coop accuracy: real:0.922249972820282    fake: 0.8615000247    相比较人工设计的prompt都能提升一些，但是仅仅是拟合prompt
 
-# 极限是多少呢？ 可能需要更多的微调
+# vit/b
+# Prompt ensemble: Accuracy: 0.8980 real    0.8452 fake
+# pomp : 0.898500025 real 0.8447499871 fake
+
+
+
 
 
 

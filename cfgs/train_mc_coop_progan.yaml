@@ -3,7 +3,7 @@ resume: null
 name: "multiclass-ViTL—Progan"  # Name of the experiment for organizing samples and models
 
 train:
-  gpu_ids: [2]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 10  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -20,17 +20,18 @@ train:
     T_max: 10
 
 model:
-  NAME: "ViT-L/14"
+#  NAME: "ViT-L/14"
+  NAME: "ViT-B/16"
   N_CTX: 16
   CSC: False
-  CTX_INIT: "a photo of a"
+  CTX_INIT: False
   CLASS_TOKEN_POSITION: "end"
 
 
 dataset:
   train:
     dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/train"
-    batch_size: 128
+    batch_size: 16
     loader_workers: 32
     loadSize: 256
     cropSize: 224
@@ -39,7 +40,7 @@ dataset:
 
   val:
     dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/val"
-    batch_size: 64
+    batch_size: 16
     loader_workers: 4
     loadSize: 256
     cropSize: 224

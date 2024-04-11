@@ -24,13 +24,18 @@ datasets:
                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
+#      sub_sets: [ 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
+#                  'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
+#                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
+#                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
+#                  'celebahq_dalle2', 'celebahq_midjourney' ]
 
     AIGCDetect:
       data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIGCDetect"
       sub_sets: ['stylegan', 'stylegan2', 'wukong', 'DALLE2', 'cyclegan', 'Midjourney',
                  'stable_diffusion_v_1_5', 'stargan', 'whichfaceisreal', 'ADM', 'biggan', 'Glide', 'gaugan',
                  'progan', 'stable_diffusion_v_1_4', 'VQDM']
-#
+
     ForenSynths:
       data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
       sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",

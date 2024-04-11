@@ -31,7 +31,7 @@ def load_clip_to_cpu(cfg):
     except RuntimeError:
         state_dict = torch.load(model_path, map_location="cpu")
     design_details = { "trainer": "VPT",
-                    "vision_depth": cfg.TRAINER.VPT.PROMPT_DEPTH_VISION,
+                      "vision_depth": cfg.TRAINER.VPT.PROMPT_DEPTH_VISION,
                       "vision_ctx": cfg.TRAINER.VPT.N_CTX_VISION,
                       "language_depth": 0,
                       "language_ctx": 0}

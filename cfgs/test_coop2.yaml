@@ -1,7 +1,8 @@
 arch: "coop"
 #resume: '/home/yw26g23/classifier/logs/coop-ViTL-Progan_20240405_17_13_50/last.ckpt'
-resume: '/home/yw26g23/classifier/logs/coop-ViTL-SD15_20240406_21_08_59/last.ckpt'
-test_name: "coop-ViTL-SD15"
+#resume: '/home/yw26g23/classifier/logs/coop-ViTL-SD15_20240406_21_08_59/last.ckpt'
+resume: '/home/yw26g23/classifier/logs/coop-ViTL-MJ_20240411_00_47_52/last.ckpt'
+test_name: "coop-ViTL-MJ"
 
 model:
   NAME: "ViT-L/14"

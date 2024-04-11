@@ -140,6 +140,7 @@ class CoOPPL(L.LightningModule):
 
 
 if __name__ == '__main__':
+    # python multi_cls_train.py --cfg cfgs/train_mc_coop_progan.yaml
     parser = argparse.ArgumentParser(description='Training')
     parser.add_argument('--cfg', type=str, default=None, required=True)
     args, cfg_args = parser.parse_known_args()
@@ -189,22 +190,27 @@ if __name__ == '__main__':
         mode='min',
     )
 
-    model = Trainer(conf, order_classes)
+    model = CoOPPL(conf, order_classes)
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
                         val_check_interval=0.5,
                         precision="16")
 
-    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    weight = torch.load('./pomp.tar')['state_dict']['ctx']
+    import pdb;pdb.set_trace()
+    model.model.prompt_learner.ctx.data = weight
+    trainer.test(model, dataloaders=val_loader)
 
-    trainer.save_checkpoint(os.path.join('logs', today_str, "last.ckpt"))
+
+    # trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    #
+    # trainer.save_checkpoint(os.path.join('logs', today_str, "last.ckpt"))
 
     # model = CoOPPL(conf, order_classes)
     # trainer = L.Trainer(accelerator="gpu", devices=conf.train.gpu_ids,precision="16")
     #
     # # trainer.fit(model, ckpt_path="/home/jwang/ybwork/classifier/logs/multiclass-ViTL—Progan_20240404_20_24_33/last.ckpt", train_dataloaders=train_loader)
     #
-    # trainer.test(model, ckpt_path="/home/jwang/ybwork/classifier/logs/multiclass-ViTL—Progan_20240404_20_24_33/last.ckpt", dataloaders=val_loader)
 
 
 

@@ -1,7 +1,8 @@
 arch: "vlp"
 #resume: '/home/yw26g23/classifier/logs/vlp-ViTL-Progan_20240405_21_31_55/last.ckpt'
-resume: '/home/yw26g23/classifier/logs/vlp-ViTL-SD15_20240407_02_40_58/last.ckpt'
-test_name: "vlp-ViTL-SD15"
+#resume: '/home/yw26g23/classifier/logs/vlp-ViTL-SD15_20240407_02_40_58/last.ckpt'
+resume: '/home/yw26g23/classifier/logs/vlp-ViTL-MJ_20240411_07_07_27/last.ckpt'
+test_name: "vlp-ViTL-MJ"
 
 model:
   NAME: "ViT-L/14"

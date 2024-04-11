@@ -185,3 +185,34 @@ class BinarySingleDataset(Dataset):
         label = self.labels[idx]
         image = self.transform_chain(image)
         return image, label
+
+#
+# import os
+# import concurrent.futures
+# from PIL import Image, UnidentifiedImageError
+# from tqdm import tqdm
+#
+# def check_and_delete_image(file_path):
+#     try:
+#         with Image.open(file_path) as img:
+#             img.verify()  # This will raise an exception if the image is not valid
+#     except UnidentifiedImageError:
+#         print(f"Deleting corrupt image: {file_path}")
+#         os.remove(file_path)
+#     except Exception as e:
+#         print(f"An error occurred with {file_path}: {e}")
+#
+# def delete_corrupt_images(directory):
+#     files_to_check = [os.path.join(root, file)
+#                       for root, dirs, files in os.walk(directory)
+#                       for file in files if file.endswith('.png')]
+#     with tqdm(total=len(files_to_check), desc="Checking images") as progress_bar:
+#         with concurrent.futures.ThreadPoolExecutor() as executor:
+#             future_to_file = {executor.submit(check_and_delete_image, file_path): file_path for file_path in files_to_check}
+#             for future in concurrent.futures.as_completed(future_to_file):
+#                 future.result()  # Wait for the image to be processed
+#                 progress_bar.update(1)  # Update the progress bar
+#
+# # Replace the string below with the path to the directory containing your images
+# images_directory = '/scratch/yw26g23/datasets/deepfakebenchmark/GenImg_MJ/train/1_fake'
+# delete_corrupt_images(images_directory)
