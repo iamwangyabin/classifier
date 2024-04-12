@@ -218,6 +218,8 @@ for batch in tqdm(dataloader):
     pass
 
 
+
+
 def get_aesthetic():
     from datasets import Dataset, Image
     pipe_aesthetic = pipeline("image-classification", "cafeai/cafe_aesthetic", device="cuda:1")
@@ -317,6 +319,187 @@ def get_aesthetic():
                 csv_writer.writerow([file_id] + aesthetic_scores)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import json
+from collections import Counter
+import dateutil.parser
+import yaml
+from transformers import pipeline
+from torchvision import transforms
+import os
+from PIL import ImageFile, Image
+from tqdm import tqdm
+import csv
+import torch
+from torch.utils.data import Dataset, DataLoader
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
+
+
+
+data = {}
+with open("/home/jwang/ybwork/nai3/posts.json", "r") as file:
+    for line in file:
+        try:
+            json_obj = json.loads(line)
+            data[json_obj['id']] = json_obj
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}")
+
+def generate_tags(data_item):
+    def process_tags(tag_str):
+        processed_tags = []
+        for tag_name in tag_str.split(" "):
+            if len(tag_name) > 3:
+                tag_name = tag_name.replace("_", " ")
+            processed_tags.append(tag_name)
+        return ", ".join(processed_tags)
+    created_at = data_item.get("media_asset", {}).get("created_at", "")
+    tags_general = process_tags(data_item.get("tag_string_general", ""))
+    tags_character = process_tags(data_item.get("tag_string_character", ""))
+    if tags_character == "original":
+        tags_character = ""
+    else:
+        tags_character = tags_character
+    tags_artist = data_item.get("tag_string_artist", "")
+    tags_meta = process_tags(data_item.get("tag_string_meta", ""))
+    tags_general_list = tags_general.split(', ')
+    special_tags = [
+        "1girl", "2girls", "3girls", "4girls", "5girls", "6+girls", "multiple girls",
+        "1boy", "2boys", "3boys", "4boys", "5boys", "6+boys", "multiple boys", "male focus"
+    ]
+    found_special_tags = [tag for tag in tags_general_list if tag in special_tags]
+    for tag in found_special_tags:
+        tags_general_list.remove(tag)
+    first_general_tag = ', '.join(found_special_tags)
+    rest_general_tags = ', '.join(tags_general_list)
+    pre_separator_tags = []
+    post_separator_tags = []
+    if tags_character:
+        pre_separator_tags.append(tags_character)
+    if tags_artist != "":
+        pre_separator_tags.append(tags_artist)
+    if first_general_tag:
+        pre_separator_tags.append(first_general_tag)
+    if rest_general_tags:
+        post_separator_tags.append(rest_general_tags)
+    pre_separator_str = ', '.join(pre_separator_tags)
+    post_separator_str = ', '.join(post_separator_tags)
+    caption = f"{pre_separator_str}, {post_separator_str}"
+    return caption
+
+img_dir = "/data/jwang/db2023/group_0"
+
+for img in os.listdir(img_dir):
+    try:
+        caption = generate_tags(data[int(img.split('.')[0])])
+    except:
+        caption = ""
+    with open(os.path.join(img_dir, img.split('.')[0]+'.txt'), 'w') as file:
+        file.write(caption)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import json
+
+
+with open('danbooru_tag_from_pixiv_top_artists_total.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
+
+
+# 选中的艺术家
+items_with_scores = [(key, value['pixiv_hot_score']) for key, value in data.items()]
+sorted_items = sorted(items_with_scores, key=lambda x: x[1], reverse=True)
+top_10000_items = sorted_items[:20000]
+top_10000_keys = [item[0] for item in top_10000_items]
+top_10000_full_items = [data[key]['danbooru_info'][0]['name'] for key in top_10000_keys]
+
+
+# 找到每个艺术家对应的图片
+
+
+# 查看下图片的美学指标（简单筛选下）
+
+
+# 图片太少的艺术家删除
+
+
+# 剩下艺术家打包
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
@@ -344,41 +527,11 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 api.upload_folder(
-    folder_path="./logs",
+    folder_path="./cos",
     path_in_repo="./",
-    repo_id="nebula/testmodel",
-    repo_type="model",
+    repo_id="deepghs/cos5t_raw",
+    repo_type="dataset",
 )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -393,3 +546,14 @@ if db_existed:
     # get last post
     post = Post.select().order_by(Post.id.desc()).limit(1).get()
     print_post_info(post)
+
+
+import py7zr
+
+archive_path = '175683.7z'
+password = 'www.acgaaa.com'
+
+with py7zr.SevenZipFile(archive_path, mode='r', password=password) as z:
+    z.extractall()
+
+print("解压完成！")
