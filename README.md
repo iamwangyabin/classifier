@@ -6,6 +6,10 @@ Just test some recent pretrained models, such as ViT, from timm for deepfake det
 
 
 
+pip install hydra-core --upgrade
+pip install lightning
+
+
 
 ## (1) Setup
 

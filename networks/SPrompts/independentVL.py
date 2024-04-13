@@ -181,15 +181,11 @@ class IndepVLPCLIP(nn.Module):
         clip_model = load_clip_to_cpu(cfg)
         self.model = CustomCLIP(cfg, ["real image", "deepfake image"], clip_model)
 
-        print("Turning off gradients in both the image and the text encoder")
-        name_to_update = "prompt_learner"
-
         for name, param in self.model.named_parameters():
-            if name_to_update not in name:
-                if "VPT" in name:
-                    param.requires_grad_(True)
-                else:
-                    param.requires_grad_(False)
+            if "ctx" in name or "VPT" in name:
+                param.requires_grad_(True)
+            else:
+                param.requires_grad_(False)
 
         # Double check
         enabled = set()
@@ -197,7 +193,6 @@ class IndepVLPCLIP(nn.Module):
             if param.requires_grad:
                 enabled.add(name)
         print(f"Parameters to be updated: {enabled}")
-
 
     def forward(self, image, return_feature=False):
         tokenized_prompts = self.model.tokenized_prompts

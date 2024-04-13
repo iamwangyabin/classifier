@@ -1,11 +1,11 @@
 arch: "vlp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "vlp-ViTL-ProGAN"
+name: "vlp-SPrompts-ViTL-ProGAN"
 
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
-  train_epochs: 5  # Number of training epochs
+  train_epochs: 20  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
@@ -18,13 +18,13 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 5
+    T_max: 20
 
 model:
   NAME: "ViT-L/14"
-  N_CTX_VISION: 2
-  N_CTX_TEXT: 2
-  CTX_INIT: "a photo of a"
+  N_CTX_VISION: 16
+  N_CTX_TEXT: 16
+  CTX_INIT: False
   PROMPT_DEPTH_VISION: 1
   PROMPT_DEPTH_TEXT: 1
 
@@ -33,6 +33,7 @@ dataset:
   train:
     mode: 'binary'
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
+#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
     subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
 #    subfolder_names: ["GenImg_SD15"]
@@ -48,6 +49,7 @@ dataset:
   val:
     mode: 'binary'
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
+#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
     subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
     multicalss_idx: [0, 0, 0, 0]
     batch_size: 256
