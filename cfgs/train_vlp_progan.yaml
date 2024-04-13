@@ -35,7 +35,7 @@ dataset:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
     subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
-    subfolder_names: ["GenImg_SD15"]
+#    subfolder_names: ["GenImg_SD15"]
 #    subfolder_names: [ "GenImg_MJ" ]
 #    multicalss_idx: [0]
     batch_size: 256
