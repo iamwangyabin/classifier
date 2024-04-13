@@ -323,16 +323,6 @@ def get_aesthetic():
 
 
 
-
-
-
-
-
-
-
-
-
-
 import json
 from collections import Counter
 import dateutil.parser
@@ -349,15 +339,15 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 
 
-
 data = {}
-with open("/home/jwang/ybwork/nai3/posts.json", "r") as file:
+with open("/data/jwang/db2023/posts.json", "r") as file:
     for line in file:
         try:
             json_obj = json.loads(line)
             data[json_obj['id']] = json_obj
         except json.JSONDecodeError as e:
             print(f"JSONDecodeError: {e}")
+
 
 def generate_tags(data_item):
     def process_tags(tag_str):
@@ -367,7 +357,6 @@ def generate_tags(data_item):
                 tag_name = tag_name.replace("_", " ")
             processed_tags.append(tag_name)
         return ", ".join(processed_tags)
-    created_at = data_item.get("media_asset", {}).get("created_at", "")
     tags_general = process_tags(data_item.get("tag_string_general", ""))
     tags_character = process_tags(data_item.get("tag_string_character", ""))
     if tags_character == "original":
@@ -401,9 +390,10 @@ def generate_tags(data_item):
     caption = f"{pre_separator_str}, {post_separator_str}"
     return caption
 
-img_dir = "/data/jwang/db2023/group_0"
 
-for img in os.listdir(img_dir):
+img_dir = "/data/jwang/db2023/target_directory"
+
+for img in tqdm(os.listdir(img_dir)):
     try:
         caption = generate_tags(data[int(img.split('.')[0])])
     except:
@@ -434,6 +424,30 @@ for img in os.listdir(img_dir):
 
 
 import json
+from collections import Counter
+import dateutil.parser
+import yaml
+from transformers import pipeline
+from torchvision import transforms
+import os
+from PIL import ImageFile, Image
+from tqdm import tqdm
+import csv
+import torch
+from torch.utils.data import Dataset, DataLoader
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
+
+data = {}
+artistname2ID={}
+with open("./posts.json", "r", encoding='utf-8') as file:
+    for line in file:
+        try:
+            json_obj = json.loads(line)
+            data[json_obj['id']] = json_obj
+            # artistname2ID[]
+        except json.JSONDecodeError as e:
+            print(f"JSONDecodeError: {e}")
 
 
 with open('danbooru_tag_from_pixiv_top_artists_total.json', 'r', encoding='utf-8') as file:
@@ -447,7 +461,6 @@ top_10000_items = sorted_items[:20000]
 top_10000_keys = [item[0] for item in top_10000_items]
 top_10000_full_items = [data[key]['danbooru_info'][0]['name'] for key in top_10000_keys]
 
-
 # 找到每个艺术家对应的图片
 
 
@@ -460,11 +473,15 @@ top_10000_full_items = [data[key]['danbooru_info'][0]['name'] for key in top_100
 # 剩下艺术家打包
 
 
+df_read = pd.read_hdf('data.h5', key='df')
 
 
 
+import pandas as pd
 
+df = pd.read_pickle('posts.pkl')
 
+print(df.head())
 
 
 

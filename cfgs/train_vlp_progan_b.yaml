@@ -1,6 +1,6 @@
 arch: "vlp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "vlp-ViTB-MJ"  # Name of the experiment for organizing samples and models
+name: "vlp-ViTB-ProGAN"  # Name of the experiment for organizing samples and models
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
@@ -24,19 +24,19 @@ model:
   N_CTX_VISION: 2
   N_CTX_TEXT: 2
   CTX_INIT: "a photo of a"
-  PROMPT_DEPTH_VISION: 2
-  PROMPT_DEPTH_TEXT: 2
+  PROMPT_DEPTH_VISION: 1
+  PROMPT_DEPTH_TEXT: 1
 
 
 dataset:
   train:
     mode: 'binary'
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-#    subfolder_names: ["ForenSynths"]
-#    multicalss_idx: [1]
-#    subfolder_names: ["GenImg_SD15"]
-    subfolder_names: ["GenImg_MJ"]
-    multicalss_idx: [0]
+    subfolder_names: ["ForenSynths"]
+    multicalss_idx: [1]
+    subfolder_names: ["GenImg_SD15"]
+#    subfolder_names: ["GenImg_MJ"]
+#    multicalss_idx: [0]
     batch_size: 256
     loader_workers: 32
     loadSize: 256

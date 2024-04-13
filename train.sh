@@ -18,13 +18,13 @@ conda init bash
 conda activate timm
 
 
-python train.py --cfg cfgs/train_coop_progan.yaml
-
-python train.py --cfg cfgs/train_coop_progan_b.yaml
+#python train.py --cfg cfgs/train_coop_progan.yaml
+#
+#python train.py --cfg cfgs/train_coop_progan_b.yaml
 
 python train.py --cfg cfgs/train_vlp_progan.yaml
 
 python train.py --cfg cfgs/train_vlp_progan_b.yaml
 
-python train.py --cfg cfgs/train_clip_sd15.yaml
+#python train.py --cfg cfgs/train_clip_sd15.yaml
 

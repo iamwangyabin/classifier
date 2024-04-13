@@ -60,10 +60,10 @@ class VLPromptLearner(nn.Module):
     def __init__(self, cfg, classnames, clip_model):
         super().__init__()
         n_cls = len(classnames)
-        # Make sure Language depth >= 1
         assert cfg.model.PROMPT_DEPTH_TEXT >= 1, "In Independent VL prompting, Language prompt depth should be >=1" \
                                                         "\nPlease use VPT trainer if you want to learn only vision " \
                                                         "branch  "
+
         n_ctx = cfg.model.N_CTX_TEXT
         ctx_init = cfg.model.CTX_INIT
         dtype = clip_model.dtype
@@ -215,13 +215,6 @@ class IndepVLPCLIP(nn.Module):
             return logits, image_features
 
         return logits
-
-
-
-
-
-
-
 
 
 
