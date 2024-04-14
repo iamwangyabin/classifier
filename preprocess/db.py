@@ -418,10 +418,7 @@ for img in tqdm(os.listdir(img_dir)):
 
 
 
-
-
-
-
+#############################################选图######################################################
 
 import json
 from collections import Counter
@@ -438,50 +435,108 @@ from torch.utils.data import Dataset, DataLoader
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 
-data = {}
+# data = {}
 artistname2ID={}
 with open("./posts.json", "r", encoding='utf-8') as file:
     for line in file:
         try:
             json_obj = json.loads(line)
-            data[json_obj['id']] = json_obj
-            # artistname2ID[]
+            # data[json_obj['id']] = json_obj
+            if json_obj['tag_string_artist'] in artistname2ID:
+                artistname2ID[json_obj['tag_string_artist']].append(json_obj['id'])
+            else:
+                artistname2ID[json_obj['tag_string_artist']] = [json_obj['id']]
         except json.JSONDecodeError as e:
             print(f"JSONDecodeError: {e}")
 
 
 with open('danbooru_tag_from_pixiv_top_artists_total.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
-
+    artscore = json.load(file)
 
 # 选中的艺术家
-items_with_scores = [(key, value['pixiv_hot_score']) for key, value in data.items()]
+items_with_scores = [(key, value['pixiv_hot_score']) for key, value in artscore.items()]
 sorted_items = sorted(items_with_scores, key=lambda x: x[1], reverse=True)
-top_10000_items = sorted_items[:20000]
+top_10000_items = sorted_items[:10000]
 top_10000_keys = [item[0] for item in top_10000_items]
-top_10000_full_items = [data[key]['danbooru_info'][0]['name'] for key in top_10000_keys]
+top_10000_full_items = [artscore[key]['danbooru_info'][0]['name'] for key in top_10000_keys]
 
-# 找到每个艺术家对应的图片
 
 
 # 查看下图片的美学指标（简单筛选下）
 
+directory = '/home/jwang/ybwork/nai3/'
+all_results = []
 
-# 图片太少的艺术家删除
+pickle_files = [f for f in os.listdir(directory) if f.endswith('.pickle')]
+
+pickle_files.sort(key=lambda x: int(x.split('_')[1].split('.')[0]))
+
+for filename in pickle_files:
+    filepath = os.path.join(directory, filename)
+    with open(filepath, 'rb') as file:
+        results = pickle.load(file)
+        if isinstance(results, list):
+            all_results.extend(results)
+        else:
+            print(f"Error: {filename} does not contain a list.")
+
+all_dict = {}
+weights = [3, 3, 1, 1, 0, 0, 0]
 
 
-# 剩下艺术家打包
+for item in all_results:
+    sample_id, logits_str = item
+    logits = logits_str.split(',')
+    logits = [float(logit) for logit in logits]
+    sigmoid_logits = [1 / (1 + math.exp(-logit)) for logit in logits]
+    exp_sigmoid_logits = [math.exp(sigmoid_logit) for sigmoid_logit in sigmoid_logits]
+    sum_exp_sigmoid_logits = sum(exp_sigmoid_logits)
+    softmax_sigmoid_logits = [exp_sigmoid_logit / sum_exp_sigmoid_logits for exp_sigmoid_logit in exp_sigmoid_logits]
+    final_score = sum(weight * softmax_sigmoid_logit for weight, softmax_sigmoid_logit in zip(weights, softmax_sigmoid_logits))
+    all_dict[int(sample_id.split('.')[0])] = final_score
+
+top_10000_artist_images = {}
+totol_num = 0
+for item in top_10000_full_items:
+    if item in artistname2ID:
+        temp = []
+        for id in artistname2ID[item]:
+            if id in all_dict and all_dict[id] >0.95:
+                temp.append(id)
+        if len(temp) >= 200:
+            top_10000_artist_images[item] = temp
+            totol_num += len(temp)
+
+top_10000_artist_images['putong_xiao_gou'] = artistname2ID['putong_xiao_gou']
 
 
-df_read = pd.read_hdf('data.h5', key='df')
+
+import shutil
+
+source_path = '/data/jwang/db2023/target_directory'
+destination_path = '/data/jwang/db2023/2kartits'
+
+for artist, images in top_10000_artist_images.items():
+    os.makedirs(os.path.join(destination_path, artist), exist_ok=True)
+    for item in images:
+        shutil.copy(os.path.join(source_path, str(item)+'.webp'), os.path.join(destination_path, artist, str(item)+'.webp'))
 
 
 
-import pandas as pd
 
-df = pd.read_pickle('posts.pkl')
 
-print(df.head())
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -563,6 +618,10 @@ if db_existed:
     # get last post
     post = Post.select().order_by(Post.id.desc()).limit(1).get()
     print_post_info(post)
+
+
+
+
 
 
 import py7zr
