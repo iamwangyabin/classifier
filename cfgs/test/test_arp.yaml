@@ -12,6 +12,11 @@ model:
   PROMPT_NUM_TEXT: 2
 
 
+dataset:
+  train:
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+
 datasets:
   batch_size: 32
   loader_workers: 8
