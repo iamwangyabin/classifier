@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=a100
+#SBATCH --partition=gpu
 #SBATCH --account=ecsstaff
 #SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:1
