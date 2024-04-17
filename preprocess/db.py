@@ -623,14 +623,16 @@ api = HfApi()
 
 # os.listdir('./cos/')
 
-for i in ['12001-12500','15501-16000','20001-20500','24001-24500','28001-28500','32001-32500','4501-5000','8501-9000']:
-    api.upload_folder(
-        folder_path=os.path.join('./cos/', i),
-        path_in_repo=os.path.join('./',i),
-        repo_id="deepghs/cos5t_raw",
-        repo_type="dataset",
-    )
-
+for i in ['15501-16000','20001-20500','24001-24500','28001-28500','32001-32500','4501-5000','8501-9000']:
+    try:
+        api.upload_folder(
+            folder_path=os.path.join('./cos/', i),
+            path_in_repo=os.path.join('./',i),
+            repo_id="deepghs/cos5t_raw",
+            repo_type="dataset",
+        )
+    except:
+        print('failed')
 
 
 #################################final for artists caption###############################
