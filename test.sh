@@ -25,7 +25,7 @@ conda activate timm
 #
 #python test.py --cfg cfgs/test_vlp2.yaml
 
-python test.py --cfg cfgs/test_arp.yaml
+python test.py --cfg cfgs/test/test_arp.yaml
 
 
 
