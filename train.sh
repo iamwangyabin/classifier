@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=ecsstaff
+#SBATCH --partition=a100
 #SBATCH --account=ecsstaff
 #SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:1
@@ -28,6 +28,6 @@ conda activate timm
 
 #python train.py --cfg cfgs/train_clip_sd15.yaml
 
-#python train.py --cfg cfgs/train/train_arp_progan.yaml
+python train.py --cfg cfgs/train/train_arp_progan.yaml
 
 python train.py --cfg cfgs/train/train_arp_progan2.yaml
