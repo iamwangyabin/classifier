@@ -529,49 +529,6 @@ for artist, images in top_10000_artist_images.items():
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
@@ -623,7 +580,7 @@ api = HfApi()
 
 # os.listdir('./cos/')
 
-for i in ['15501-16000','20001-20500','24001-24500','28001-28500','32001-32500','4501-5000','8501-9000']:
+for i in ['1001-1500','14501-15000','18001-18500','22001-22500','26001-26500','3001-3500','34501-35000','6501-7000' ]:
     try:
         api.upload_folder(
             folder_path=os.path.join('./cos/', i),

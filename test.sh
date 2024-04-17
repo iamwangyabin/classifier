@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=a100
+#SBATCH --partition=ecsstaff
 #SBATCH --account=ecsstaff
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=32
@@ -17,15 +17,15 @@ conda init bash
 conda activate timm
 
 
-python test.py --cfg cfgs/test_coop.yaml
+#python test.py --cfg cfgs/test_coop.yaml
+#
+#python test.py --cfg cfgs/test_coop2.yaml
+#
+#python test.py --cfg cfgs/test_vlp.yaml
+#
+#python test.py --cfg cfgs/test_vlp2.yaml
 
-python test.py --cfg cfgs/test_coop2.yaml
-
-python test.py --cfg cfgs/test_vlp.yaml
-
-python test.py --cfg cfgs/test_vlp2.yaml
-
-
+python test.py --cfg cfgs/test_arp.yaml
 
 
 
