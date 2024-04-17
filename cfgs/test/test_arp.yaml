@@ -1,6 +1,7 @@
 arch: "arp"
-resume: '/home/yw26g23/classifier/logs/arp-ViTL-ProGAN_20240417_15_26_08/epoch=02-val_acc_epoch=0.82.ckpt'
-test_name: "arp-ViTL-Progan"
+#resume: '/home/yw26g23/classifier/logs/arp-ViTL-ProGAN_20240417_15_26_08/epoch=02-val_acc_epoch=0.82.ckpt'
+resume: '/home/yw26g23/classifier/logs/arp-ViTL-ProGAN_20240417_15_26_08/epoch=00-val_acc_epoch=0.83.ckpt'
+test_name: "arp-ViTL-Progan0"
 
 model:
   NAME: "ViT-L/14"

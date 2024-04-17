@@ -580,7 +580,7 @@ api = HfApi()
 
 # os.listdir('./cos/')
 
-for i in ['1001-1500','14501-15000','18001-18500','22001-22500','26001-26500','3001-3500','34501-35000','6501-7000' ]:
+for i in ['13001-13500','16501-17000','20501-21000','25001-25500','29001-29500','33001-33500','501-1000','9501-10000']:
     try:
         api.upload_folder(
             folder_path=os.path.join('./cos/', i),
@@ -633,14 +633,6 @@ for artist_folder in os.listdir(root_dir):
 
 
 
-import py7zr
 
-archive_path = '175683.7z'
-password = 'www.acgaaa.com'
-
-with py7zr.SevenZipFile(archive_path, mode='r', password=password) as z:
-    z.extractall()
-
-print("解压完成！")
 
 
