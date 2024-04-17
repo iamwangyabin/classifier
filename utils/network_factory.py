@@ -9,6 +9,7 @@ from networks.NPR.detector import NPRModel
 from networks.ViTDetector.detector import ViTModel
 from networks.SPrompts.independentVL import IndepVLPCLIP
 from networks.SPrompts.coop import CoOpCLIP
+from networks.SPrompts.arprompts import ARPromptsCLIP
 
 def resume_lightning(model, conf):
     if conf.resume:
@@ -56,6 +57,9 @@ def get_model(conf):
         resume_lightning(model, conf)
     elif conf.arch == 'vlp':
         model = IndepVLPCLIP(conf)
+        resume_lightning(model, conf)
+    elif conf.arch == 'arp':
+        model = ARPromptsCLIP(conf)
         resume_lightning(model, conf)
     elif conf.arch == 'coop':
         model = CoOpCLIP(conf)

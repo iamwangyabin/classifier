@@ -73,7 +73,7 @@ def jpeg_from_key(img, compress_val, key):
     return method(img, compress_val)
 
 
-class BinaryMultiDatasets(Dataset):
+class DeepfakeMultiDatasets(Dataset):
     def __init__(self, opt, split='train'):
         self.dataroot = opt.dataroot
         self.split = split
@@ -82,12 +82,10 @@ class BinaryMultiDatasets(Dataset):
         self.label_mapping = {'0_real': 0, '1_fake': 1}
         image_extensions = ('.jpg', '.jpeg', '.png')
 
-        for id, subfolder in enumerate(opt.subfolder_names):
-            if opt.multicalss_idx[id]:
-                classes = os.listdir(os.path.join(self.dataroot, subfolder, split))
-            else:
-                classes = ['']
-            for cls in classes:
+        if split == 'train':
+            subfolder = opt.subfolder_names
+            # classes = os.listdir(os.path.join(self.dataroot, subfolder, split))
+            for id, cls in enumerate(opt.multicalss_names):
                 root = os.path.join(self.dataroot, subfolder, split, cls)
                 for label in ['0_real', '1_fake']:
                     label_dir = os.path.join(root, label)
@@ -95,9 +93,8 @@ class BinaryMultiDatasets(Dataset):
                         img_path = os.path.join(label_dir, img_file)
                         if img_path.lower().endswith(image_extensions):
                             self.image_pathes.append(img_path)
-                            self.labels.append(self.label_mapping[label]+id*2)
-        # import pdb;pdb.set_trace()
-        if split == 'train':
+                            self.labels.append(self.label_mapping[label] + id * 2)
+
             trsf = [
                 transforms.Resize(opt.loadSize),
                 transforms.RandomResizedCrop(opt.cropSize),
@@ -108,6 +105,22 @@ class BinaryMultiDatasets(Dataset):
             ]
 
         else:
+
+            for id, subfolder in enumerate(opt.subfolder_names):
+                if opt.multicalss_idx[id]:
+                    classes = os.listdir(os.path.join(self.dataroot, subfolder, split))
+                else:
+                    classes = ['']
+                for cls in classes:
+                    root = os.path.join(self.dataroot, subfolder, split, cls)
+                    for label in ['0_real', '1_fake']:
+                        label_dir = os.path.join(root, label)
+                        for img_file in os.listdir(label_dir):
+                            img_path = os.path.join(label_dir, img_file)
+                            if img_path.lower().endswith(image_extensions):
+                                self.image_pathes.append(img_path)
+                                self.labels.append(self.label_mapping[label] + id * 2)
+
             trsf = [
                 transforms.Resize(opt.loadSize),
                 transforms.CenterCrop(opt.cropSize),

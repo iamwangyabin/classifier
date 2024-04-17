@@ -14,6 +14,7 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 
 from utils.util import load_config_with_cli, archive_files
 from data.binary_datasets import BinaryMultiDatasets
+from data.multicls_datasets import DeepfakeMultiDatasets
 from networks.trainer import Trainer
 
 if __name__ == '__main__':
@@ -24,12 +25,19 @@ if __name__ == '__main__':
     conf = hydra.utils.instantiate(conf)
     wandb.login(key = 'a4d3a740e939973b02ac59fbd8ed0d6a151df34b')
 
-    train_dataset = BinaryMultiDatasets(conf.dataset.train, split='train')
+
+    if conf.arch == 'arp':
+        train_dataset = DeepfakeMultiDatasets(conf.dataset.train, split='train')
+        val_dataset = DeepfakeMultiDatasets(conf.dataset.val, split='')
+    else:
+        train_dataset = BinaryMultiDatasets(conf.dataset.train, split='train')
+        # val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val') # for cddb
+        val_dataset = BinaryMultiDatasets(conf.dataset.val, split='')
+
+
     train_loader = DataLoader(train_dataset, batch_size=conf.dataset.train.batch_size, shuffle=True,
                               num_workers=conf.dataset.train.loader_workers)
-    # val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val') # for cddb
-    val_dataset = BinaryMultiDatasets(conf.dataset.val, split='')
-    val_loader = DataLoader(val_dataset, batch_size=conf.dataset.val.batch_size, shuffle=False,
+    val_loader = DataLoader(val_dataset, batch_size=conf.dataset.val.batch_size, shuffle=True,
                             num_workers=conf.dataset.val.loader_workers)
 
     today_str = conf.name +"_"+ datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
@@ -43,20 +51,23 @@ if __name__ == '__main__':
         monitor='val_acc_epoch',
         dirpath=os.path.join('logs', today_str),
         filename='{epoch:02d}-{val_acc_epoch:.2f}',
-        save_top_k=1,
+        save_top_k=3,
         mode='max',
     )
 
     if conf.arch == 'vlp' or conf.arch == 'coop':
         from networks.trainer import Trainer_multicls
         model = Trainer_multicls(opt=conf)
+    elif conf.arch == 'arp':
+        from networks.trainer import Trainer_arpmulticls
+        model = Trainer_arpmulticls(opt=conf)
     else:
         model = Trainer(opt=conf)
 
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
-                        val_check_interval=0.9,
-                        # check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
+                        # val_check_interval=1,
+                        check_val_every_n_epoch=conf.train.check_val_every_n_epoch,
                         precision="16")
 
 

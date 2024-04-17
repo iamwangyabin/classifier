@@ -592,34 +592,84 @@ for filename in files_to_upload:
     )
 
 
+
+from huggingface_hub import HfApi
+import os
+
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+api = HfApi()
+
+for i in os.listdir('./cos/'):
+    for file in os.listdir(os.path.join('./cos', i)):
+        # try:
+        print(file)
+        api.upload_file(
+            path_or_fileobj=os.path.join('./cos/', i, file),
+            path_in_repo=os.path.join(i, file),
+            repo_id="deepghs/cos5t_raw",
+            repo_type="dataset",
+        )
+        # except:
+        #     print('finish')
+
+
+
 #  upload a folder
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
-api.upload_folder(
-    folder_path="./cos",
-    path_in_repo="./",
-    repo_id="deepghs/cos5t_raw",
-    repo_type="dataset",
-)
+
+# os.listdir('./cos/')
+
+for i in ['12001-12500','15501-16000','20001-20500','24001-24500','28001-28500','32001-32500','4501-5000','8501-9000']:
+    api.upload_folder(
+        folder_path=os.path.join('./cos/', i),
+        path_in_repo=os.path.join('./',i),
+        repo_id="deepghs/cos5t_raw",
+        repo_type="dataset",
+    )
 
 
 
-db_existed = os.path.exists("danbooru2023.db")
+#################################final for artists caption###############################
+
+import json
+from collections import Counter
+import dateutil.parser
+import yaml
+from transformers import pipeline
+from torchvision import transforms
+import os
+from PIL import ImageFile, Image
+from tqdm import tqdm
+import csv
+import torch
+from torch.utils.data import Dataset, DataLoader
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+Image.MAX_IMAGE_PIXELS = None
+
+from caption import make_caption_from_id
+
+from db import load_db
+
 db = load_db("danbooru2023.db")
-if db_existed:
-    # run sanity check
-    post = Post.get_by_id(1)
-    print_post_info(post)
-    tag = Tag.select().where(Tag.name == "kousaka_kirino").get()
-    print(f"Tag {tag} has {len(tag.posts)} posts")
-    # get last post
-    post = Post.select().order_by(Post.id.desc()).limit(1).get()
-    print_post_info(post)
 
 
+root_dir = "/data/jwang/db2023/2kartits/"
+
+
+for artist_folder in os.listdir(root_dir):
+    for item in os.listdir(os.path.join(root_dir, artist_folder)):
+        print(os.path.join(root_dir, artist_folder, item))
+        id = int(os.path.basename(item).split('.')[0])
+        if os.path.exists(os.path.join(root_dir, artist_folder, str(id) + '.txt')):
+            pass
+        else:
+            caption = make_caption_from_id(id)
+            with open(os.path.join(root_dir, artist_folder, str(id) + '.txt'), 'w') as file:
+                file.write(caption)
 
 
 
@@ -633,3 +683,5 @@ with py7zr.SevenZipFile(archive_path, mode='r', password=password) as z:
     z.extractall()
 
 print("解压完成！")
+
+

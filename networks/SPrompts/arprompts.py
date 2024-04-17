@@ -55,14 +55,11 @@ class TextEncoder(nn.Module):
         return x
 
 
-
-
-
-
-
 class ARPromptLearner(nn.Module):
     def __init__(self, cfg, classnames, clip_model):
         super().__init__()
+
+        # 在deepfake detection中，通常real是0 negative，fake是1 positive
         n_cls = len(classnames)
         assert cfg.model.PROMPT_DEPTH_TEXT >= 1, ("In Independent VL prompting, Language prompt depth should be >=1 \n "
                                                   "Please use VPT trainer if you want to learn only vision branch  ")
@@ -93,7 +90,6 @@ class ARPromptLearner(nn.Module):
         # with torch.no_grad():
         #     embedding = clip_model.token_embedding(tokenized_prompts).type(dtype)
 
-
         classnames = [name.replace("_", " ") for name in classnames]
         name_lens = [len(_tokenizer.encode(name)) for name in classnames]
         positive_prompts = [prompt_prefix + " " +  name   for name in classnames]
@@ -103,8 +99,6 @@ class ARPromptLearner(nn.Module):
         with torch.no_grad():
             positive_embedding = clip_model.token_embedding(positive_tokenized_prompts).type(dtype)
             negative_embedding = clip_model.token_embedding(negative_tokenized_prompts).type(dtype)
-
-
 
         positive_embedding = positive_embedding.view(positive_embedding.shape[0], 1, positive_embedding.shape[1], positive_embedding.shape[2])
         negative_embedding = negative_embedding.view(negative_embedding.shape[0], 1, negative_embedding.shape[1], negative_embedding.shape[2])
@@ -116,35 +110,26 @@ class ARPromptLearner(nn.Module):
         positive_tokenized_prompts = positive_tokenized_prompts.repeat(1, self.prompt_num, 1)
         negative_tokenized_prompts = negative_tokenized_prompts.repeat(1, self.prompt_num, 1)
         tokenized_prompts = torch.cat([positive_tokenized_prompts, negative_tokenized_prompts], dim=1)
-        tokenized_prompts = tokenized_prompts.view(tokenized_prompts.shape[0]*tokenized_prompts.shape[1], -1)
-
-
-        self.register_buffer("token_prefix", embedding[:, :, :self.prompt_num, :])  # SOS
-        self.register_buffer("token_suffix", embedding[:, :, self.prompt_num:, :])  # positive prompt CLS, EOS
+        # 这个错误，因为转换后顺序变了
+        # tokenized_prompts = tokenized_prompts.view(tokenized_prompts.shape[0]*tokenized_prompts.shape[1], -1)
+        tokenized_prompts = tokenized_prompts.permute(1, 0, 2).contiguous().view(tokenized_prompts.shape[0]*tokenized_prompts.shape[1], -1)
+        # import pdb;pdb.set_trace()
+        self.register_buffer("token_prefix", embedding[:, :, :1, :])  # SOS
+        self.register_buffer("token_suffix", embedding[:, :, 1 + n_ctx:, :])  # positive prompt CLS, EOS
+        self.register_buffer("positive_token_prefix", embedding[:, :self.prompt_num, :1, :])  # SOS
+        self.register_buffer("positive_token_suffix", embedding[:, :self.prompt_num, 1 + n_ctx:, :])  # positive prompt CLS, EOS
+        self.register_buffer("negative_token_prefix", embedding[:, self.prompt_num:, :1, :])  # SOS
+        self.register_buffer("negative_token_suffix", embedding[:, self.prompt_num:, 1 + n_ctx:, :])
+        self.positive_tokenized_prompts = positive_tokenized_prompts.view(
+            positive_tokenized_prompts.shape[0] * positive_tokenized_prompts.shape[1], -1)
+        self.negative_tokenized_prompts = negative_tokenized_prompts.view(
+            negative_tokenized_prompts.shape[0] * negative_tokenized_prompts.shape[1], -1)
 
         self.n_cls = n_cls
         self.n_ctx = n_ctx
         self.tokenized_prompts = tokenized_prompts  # torch.Tensor
         self.name_lens = name_lens
 
-
-    # def forward(self):
-    #     ctx = self.ctx
-    #     if ctx.dim() == 2:
-    #         ctx = ctx.unsqueeze(0).expand(self.n_cls, -1, -1)
-    #
-    #     prefix = self.token_prefix
-    #     suffix = self.token_suffix
-    #     prompts = torch.cat(
-    #         [
-    #             prefix,  # (dim0, 1, dim)
-    #             ctx,  # (dim0, n_ctx, dim)
-    #             suffix,  # (dim0, *, dim)
-    #         ],
-    #         dim=1,
-    #     )
-    #
-    #     return prompts
 
     def forward(self):
         ctx_positive = self.ctx_positive
@@ -177,50 +162,68 @@ class ARPromptLearner(nn.Module):
             dim=2,
         )
 
+        new_order = [item for i in range(self.prompt_num) for item in (self.prompt_num + i, i)] #[2, 0, 3, 1]
+        prompts = torch.cat([prompts[:, i, :, :] for i in new_order], dim=0)
+        return prompts
+
+    def forward_general_realfake(self):
+        ctx_positive = self.ctx_positive
+        ctx_negative = self.ctx_negative
+        if ctx_negative.shape[0] == 0:
+            if ctx_positive.dim() == 3:
+                ctx = ctx_positive.unsqueeze(0).expand(self.n_cls, -1, -1, -1)
+            else:
+                ctx = ctx_positive
+        else:
+            if ctx_positive.dim() == 3:
+                diff = ctx_positive.shape[1] - ctx_negative.shape[1]
+                additional_rows = torch.zeros((ctx_negative.shape[0], diff, ctx_negative.shape[2])).cuda()
+                additional_rows = additional_rows.to(ctx_negative.dtype)
+                ctx_negative = torch.cat([additional_rows, ctx_negative], dim=1)
+                ctx = torch.cat([ctx_positive, ctx_negative], dim=0)
+                ctx = ctx.unsqueeze(0).expand(self.n_cls, -1, -1, -1)
+            else:
+                ctx = torch.cat([ctx_positive, ctx_negative], dim=1)
+
+        prefix = self.token_prefix
+        suffix = self.token_suffix
+
+        prompts = torch.cat(
+            [
+                prefix,  # (n_cls,1+n_neg, 1, dim)
+                ctx,  # (n_cls,1+n_neg, n_ctx, dim)
+                suffix,  # (n_cls,1+n_neg, *, dim)
+            ],
+            dim=2,
+        )
+        fakep = prompts.mean(0)[:self.prompt_num].mean(0)
+        realp = prompts.mean(0)[self.prompt_num:].mean(0)
+        prompts = torch.stack([realp, fakep],dim=0)
+
         return prompts
 
 
 
 
-class CustomCLIP(nn.Module):
-    def __init__(self, cfg, classnames, clip_model):
-        super().__init__()
-        self.prompt_learner = VLPromptLearner(cfg, classnames, clip_model)
+
+class ARPromptsCLIP(nn.Module):
+
+    def __init__(self, cfg):
+        super(ARPromptsCLIP, self).__init__()
+
+        self.cfg = cfg
+        print(f"Loading CLIP (backbone: {cfg.model.NAME})")
+        clip_model = load_clip_to_cpu(cfg)
+        classnames = cfg.dataset.train.multicalss_names
+        # import pdb;pdb.set_trace()
+        self.prompt_learner = ARPromptLearner(cfg, classnames, clip_model)
         self.tokenized_prompts = self.prompt_learner.tokenized_prompts
         self.image_encoder = clip_model.visual
         self.text_encoder = TextEncoder(clip_model)
         self.logit_scale = clip_model.logit_scale
         self.dtype = clip_model.dtype
 
-    def forward(self, image, label=None):
-        tokenized_prompts = self.tokenized_prompts
-        logit_scale = self.logit_scale.exp()
-
-        prompts = self.prompt_learner()
-        text_features = self.text_encoder(prompts, tokenized_prompts)
-        image_features = self.image_encoder(image.type(self.dtype))
-
-        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
-        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
-        logits = logit_scale * image_features @ text_features.t()
-
-        if self.prompt_learner.training:
-            return F.cross_entropy(logits, label)
-
-        return logits
-
-
-class IndepVLPCLIP(nn.Module):
-
-    def __init__(self, cfg):
-        super(IndepVLPCLIP, self).__init__()
-
-        self.cfg = cfg
-        print(f"Loading CLIP (backbone: {cfg.model.NAME})")
-        clip_model = load_clip_to_cpu(cfg)
-        self.model = CustomCLIP(cfg, ["real image", "deepfake image"], clip_model)
-
-        for name, param in self.model.named_parameters():
+        for name, param in self.named_parameters():
             if "ctx" in name or "VPT" in name:
                 param.requires_grad_(True)
             else:
@@ -228,22 +231,31 @@ class IndepVLPCLIP(nn.Module):
 
         # Double check
         enabled = set()
-        for name, param in self.model.named_parameters():
+        for name, param in self.named_parameters():
             if param.requires_grad:
                 enabled.add(name)
         print(f"Parameters to be updated: {enabled}")
 
-    def forward(self, image, return_feature=False):
-        tokenized_prompts = self.model.tokenized_prompts
-        logit_scale = self.model.logit_scale.exp()
+    def forward(self, image, return_feature=False, return_binary=False):
+        prompts = self.prompt_learner()
 
-        prompts = self.model.prompt_learner()
-        text_features = self.model.text_encoder(prompts, tokenized_prompts)
-        image_features = self.model.image_encoder(image)
-
-        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+        text_features = self.text_encoder(prompts, self.tokenized_prompts)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
-        logits = logit_scale * image_features @ text_features.t()
+
+        image_features = self.image_encoder(image)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+        logits = self.logit_scale.exp() * image_features @ text_features.t()
+
+
+        if return_binary:
+            b_prompts = self.prompt_learner.forward_general_realfake()
+            column_maxes = self.tokenized_prompts.max(dim=0)[0] + torch.arange(self.tokenized_prompts.size(1))
+            new_token = column_maxes.repeat(b_prompts.size(0), 1)
+            b_text_features = self.text_encoder(b_prompts, new_token)
+            b_text_features = b_text_features / b_text_features.norm(dim=-1, keepdim=True)
+            b_logits = self.logit_scale.exp() * image_features @ b_text_features.t()
+            return logits, b_logits
 
         if return_feature:
             return logits, image_features
@@ -251,4 +263,20 @@ class IndepVLPCLIP(nn.Module):
         return logits
 
 
+    def forward_binary(self, image, return_feature=False):
 
+        prompts = self.prompt_learner.forward_general_realfake()
+        column_maxes = self.tokenized_prompts.max(dim=0)[0] + torch.arange(self.tokenized_prompts.size(1))
+        new_token = column_maxes.repeat(prompts.size(0), 1)
+        text_features = self.text_encoder(prompts, new_token)
+        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+        image_features = self.image_encoder(image)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+        logits = self.logit_scale.exp() * image_features @ text_features.t()
+
+        if return_feature:
+            return logits, image_features
+
+        return logits
