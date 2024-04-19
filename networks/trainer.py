@@ -145,8 +145,8 @@ class Trainer_arpmulticls(L.LightningModule):
         logits, b_logits = self.model(x, return_binary=True)
         loss = 0
         # 首先语义对齐：将y归为20个类，然后logits向这20类输出监督，无关real/fake  实现为对logits维度进行切分，每20个一组进行cross entropy
-        cls_y = y//2 #0~40类 -> 0~19类
-        logits_groups = torch.chunk(logits, 4, dim=1)
+        cls_y = y//2 #0~40类 -> 0~19类 如果prompt是2，如果是1，那么就是
+        logits_groups = torch.chunk(logits, 2*self.opt.model.PROMPT_NUM_TEXT, dim=1)
         for i, logits_group in enumerate(logits_groups):
             loss += F.cross_entropy(logits_group, cls_y)
 
@@ -156,7 +156,7 @@ class Trainer_arpmulticls(L.LightningModule):
             mask = i//2 == y % 2
             loss += F.cross_entropy(logits_group[mask], cls_y[mask])
 
-
+        # import pdb;pdb.set_trace()
         # 在每个子空间做deepfake detection，也就是以类为单位进行deepfake detection
 
 
