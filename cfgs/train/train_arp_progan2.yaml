@@ -1,6 +1,6 @@
 arch: "arp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "arp-ViTL-ProGAN"
+name: "arp-ViTL-NOLOSS3-ProGAN"
 
 
 train:
@@ -27,7 +27,7 @@ model:
   CTX_INIT: False
   PROMPT_DEPTH_VISION: 2
   PROMPT_DEPTH_TEXT: 2
-  PROMPT_NUM_TEXT: 2
+  PROMPT_NUM_TEXT: 1
 
 
 dataset:

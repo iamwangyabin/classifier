@@ -578,9 +578,9 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 
-# os.listdir('./cos/')
+diff_folders = ['18501-19000', '31001-31500', '5001-5500',]
 
-for i in ['13001-13500','16501-17000','20501-21000','25001-25500','29001-29500','33001-33500','501-1000','9501-10000']:
+for i in diff_folders:
     try:
         api.upload_folder(
             folder_path=os.path.join('./cos/', i),
