@@ -1,10 +1,10 @@
 arch: "arp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "arp-ViTL-NOLOSS3-ProGAN"
+name: "arp-ViTL-3loss-balance-ProGAN"
 
 
 train:
-  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [1]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 1  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -25,8 +25,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 1
-  PROMPT_DEPTH_TEXT: 1
+  PROMPT_DEPTH_VISION: 2
+  PROMPT_DEPTH_TEXT: 2
   PROMPT_NUM_TEXT: 1
 
 
@@ -47,8 +47,8 @@ dataset:
   val:
 #    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
     dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
-    subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
-    multicalss_idx: [0, 0, 0, 0]
+    subfolder_names: ["progan"]
+    multicalss_idx: [1]
     batch_size: 32
     loader_workers: 4
     loadSize: 256

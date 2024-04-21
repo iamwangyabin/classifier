@@ -31,7 +31,9 @@ def get_model(conf):
     print("Model loaded..")
     if conf.arch == 'clip':
         model = CLIPModel('ViT-L/14')
-        resume_lightning(model, conf)
+        state_dict = torch.load(conf.resume, map_location='cpu')
+        model.fc.load_state_dict(state_dict)
+        # resume_lightning(model, conf)
     elif conf.arch == 'ms_clip':
         model = MultiscaleCLIPModel('ViT-L/14', patch_sizes=conf.patch_sizes, strides=conf.strides)
         if conf.resume:

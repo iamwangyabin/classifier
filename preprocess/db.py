@@ -578,13 +578,13 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 
-diff_folders = ['18501-19000', '31001-31500', '5001-5500',]
+diff_folders = ['0-500','1000-1500','1500-2000','2000-2500','2500-3000','3500-4000','4000-4500','500-1000',]
 
 for i in diff_folders:
     try:
         api.upload_folder(
-            folder_path=os.path.join('./cos/', i),
-            path_in_repo=os.path.join('./',i),
+            folder_path=os.path.join('./cos2/', i),
+            path_in_repo=os.path.join('./supp',i),
             repo_id="deepghs/cos5t_raw",
             repo_type="dataset",
         )

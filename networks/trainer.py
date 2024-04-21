@@ -130,6 +130,8 @@ class Trainer_multicls(L.LightningModule):
 
 
 
+mapping = {0: 0, 1: 20, 2: 1, 3: 21, 4: 2, 5: 22, 6: 3, 7: 23, 8: 4, 9: 24, 10: 5, 11: 25, 12: 6, 13: 26, 14: 7, 15: 27, 16: 8, 17: 28, 18: 9, 19: 29, 20: 10, 21: 30, 22: 11, 23: 31, 24: 12, 25: 32, 26: 13, 27: 33, 28: 14, 29: 34, 30: 15, 31: 35, 32: 16, 33: 36, 34: 17, 35: 37, 36: 18, 37: 38, 38: 19, 39: 39}
+
 class Trainer_arpmulticls(L.LightningModule):
     # 这个实现相比较multicls是将每个类的real fake都堪称独立的类别
     def __init__(self, opt):
@@ -152,19 +154,24 @@ class Trainer_arpmulticls(L.LightningModule):
 
         # 其次次级语义对齐：fake同fake的分类对齐 real同real的对齐 也是ce损失
         # 实现为通过chunk和mask进行，将属于real的样本mask掉，
-        for i, logits_group in enumerate(logits_groups):
-            mask = i//2 == y % 2
-            loss += F.cross_entropy(logits_group[mask], cls_y[mask])
+        # for i, logits_group in enumerate(logits_groups):
+        #     mask = i//2 == y % 2
+        #     loss += 0.5*F.cross_entropy(logits_group[mask], cls_y[mask])
 
         # import pdb;pdb.set_trace()
         # 在每个子空间做deepfake detection，也就是以类为单位进行deepfake detection
-
+        # 0表示real，1表示fake，这是个deepfake detection任务，因此
+        # 主要问题是我们的y是0，1，2，3，4，5...38，39这样的，每个类都有两个label，分别表示real和fake，这样进行了20个类，表现为40个label，也就是每个类都有real和fake
+        # 然而logits是0-19个real，之后是20-39个fake，（prompt=1时候），也就是先输出每个类的real再输出每个类的fake
+        # 我们需要变换y，让它和logits对齐
+        new_y =  torch.tensor([mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
+        loss += F.cross_entropy(logits, new_y)
 
         # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts加起来）
         # int(y % 2)
         # general real prompt的logits
         # general fake prompt的logits
-        # loss += F.cross_entropy(b_logits, y % 2)
+        loss += F.cross_entropy(b_logits, y % 2)
         # loss = self.criterion(logits, y)
         self.log("train_loss", loss)
         return loss

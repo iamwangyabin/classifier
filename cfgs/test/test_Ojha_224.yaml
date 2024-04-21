@@ -1,11 +1,11 @@
 arch: "clip"
-#resume: 'networks/UniversalFakeDetect/fc_weights.pth'
-#resume: 'logs/Ojha—ProganPart1_20240315_08_28_33/epoch=78-val_acc_epoch=0.79.ckpt' # part1
-#resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
-#resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
-#resume: 'logs/Ojha—Progan_less_20240324_19_24_35/epoch=12-val_acc_epoch=0.69-v1.ckpt' # less
-resume: '/home/yw26g23/classifier/logs/Ojha-SD15_20240329_18_26_10/epoch=04-val_acc_epoch=0.71.ckpt' # 使用sd1.5作为base训练集
-test_name: "Ojha-SD15_best_224"
+resume: 'networks/UniversalFakeDetect/fc_weights.pth'
+##resume: 'logs/Ojha—ProganPart1_20240315_08_28_33/epoch=78-val_acc_epoch=0.79.ckpt' # part1
+##resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
+##resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
+##resume: 'logs/Ojha—Progan_less_20240324_19_24_35/epoch=12-val_acc_epoch=0.69-v1.ckpt' # less
+#resume: '/home/yw26g23/classifier/logs/Ojha-SD15_20240329_18_26_10/epoch=04-val_acc_epoch=0.71.ckpt' # 使用sd1.5作为base训练集
+test_name: "Ojha-224"
 
 dataset:
   train:
@@ -36,42 +36,58 @@ datasets:
       std: [0.26862954, 0.26130258, 0.27577711]
 
   source:
+    AI_recognition_dataset:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AI_recognition_dataset"
+      sub_sets: [ 'all' ]
+
+    DIF:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/DIF_testset"
+      sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
+                 'stargan',  'stylegan',  'stylegan2']
+
+    AIArt:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIArt"
+      sub_sets: ['dalle','imagen','mj','parti','sd','sdft']
+
+    Fake2M:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Fake2M"
+      sub_sets: ['cogview2-22K','IF-CC95K','Midjourneyv5-5K','SDv15-CC30K','SDv21-CC15K','stylegan3-60K']
+
+    GenImage:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIGCDetect"
+      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
+
+
     DiffusionForensics:
-      data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/DiffusionForensics"
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/DiffusionForensics"
       sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
                  'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
 
-    AIGCDetect:
-      data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/AIGCDetect"
-      sub_sets: ['stylegan', 'stylegan2', 'wukong', 'DALLE2', 'cyclegan', 'Midjourney',
-                 'stable_diffusion_v_1_5', 'stargan', 'whichfaceisreal', 'ADM', 'biggan', 'Glide', 'gaugan',
-                 'progan', 'stable_diffusion_v_1_4', 'VQDM']
-
     ForenSynths:
-      data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/"
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
       sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                    "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
-      data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/Ojha"
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Ojha"
       sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
 
     AntifakePrompt:
-      data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/AntifakePrompt"
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AntifakePrompt"
       sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
                  'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 
-#    Celeb-DF-v1:
-#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
-#      sub_sets: ['all']
-#
-#    Celeb-DF-v2:
-#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
-#      sub_sets: ['all']
-#
-#    UADFV:
-#      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
-#      sub_sets: ['all']
+    Celeb-DF-v1:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
+      sub_sets: ['all']
+
+    Celeb-DF-v2:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
+      sub_sets: ['all']
+
+    UADFV:
+      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
+      sub_sets: ['all']
