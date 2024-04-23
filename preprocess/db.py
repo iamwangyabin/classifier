@@ -535,8 +535,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 files_to_upload = [
-    "HIFI_Dataset.part.aa",
-    "HIFI_Dataset.part.ab",
+    "UADFV.tar",
 ]
 
 for filename in files_to_upload:
@@ -550,6 +549,9 @@ for filename in files_to_upload:
 
 
 
+
+
+
 from huggingface_hub import HfApi
 import os
 
@@ -558,7 +560,6 @@ api = HfApi()
 
 for i in os.listdir('./cos/'):
     for file in os.listdir(os.path.join('./cos', i)):
-        # try:
         print(file)
         api.upload_file(
             path_or_fileobj=os.path.join('./cos/', i, file),
@@ -566,9 +567,6 @@ for i in os.listdir('./cos/'):
             repo_id="deepghs/cos5t_raw",
             repo_type="dataset",
         )
-        # except:
-        #     print('finish')
-
 
 
 #  upload a folder

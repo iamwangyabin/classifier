@@ -10,7 +10,8 @@ test_name: "Ojha-224"
 dataset:
   train:
     mode: 'binary'
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
     subfolder_names: ["ForenSynths"]
     multicalss_idx: [1]
     batch_size: 256
@@ -24,6 +25,7 @@ dataset:
 datasets:
   batch_size: 32
   loader_workers: 8
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
     - _target_: torchvision.transforms.Resize
@@ -36,30 +38,48 @@ datasets:
       std: [0.26862954, 0.26130258, 0.27577711]
 
   source:
+    GANGen-Detection:
+      data_root: '${datasets.data_root}/GANGen-Detection'
+      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
+
+    Synthbuster:
+      data_root: '${datasets.data_root}/synthbuster'
+      sub_sets: ['dalle2','firefly','stable-diffusion-1-4','stable-diffusion-xl', 'dalle3','glide','midjourney-v5',
+                 'stable-diffusion-1-3','stable-diffusion-2','real']
+
+    Artifact:
+      data_root: '${datasets.data_root}/Artifact'
+      sub_sets: ["afhq", "coco", "celebahq", "ffhq", "imagenet", "landscape", "lsun", "metfaces","real_cyclegan",
+                 "diffusion_gan", "gau_gan", "lama", "mat", "projected_gan", "stylegan1",
+                 "vq_diffusion", "big_gan", "face_synthetics", "generative_inpainting",
+                 "sfhq", "stylegan2", "ddpm", "glide", "latent_diffusion", "palette",
+                 "stable_diffusion", "stylegan3", "cips", "denoising_diffusion_gan",
+                 "gansformer", "pro_gan", "star_gan", "taming_transformer", "cyclegan"]
+
+    AIArt:
+      data_root: '${datasets.data_root}/AIArt'
+      sub_sets: [ 'dalle','imagen','mj','parti','sd','sdft' ]
+
     AI_recognition_dataset:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AI_recognition_dataset"
+      data_root: '${datasets.data_root}/AI_recognition_dataset'
       sub_sets: [ 'all' ]
 
     DIF:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/DIF_testset"
+      data_root: '${datasets.data_root}/DIF_testset'
       sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
                  'stargan',  'stylegan',  'stylegan2']
 
-    AIArt:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIArt"
-      sub_sets: ['dalle','imagen','mj','parti','sd','sdft']
-
     Fake2M:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Fake2M"
+      data_root: '${datasets.data_root}/Fake2M'
       sub_sets: ['cogview2-22K','IF-CC95K','Midjourneyv5-5K','SDv15-CC30K','SDv21-CC15K','stylegan3-60K']
 
     GenImage:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AIGCDetect"
+      data_root: '${datasets.data_root}/AIGCDetect'
       sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
 
 
     DiffusionForensics:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/DiffusionForensics"
+      data_root: '${datasets.data_root}/DiffusionForensics'
       sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
                  'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
@@ -67,27 +87,27 @@ datasets:
                  'celebahq_dalle2', 'celebahq_midjourney']
 
     ForenSynths:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/"
+      data_root: '${datasets.data_root}/ForenSynths'
       sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                    "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Ojha"
+      data_root: '${datasets.data_root}/Ojha'
       sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
 
     AntifakePrompt:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/AntifakePrompt"
+      data_root: '${datasets.data_root}/AntifakePrompt'
       sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
                  'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 
     Celeb-DF-v1:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v1"
-      sub_sets: ['all']
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
 
     Celeb-DF-v2:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2"
-      sub_sets: ['all']
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
 
     UADFV:
-      data_root: "/home/jwang/ybwork/data/deepfake_benchmark/UADFV"
-      sub_sets: ['all']
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

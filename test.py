@@ -4,6 +4,12 @@ import argparse
 import hydra
 import torch.utils.data
 import pickle
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(current_dir)
 
 from utils.util import load_config_with_cli, archive_files
 from utils.validate import validate, validate_multicls, validate_arp
@@ -12,6 +18,8 @@ from utils.network_factory import get_model
 
 
 if __name__ == '__main__':
+
+
     parser = argparse.ArgumentParser(description='Testing')
     parser.add_argument('--cfg', type=str, default=None, required=True)
     args, cfg_args = parser.parse_known_args()
@@ -62,5 +70,5 @@ if __name__ == '__main__':
         writer.writerow(columns)
         for values in all_results:
             writer.writerow(values)
-    with open(conf.test_name + '.pkl', 'wb') as file:
-        pickle.dump(save_raw_results, file)
+    # with open(conf.test_name + '.pkl', 'wb') as file:
+    #     pickle.dump(save_raw_results, file)

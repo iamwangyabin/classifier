@@ -1,5 +1,6 @@
 import os
 import cv2
+import warnings
 import numpy as np
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
@@ -10,6 +11,8 @@ from PIL import ImageFile, Image
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
 from PIL import ImageFile, Image
+
+warnings.filterwarnings("ignore", category=UserWarning, module='PIL')
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
