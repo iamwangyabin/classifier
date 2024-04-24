@@ -1,61 +1,38 @@
-# Copy this file to HiFi project, and run it
+# code for testing fusing only
 
-import os
+import argparse
 import csv
+import io
 import json
+import os
+import copy
+import pickle
+import sys
+import warnings
+import cv2
+import hydra
 import numpy as np
+import torch
+import torchvision.transforms as transforms
+from PIL import Image, ImageFile
+from random import choice, random
+from scipy.fftpack import dct
+from scipy.ndimage.filters import gaussian_filter
+from torch.utils.data import Dataset
+from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
 from copy import deepcopy
 from tqdm import tqdm
-from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
-from PIL import ImageFile, Image
-from omegaconf import OmegaConf, ListConfig
-from typing import Tuple, List, Iterable, Any
-import hydra
-import argparse
 
-import torchvision.transforms as transforms
-import torch
-import torch.utils.data
-from torch.utils.data import Dataset
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-from utils.utils import *
-from HiFi_Net import HiFi_Net
-
+sys.path.append(current_dir)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
+warnings.filterwarnings("ignore", category=UserWarning, module='PIL')
 
 
-def remove_config_undefined(cfg):
-    itr: Iterable[Any] = range(len(cfg)) if isinstance(cfg, ListConfig) else cfg
-
-    undefined_keys = []
-    for key in itr:
-        if cfg._get_child(key) == '---':
-            undefined_keys.append(key)
-        elif OmegaConf.is_config(cfg[key]):
-            remove_config_undefined(cfg[key])
-    for key in undefined_keys:
-        del cfg[key]
-    return cfg
-
-def load_config(path, remove_undefined=True):
-    cfg = OmegaConf.load(path)
-    if '_base_' in cfg:
-        for base in cfg['_base_']:
-            cfg = OmegaConf.merge(load_config(base, remove_undefined=False), cfg)
-        del cfg['_base_']
-    if remove_undefined:
-        cfg = remove_config_undefined(cfg)
-    return cfg
-
-def load_config_with_cli(path, args_list=None, remove_undefined=True):
-    cfg = load_config(path, remove_undefined=False)
-    cfg_cli = OmegaConf.from_cli(args_list)
-    cfg = OmegaConf.merge(cfg, cfg_cli)
-    if remove_undefined:
-        cfg = remove_config_undefined(cfg)
-    return cfg
-
+from utils.util import load_config_with_cli, archive_files
+from utils.network_factory import get_model
 
 class BinaryJsonDatasets(Dataset):
     def __init__(self, opt, data_root, subset='all', split='train'):
@@ -63,6 +40,7 @@ class BinaryJsonDatasets(Dataset):
         self.split = split
         self.image_pathes = []
         self.labels = []
+        self.CropSize = opt.CropSize
 
         json_file = os.path.join(self.dataroot, f'{split}.json')
         with open(json_file, 'r') as f:
@@ -73,19 +51,36 @@ class BinaryJsonDatasets(Dataset):
             self.image_pathes.append(img_full_path)
             self.labels.append(label)
 
-
-        self.transform_chain = transforms.Compose(opt.trsf)
-
-
     def __len__(self):
         return len(self.image_pathes)
 
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
+
+        height, width = image.height, image.width
+
+        input_img = copy.deepcopy(image)
+        input_img = transforms.ToTensor()(input_img)
+        input_img = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(input_img)
+
+        image = transforms.Resize(self.CropSize)(image)
+        image = transforms.CenterCrop(self.CropSize)(image)
+        cropped_img = transforms.ToTensor()(image)
+        cropped_img = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(cropped_img)
+
+        scale = torch.tensor([height, width])
+
         label = self.labels[idx]
-        image = self.transform_chain(image)
-        return image, label
+        return input_img, cropped_img, scale, label
+
+
+def patch_collate_test(batch):
+    input_img=[item[0] for item in batch]
+    cropped_img=torch.stack([item[1] for item in batch], dim=0)
+    scale=torch.stack([item[2] for item in batch], dim=0)
+    target=torch.tensor([item[3] for item in batch])
+    return [input_img, cropped_img, scale, target]
 
 
 def find_best_threshold(y_true, y_pred):
@@ -116,17 +111,21 @@ def calculate_acc(y_true, y_pred, thres):
     return r_acc, f_acc, acc
 
 
-def validate(model, loader):
+def validate_PSM(model, data_loader):
+    y_true, y_pred = [], []
+    i = 0
     with torch.no_grad():
-        y_true, y_pred = [], []
-        print("Length of dataset: %d" % (len(loader)))
-        for img, label in tqdm(loader):
-            img = img.cuda()
-            output = model.FENet(img)
-            mask1_fea, mask1_binary, out0, out1, out2, out3 = model.SegNet(output, img)
-            res, prob = one_hot_label_new(out3)
-            y_pred.extend(prob)
+        for data in data_loader:
+            i += 1
+            print("batch number {}/{}".format(i, len(data_loader)), end='\r')
+            input_img = data[0]  # [batch_size, 3, height, width]
+            cropped_img = data[1].cuda()  # [batch_size, 3, 224, 224]
+            scale = data[2].cuda()  # [batch_size, 1, 2]
+            label = data[3].cuda()  # [batch_size, 1]
+            logits = model(input_img, cropped_img, scale)
+            y_pred.extend(logits.sigmoid().flatten().tolist())
             y_true.extend(label.flatten().tolist())
+
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
@@ -134,50 +133,70 @@ def validate(model, loader):
     r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
     num_real = (y_true == 0).sum()
     num_fake = (y_true == 1).sum()
-    return ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres, num_real, num_fake
+    result_dict = {
+        'ap': ap,
+        'r_acc0': r_acc0,
+        'f_acc0': f_acc0,
+        'acc0': acc0,
+        'r_acc1': r_acc1,
+        'f_acc1': f_acc1,
+        'acc1': acc1,
+        'best_thres': best_thres,
+        'num_real': num_real,
+        'num_fake': num_fake,
+        'y_true': y_true,
+        'y_pred': y_pred,
+    }
+    return result_dict
+
 
 
 if __name__ == '__main__':
+
+
     parser = argparse.ArgumentParser(description='Testing')
     parser.add_argument('--cfg', type=str, default=None, required=True)
     args, cfg_args = parser.parse_known_args()
     conf = load_config_with_cli(args.cfg, args_list=cfg_args)
     conf = hydra.utils.instantiate(conf)
 
-    model = HiFi_Net()
-    print("Model loaded.")
-
+    model = get_model(conf)
+    model.cuda()
+    model.eval()
     all_results = []
-
+    save_raw_results = {}
     for set_name, source_conf in conf.datasets.source.items():
         data_root = source_conf.data_root
         for subset in source_conf.sub_sets:
             dataset = BinaryJsonDatasets(conf.datasets, data_root, subset, split='test')
             data_loader = torch.utils.data.DataLoader(dataset, batch_size=conf.datasets.batch_size,
-                                                      num_workers=conf.datasets.loader_workers)
-            ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres, num_real, num_fake = validate(model, data_loader)
+                                        collate_fn=patch_collate_test, num_workers=conf.datasets.loader_workers)
+
+            result = validate_PSM(model, data_loader)
+            ap = result['ap']
+            r_acc0 = result['r_acc0']
+            f_acc0 = result['f_acc0']
+            acc0 = result['acc0']
+            r_acc1 = result['r_acc1']
+            f_acc1 = result['f_acc1']
+            acc1 = result['acc1']
+            best_thres = result['best_thres']
+            num_real = result['num_real']
+            num_fake = result['num_fake']
+
             print(f"{set_name} {subset}")
             print(f"AP: {ap:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
             all_results.append([set_name, subset, ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres,
                                 num_real, num_fake])
+            save_raw_results[f"{set_name} {subset}"] = result
+
 
     columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres',
                'num_real', 'num_fake']
-    with open('model_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    with open(conf.test_name+'_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(columns)
         for values in all_results:
             writer.writerow(values)
-
-
-
-
-
-
-
-
-
-
-
 
 

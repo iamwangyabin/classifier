@@ -1,13 +1,12 @@
-arch: "cnn"
-resume: 'networks/CNNSpot/blur_jpg_prob0.1.pth'
-test_name: "CNN01_224"
+arch: "Gram"
+resume: 'networks/weights/Gram.pth'
+test_name: "Gram_224"
 
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
-  data_root: "/home/jwang/ybwork/data/deepfake_benchmark"
-
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/deepfake_benchmark"
 
   trsf:
     - _target_: torchvision.transforms.Resize
@@ -20,12 +19,6 @@ datasets:
       std: [0.229, 0.224, 0.225]
 
   source:
-    ForenSynths:
-      data_root: '${datasets.data_root}/ForenSynths'
-      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-                  "stylegan", "stylegan2", "whichfaceisreal" ]
-
-
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
@@ -74,6 +67,10 @@ datasets:
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
 
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                   "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

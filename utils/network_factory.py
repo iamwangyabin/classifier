@@ -52,6 +52,7 @@ def get_model(conf):
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict['model'])
 
+
     # elif conf.arch == 'LGrad':
     #     model = resnet50(num_classes=1)
     #     if conf.resume:
@@ -66,18 +67,22 @@ def get_model(conf):
             except:
                 model.load_state_dict({k.replace('module.', ''): v for k, v in state_dict['netC'].items()})
 
+    elif conf.arch == 'Fusing':
+        from networks.Fusing.detector import Patch5Model
+        model = Patch5Model()
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')
+            model.load_state_dict(state_dict['model'])
 
-    # elif conf.arch == 'Fusing':
-    #     model = Patch5Model()
-    #
-    # elif conf.arch == 'Gram':
-    #     model = ResnetGram.resnet18(num_classes=1)
-    #     用的和CNNSpot一样的图片处理方法
-
-
-
-
-
+    elif conf.arch == 'Gram':
+        from networks.GramNet.detector import resnet18
+        model = resnet18(num_classes=1)
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')
+            try:
+                model.load_state_dict(state_dict['netC'], strict=True)
+            except:
+                model.load_state_dict({k.replace('module.', ''): v for k, v in state_dict['netC'].items()})
 
     elif conf.arch == 'arp':
         model = ARPromptsCLIP(conf)

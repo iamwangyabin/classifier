@@ -17,17 +17,16 @@ conda init bash
 conda activate timm
 
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_224.yaml
-
-python test.py --cfg cfgs/test/test_CNNSpot0.5_224.yaml
-
-python test.py --cfg cfgs/test/test_Ojha_224.yaml
-
-python test.py --cfg cfgs/test/test_FreDect_224.yaml
-
-
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_224.yaml
+#
+#python test.py --cfg cfgs/test/test_CNNSpot0.5_224.yaml
+#
+#python test.py --cfg cfgs/test/test_Ojha_224.yaml
+#
+#python test.py --cfg cfgs/test/test_FreDect_224.yaml
 
 
+python test_fusing.py --cfg cfgs/test/test_Fusing_224.yaml
 
-
+python test.py --cfg cfgs/test/test_Garm_224.yaml
 
