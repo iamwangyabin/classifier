@@ -45,13 +45,22 @@ def get_model(conf):
         model = NPRModel(num_classes=1)
         if conf.resume:
             state_dict = torch.load(conf.resume, map_location='cpu')
-            model.load_state_dict(state_dict['model'])
+            try:
+                model.load_state_dict(state_dict['model'])
+            except:
+                state_dict = {'module.' + k: v for k, v in state_dict.items()}
+                model.load_state_dict(state_dict)
     elif conf.arch == 'lnp':
         model = resnet50(num_classes=1)
         if conf.resume:
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict['model'])
-
+    elif conf.arch == 'freqnet':
+        from networks.FreqNet.freqnet import freqnet
+        model = freqnet(num_classes=1)
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')
+            model.load_state_dict(state_dict)
 
     # elif conf.arch == 'LGrad':
     #     model = resnet50(num_classes=1)

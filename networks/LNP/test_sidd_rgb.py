@@ -23,13 +23,13 @@ import cv2
 from skimage import img_as_ubyte
 
 parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
-parser.add_argument('--input_dir', default='/home/jwang/ybwork/data/deepfake_benchmark/Celeb-DF-v2',
+parser.add_argument('--input_dir', default='/home/jwang/ybwork/data/deepfake_benchmark/',
                     type=str, help='Directory of validation images')
-parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/Celeb-DF-v2',
+parser.add_argument('--result_dir', default='/home/jwang/ybwork/data/deepfake_benchmark_LNP/',
                     type=str, help='Directory for results')
 parser.add_argument('--weights', default='./sidd_rgb.pth',
                     type=str, help='Path to weights')
-parser.add_argument('--gpus', default='1', type=str, help='CUDA_VISIBLE_DEVICES')
+parser.add_argument('--gpus', default='2', type=str, help='CUDA_VISIBLE_DEVICES')
 parser.add_argument('--save_images', action='store_true', help='Save denoised images in result directory')
 parser.add_argument('--noise_type', default=None,
                     type=str, help='e.g. jpg, blur, resize')
@@ -47,7 +47,7 @@ for dirpath, dirnames, filenames in os.walk(args.input_dir):
 
     image_paths = []
     for file in filenames:
-        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.PNG', '.JPEG')):
+        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp')):
             image_paths.append(os.path.join(dirpath, file))
 
     test_dataset = get_validation_data(image_paths, args.noise_type)

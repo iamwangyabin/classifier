@@ -1,6 +1,6 @@
-arch: "cnn"
-resume: 'networks/CNNSpot/blur_jpg_prob0.5.pth'
-test_name: "CNN05_224"
+arch: "freqnet"
+resume: 'networks/weights/freqnet.pth'
+test_name: "Freqnet_224"
 
 datasets:
   batch_size: 32

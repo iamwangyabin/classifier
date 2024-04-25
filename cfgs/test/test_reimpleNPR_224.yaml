@@ -1,11 +1,11 @@
-arch: "cnn"
-resume: 'networks/CNNSpot/blur_jpg_prob0.5.pth'
-test_name: "CNN05_224"
+arch: "npr"
+#resume: 'networks/weights/NPR.pth'
+resume: 'networks/weights/NPR_reimple.pth'
+test_name: "NPR_reimple_224"
 
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
   data_root: "/home/jwang/ybwork/data/deepfake_benchmark"
 
   trsf:

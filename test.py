@@ -49,22 +49,21 @@ if __name__ == '__main__':
             r_acc0 = result['r_acc0']
             f_acc0 = result['f_acc0']
             acc0 = result['acc0']
-            r_acc1 = result['r_acc1']
-            f_acc1 = result['f_acc1']
-            acc1 = result['acc1']
-            best_thres = result['best_thres']
+            # r_acc1 = result['r_acc1']
+            # f_acc1 = result['f_acc1']
+            # acc1 = result['acc1']
+            # best_thres = result['best_thres']
             num_real = result['num_real']
             num_fake = result['num_fake']
 
             print(f"{set_name} {subset}")
             print(f"AP: {ap:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
-            all_results.append([set_name, subset, ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres,
+            all_results.append([set_name, subset, ap, r_acc0, f_acc0, acc0, #r_acc1, f_acc1, acc1, best_thres,
                                 num_real, num_fake])
             save_raw_results[f"{set_name} {subset}"] = result
 
 
-    columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres',
-               'num_real', 'num_fake']
+    columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'num_real', 'num_fake']
     with open(conf.test_name+'_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(columns)
