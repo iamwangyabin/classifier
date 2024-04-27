@@ -35,8 +35,8 @@ model:
 
 dataset:
   train:
-    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
+#    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
+    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
     subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
     multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                        "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
@@ -48,8 +48,8 @@ dataset:
     augment: null
 
   val:
-    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
+#    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
+    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
     subfolder_names: ["progan"]
     multicalss_idx: [1]
     batch_size: 32
