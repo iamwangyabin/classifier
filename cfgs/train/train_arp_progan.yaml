@@ -4,7 +4,7 @@ name: "arp-ViTL-a1b1c1-221-ProGAN"
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
-  train_epochs: 1  # Number of training epochs
+  train_epochs: 5  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
@@ -21,7 +21,7 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 1
+    T_max: 5
 
 model:
   NAME: "ViT-L/14"
@@ -36,7 +36,7 @@ model:
 dataset:
   train:
 #    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
     subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
     multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                        "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
@@ -49,7 +49,7 @@ dataset:
 
   val:
 #    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
+    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
     subfolder_names: ["progan"]
     multicalss_idx: [1]
     batch_size: 32
