@@ -548,27 +548,6 @@ for filename in files_to_upload:
     )
 
 
-
-
-
-
-from huggingface_hub import HfApi
-import os
-
-os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-api = HfApi()
-
-for i in os.listdir('./cos/'):
-    for file in os.listdir(os.path.join('./cos', i)):
-        print(file)
-        api.upload_file(
-            path_or_fileobj=os.path.join('./cos/', i, file),
-            path_in_repo=os.path.join(i, file),
-            repo_id="deepghs/cos5t_raw",
-            repo_type="dataset",
-        )
-
-
 #  upload a folder
 from huggingface_hub import HfApi
 import os
@@ -627,6 +606,26 @@ for artist_folder in os.listdir(root_dir):
             caption = make_caption_from_id(id)
             with open(os.path.join(root_dir, artist_folder, str(id) + '.txt'), 'w') as file:
                 file.write(caption)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

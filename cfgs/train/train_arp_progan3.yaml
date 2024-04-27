@@ -1,6 +1,7 @@
 arch: "arp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
 resume: null
-name: "arp-ViTL-a1b1c1-221-ProGAN"
+name: "arp-ViTL-a01b1c1-221-ProGAN"
+
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
@@ -8,7 +9,7 @@ train:
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
-  a: 1
+  a: 0.1
   b: 1
   c: 1
 
@@ -35,8 +36,8 @@ model:
 
 dataset:
   train:
-#    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
+#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
     subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
     multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                        "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
@@ -48,11 +49,11 @@ dataset:
     augment: null
 
   val:
-#    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
-    subfolder_names: ["progan"]
-    multicalss_idx: [1]
-    batch_size: 32
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
+#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
+    subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
+    multicalss_idx: [0, 0, 0, 0]
+    batch_size: 128
     loader_workers: 4
     loadSize: 256
     cropSize: 224

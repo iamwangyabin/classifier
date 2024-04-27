@@ -150,7 +150,7 @@ class Trainer_arpmulticls(L.LightningModule):
         cls_y = y//2 #0~40类 -> 0~19类 如果prompt是2，如果是1，那么就是
         logits_groups = torch.chunk(logits, 2*self.opt.model.PROMPT_NUM_TEXT, dim=1)
         for i, logits_group in enumerate(logits_groups):
-            loss += F.cross_entropy(logits_group, cls_y)
+            loss += self.opt.model.a * F.cross_entropy(logits_group, cls_y)
 
         # 其次次级语义对齐：fake同fake的分类对齐 real同real的对齐 也是ce损失
         # 实现为通过chunk和mask进行，将属于real的样本mask掉，
@@ -165,13 +165,13 @@ class Trainer_arpmulticls(L.LightningModule):
         # 然而logits是0-19个real，之后是20-39个fake，（prompt=1时候），也就是先输出每个类的real再输出每个类的fake
         # 我们需要变换y，让它和logits对齐
         new_y =  torch.tensor([mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
-        loss += F.cross_entropy(logits, new_y)
+        loss += self.opt.model.b * F.cross_entropy(logits, new_y)
 
         # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts加起来）
         # int(y % 2)
         # general real prompt的logits
         # general fake prompt的logits
-        loss += F.cross_entropy(b_logits, y % 2)
+        loss += self.opt.model.c * F.cross_entropy(b_logits, y % 2)
         # loss = self.criterion(logits, y)
         self.log("train_loss", loss)
         return loss

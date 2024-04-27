@@ -31,3 +31,14 @@ conda activate timm
 python train.py --cfg cfgs/train/train_arp_progan.yaml
 
 python train.py --cfg cfgs/train/train_arp_progan2.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan3.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan4.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan5.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan6.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan7.yaml
+

@@ -1,11 +1,6 @@
 import os.path as osp
-from collections import OrderedDict
-import math
-
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
-from torch.cuda.amp import GradScaler, autocast
 
 from networks.SPrompts.clip import clip
 from networks.SPrompts.clip.simple_tokenizer import SimpleTokenizer as _Tokenizer
@@ -203,6 +198,54 @@ class ARPromptLearner(nn.Module):
         return prompts
 
 
+    def forward_class_name(self, classnames, token_embedding):
+        n_cls = len(classnames)
+        classnames = [name.replace("_", " ") for name in classnames]
+        name_lens = [len(_tokenizer.encode(name)) for name in classnames]
+        tokenized_clsnames = torch.cat([clip.tokenize(p) for p in classnames])
+        with torch.no_grad():
+            clsnames_embedding = token_embedding(tokenized_clsnames).type(self.ctx_negative.dtype)
+
+
+        ctx_positive = self.ctx_positive
+        ctx_negative = self.ctx_negative
+        if ctx_negative.shape[0] == 0:
+            if ctx_positive.dim() == 3:
+                ctx = ctx_positive.unsqueeze(0).expand(self.n_cls, -1, -1, -1)
+            else:
+                ctx = ctx_positive
+        else:
+            if ctx_positive.dim() == 3:
+                diff = ctx_positive.shape[1] - ctx_negative.shape[1]
+                additional_rows = torch.zeros((ctx_negative.shape[0], diff, ctx_negative.shape[2])).cuda()
+                additional_rows = additional_rows.to(ctx_negative.dtype)
+                ctx_negative = torch.cat([additional_rows, ctx_negative], dim=1)
+                ctx = torch.cat([ctx_positive, ctx_negative], dim=0)
+                ctx = ctx.unsqueeze(0).expand(self.n_cls, -1, -1, -1)
+            else:
+                ctx = torch.cat([ctx_positive, ctx_negative], dim=1)
+
+        prefix = self.token_prefix
+        suffix = self.token_suffix
+
+        prompts = torch.cat(
+            [
+                prefix,  # (n_cls,1+n_neg, 1, dim)
+                ctx,  # (n_cls,1+n_neg, n_ctx, dim)
+                # suffix,  # (n_cls,1+n_neg, *, dim)
+            ],
+            dim=2,
+        )
+        fakep = prompts.mean(0)[:self.prompt_num].mean(0)
+        realp = prompts.mean(0)[self.prompt_num:].mean(0)
+        clsnames_embedding = clsnames_embedding.mean(0)[1:self.token_suffix.shape[2]+1]
+
+        fakep = torch.cat([fakep, clsnames_embedding.to(fakep.device)], dim=0)
+        realp = torch.cat([realp, clsnames_embedding.to(realp.device)], dim=0)
+
+        prompts = torch.stack([realp, fakep],dim=0)
+
+        return prompts
 
 
 
@@ -269,6 +312,8 @@ class ARPromptsCLIP(nn.Module):
         column_maxes = self.tokenized_prompts.max(dim=0)[0] + torch.arange(self.tokenized_prompts.size(1))
         new_token = column_maxes.repeat(prompts.size(0), 1)
         text_features = self.text_encoder(prompts, new_token)
+        # class_embeddings = model.encode_text(texts)
+
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
         image_features = self.image_encoder(image)
@@ -278,5 +323,21 @@ class ARPromptsCLIP(nn.Module):
 
         if return_feature:
             return logits, image_features
+
+        return logits
+
+    def forward_binary_classnames(self, image, classnames, token_embedding):
+
+        prompts = self.prompt_learner.forward_class_name(classnames, token_embedding)
+        column_maxes = self.tokenized_prompts.max(dim=0)[0] + torch.arange(self.tokenized_prompts.size(1))
+        new_token = column_maxes.repeat(prompts.size(0), 1)
+        text_features = self.text_encoder(prompts, new_token)
+        text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+        image_features = self.image_encoder(image)
+        image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+        logits = self.logit_scale.exp() * image_features @ text_features.t()
+
 
         return logits
