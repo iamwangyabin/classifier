@@ -51,7 +51,7 @@ if __name__ == '__main__':
         monitor='val_acc_epoch',
         dirpath=os.path.join('logs', today_str),
         filename='{epoch:02d}-{val_acc_epoch:.2f}',
-        save_top_k=1,
+        save_top_k=5,
         mode='max',
     )
 

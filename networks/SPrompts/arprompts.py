@@ -1,6 +1,7 @@
 import os.path as osp
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 
 from networks.SPrompts.clip import clip
 from networks.SPrompts.clip.simple_tokenizer import SimpleTokenizer as _Tokenizer
@@ -279,11 +280,18 @@ class ARPromptsCLIP(nn.Module):
                 enabled.add(name)
         print(f"Parameters to be updated: {enabled}")
 
+    def interpolate(self, img, factor):
+        return F.interpolate(F.interpolate(img, scale_factor=factor, mode='nearest', recompute_scale_factor=True),
+                             scale_factor=1 / factor, mode='nearest', recompute_scale_factor=True)
+
+
     def forward(self, image, return_feature=False, return_binary=False):
         prompts = self.prompt_learner()
 
         text_features = self.text_encoder(prompts, self.tokenized_prompts)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+        image = self.interpolate(image,0.5)
 
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
@@ -316,6 +324,8 @@ class ARPromptsCLIP(nn.Module):
 
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
+        image = self.interpolate(image,0.5)
+
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
 
@@ -333,6 +343,8 @@ class ARPromptsCLIP(nn.Module):
         new_token = column_maxes.repeat(prompts.size(0), 1)
         text_features = self.text_encoder(prompts, new_token)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+        image = self.interpolate(image,0.5)
 
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
