@@ -55,9 +55,13 @@ def pil_jpg(img, compress_val):
     out.close()
     return img
 
+def jpeg_from_key(img, compress_val, key):
+    jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
+    method = jpeg_dict[key]
+    return method(img, compress_val)
+
 def data_augment(img, opt):
     img = np.array(img)
-
     if random() < opt.blur_prob:
         sig = sample_continuous(opt.blur_sig)
         gaussian_blur(img, sig)
@@ -68,11 +72,6 @@ def data_augment(img, opt):
         img = jpeg_from_key(img, qual, method)
 
     return Image.fromarray(img)
-
-def jpeg_from_key(img, compress_val, key):
-    jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
-    method = jpeg_dict[key]
-    return method(img, compress_val)
 
 
 class BinaryMultiDatasets(Dataset):
@@ -104,7 +103,7 @@ class BinaryMultiDatasets(Dataset):
                 transforms.Resize(opt.loadSize),
                 transforms.RandomResizedCrop(opt.cropSize),
                 transforms.RandomHorizontalFlip() if opt.random_flip else transforms.Lambda(lambda img: img),
-                transforms.Lambda(lambda img: data_augment(img, opt.augment)) if opt.augment else transforms.Lambda(lambda img: img),
+                transforms.Lambda(lambda img: data_augment(img, opt)) if opt.augment else transforms.Lambda(lambda img: img),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
             ]
@@ -118,6 +117,11 @@ class BinaryMultiDatasets(Dataset):
             ]
 
         self.transform_chain = transforms.Compose(trsf)
+
+
+
+        # self.transform_chain = transforms.Compose(opt.trsf)
+
 
     def __len__(self):
         return len(self.image_pathes)

@@ -291,7 +291,7 @@ class ARPromptsCLIP(nn.Module):
         text_features = self.text_encoder(prompts, self.tokenized_prompts)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
-        image = self.interpolate(image,0.5)*2/3.0
+        # image = self.interpolate(image,0.5)*2/3.0
 
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
@@ -324,7 +324,7 @@ class ARPromptsCLIP(nn.Module):
 
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
-        image = self.interpolate(image,0.5)*2/3.0
+        # image = self.interpolate(image,0.5)*2/3.0
 
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)
@@ -344,7 +344,7 @@ class ARPromptsCLIP(nn.Module):
         text_features = self.text_encoder(prompts, new_token)
         text_features = text_features / text_features.norm(dim=-1, keepdim=True)
 
-        image = self.interpolate(image,0.5)*2/3.0
+        # image = self.interpolate(image,0.5)*2/3.0
 
         image_features = self.image_encoder(image)
         image_features = image_features / image_features.norm(dim=-1, keepdim=True)

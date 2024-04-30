@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, roc_auc_score, f1_score
+
 from copy import deepcopy
 from tqdm import tqdm
 
@@ -117,9 +119,8 @@ def validate_arp(model, loader):
         for img, label in tqdm(loader):
             in_tens = img.cuda()
 
-
             # logits = model.forward_binary_classnames(in_tens, ['face'], token_embedding)
-            #
+
             logits = model.forward_binary(in_tens)
             y_logits.extend(logits.flatten().tolist())
             y_pred.extend(F.softmax(logits, 1)[:,1].flatten().tolist())
@@ -127,12 +128,18 @@ def validate_arp(model, loader):
     y_true, y_pred, y_logits = np.array(y_true), np.array(y_pred), np.array(y_logits)
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
+
+    auc = roc_auc_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred>0.5)
+
     # best_thres = find_best_threshold(y_true, y_pred)
     # r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
     num_real = (y_true == 0).sum()
     num_fake = (y_true == 1).sum()
     result_dict = {
         'ap': ap,
+        'auc': auc,
+        'f1': f1,
         'r_acc0': r_acc0,
         'f_acc0': f_acc0,
         'acc0': acc0,
