@@ -1,5 +1,6 @@
 import os
 import cv2
+import io
 import json
 import warnings
 import numpy as np
@@ -39,6 +40,18 @@ class DCTTransform:
         image = torch.from_numpy(image).permute(2, 0, 1).to(dtype=torch.float)
         return image
 
+
+
+class Compress:
+    def __init__(self, method="JPEG", qf=100):
+        self.qf = qf
+        self.method = method
+
+    def __call__(self, image):
+        outputIoStream = io.BytesIO()
+        image.save(outputIoStream, self.method, quality=self.qf, optimice=True)
+        outputIoStream.seek(0)
+        return Image.open(outputIoStream)
 
 
 class BinaryJsonDatasets(Dataset):
