@@ -51,8 +51,15 @@ def validate(model, loader):
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
 
-    auc = roc_auc_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred>0.5)
+    try:
+        auc = roc_auc_score(y_true, y_pred)
+    except:
+        auc = 0
+    try:
+        f1 = f1_score(y_true, y_pred>0.5)
+    except:
+        f1 = 0
+
 
     # best_thres = find_best_threshold(y_true, y_pred)
     # r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
@@ -136,8 +143,14 @@ def validate_arp(model, loader):
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
 
-    auc = roc_auc_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred>0.5)
+    try:
+        auc = roc_auc_score(y_true, y_pred)
+    except:
+        auc = 0
+    try:
+        f1 = f1_score(y_true, y_pred>0.5)
+    except:
+        f1 = 0
 
     # best_thres = find_best_threshold(y_true, y_pred)
     # r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
