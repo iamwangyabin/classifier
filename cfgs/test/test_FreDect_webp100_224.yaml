@@ -1,6 +1,6 @@
 arch: "FreDect"
 resume: 'networks/weights/DCTAnalysis.pth'
-test_name: "FreDect_224"
+test_name: "FreDect_webp100_224"
 
 datasets:
   batch_size: 32
@@ -8,6 +8,9 @@ datasets:
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
+    - _target_: data.Compress
+      method: "WEBP"
+      qf: 100
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop

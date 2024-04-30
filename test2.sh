@@ -42,10 +42,10 @@ conda activate timm
 
 #python test.py --cfg cfgs/test/test_arp.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg90_224.yaml
+python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg90_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg100_224.yaml
+python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg100_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_webp90_224.yaml
+python test.py --cfg cfgs/test/test_CNNSpot0.5_webp90_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_webp100_224.yaml
+python test.py --cfg cfgs/test/test_CNNSpot0.5_webp100_224.yaml

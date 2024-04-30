@@ -1,18 +1,26 @@
-arch: "FreDect"
-resume: 'networks/weights/DCTAnalysis.pth'
-test_name: "FreDect_224"
+
+arch: "freqnet"
+resume: 'networks/weights/freqnet.pth'
+test_name: "Freqnet_jpg100_224"
 
 datasets:
   batch_size: 32
-  loader_workers: 16
+  loader_workers: 8
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/deepfake_benchmark"
 
   trsf:
+    - _target_: data.Compress
+      method: "JPEG"
+      qf: 100
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
       size: 224
-    - _target_: data.DCTTransform
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
 
   source:
     ForenSynths:

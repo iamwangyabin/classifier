@@ -1,18 +1,24 @@
-arch: "FreDect"
-resume: 'networks/weights/DCTAnalysis.pth'
-test_name: "FreDect_224"
+arch: "clip"
+resume: 'networks/UniversalFakeDetect/fc_weights.pth'
+test_name: "Ojha_webp100_224"
 
 datasets:
   batch_size: 32
-  loader_workers: 16
+  loader_workers: 8
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
+    - _target_: data.Compress
+      method: "WEBP"
+      qf: 100
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
       size: 224
-    - _target_: data.DCTTransform
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
 
   source:
     ForenSynths:

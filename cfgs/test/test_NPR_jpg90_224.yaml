@@ -1,18 +1,26 @@
-arch: "FreDect"
-resume: 'networks/weights/DCTAnalysis.pth'
-test_name: "FreDect_224"
+arch: "npr"
+resume: 'networks/weights/NPR.pth'
+#resume: 'networks/weights/NPR_reimple.pth'
+test_name: "NPR_jpg90_224"
 
 datasets:
   batch_size: 32
-  loader_workers: 16
+  loader_workers: 32
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
+    - _target_: data.Compress
+      method: "JPEG"
+      qf: 90
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
       size: 224
-    - _target_: data.DCTTransform
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
 
   source:
     ForenSynths:

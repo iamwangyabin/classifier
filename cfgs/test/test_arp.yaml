@@ -27,9 +27,6 @@ datasets:
 #  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
-#    - _target_: data.Compress
-#      method: "WEBP"
-#      qf: 95
     - _target_: data.Compress
       method: "JPEG"
       qf: 95
