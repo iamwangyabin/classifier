@@ -2,7 +2,7 @@ arch: "arp"
 #resume: '/home/yw26g23/classifier/logs/arp-ViTL-ProGAN_20240417_15_26_08/epoch=02-val_acc_epoch=0.82.ckpt'
 #resume: '/home/yw26g23/classifier/logs/arp-ViTL-ProGAN_20240417_15_26_08/epoch=00-val_acc_epoch=0.83.ckpt'
 #resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
-resume: '/home/yw26g23/classifier/logs/arpnpr-ViTL-a1b1c1-221-ProGAN_20240429_14_41_50/epoch=00-val_acc_epoch=0.74.ckpt'
+resume: '/home/yw26g23/classifier/logs/arpnpr23-ViTL-a1b1c1-221-ProGAN_20240430_00_27_55/epoch=00-val_acc_epoch=0.81.ckpt'
 
 
 test_name: "arp-nrp-ViTL-Progan"

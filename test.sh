@@ -40,4 +40,4 @@ conda activate timm
 
 #CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_reimplefreqnet_224.yaml
 
-python test_fusing.py --cfg cfgs/test/test_arp.yaml
+python test.py --cfg cfgs/test/test_arp.yaml
