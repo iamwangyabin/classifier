@@ -1,5 +1,5 @@
 arch: "cnn"
-resume: 'networks/CNNSpot/blur_jpg_prob0.5.pth'
+resume: 'networks/weights/blur_jpg_prob0.5.pth'
 test_name: "CNN05_jpg100_224"
 
 datasets:
