@@ -1,11 +1,12 @@
 arch: "Fusing"
 resume: 'networks/weights/PSM.pth'
-test_name: "Fusing_224"
+test_name: "Fusing_jpg90_224"
 
 datasets:
   batch_size: 32
   loader_workers: 16
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
   CropSize: 224
   qf: 90

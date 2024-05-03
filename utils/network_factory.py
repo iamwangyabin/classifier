@@ -83,22 +83,18 @@ def get_model(conf):
                 model.load_state_dict(state_dict['netC'], strict=True)
             except:
                 model.load_state_dict({k.replace('module.', ''): v for k, v in state_dict['netC'].items()})
-
     elif conf.arch == 'arp':
         model = ARPromptsCLIP(conf)
         resume_lightning(model, conf)
-
+    elif conf.arch == 'vlp':
+        model = IndepVLPCLIP(conf)
+        resume_lightning(model, conf)
 
 
 
     # elif conf.arch == 'dino':
     #     model = DINOModel('dinov2_l')
     #     resume_lightning(model, conf)
-    #
-    # elif conf.arch == 'vlp':
-    #     model = IndepVLPCLIP(conf)
-    #     resume_lightning(model, conf)
-    #
     # elif conf.arch == 'coop':
     #     model = CoOpCLIP(conf)
     #     resume_lightning(model, conf)

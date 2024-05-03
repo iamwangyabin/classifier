@@ -24,28 +24,25 @@ conda activate timm
 #python test.py --cfg cfgs/test/test_Ojha_224.yaml
 #
 #python test.py --cfg cfgs/test/test_FreDect_224.yaml
-
-
+#
 #python test_fusing.py --cfg cfgs/test/test_Fusing_224.yaml
 #
 #python test.py --cfg cfgs/test/test_Garm_224.yaml
 
-
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_NPR_224.yaml
-#
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_reimpleNPR_224.yaml
-#
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_freqnet_224.yaml
-
-
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_reimplefreqnet_224.yaml
-
 #python test.py --cfg cfgs/test/test_arp.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg90_224.yaml
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg100_224.yaml
+#
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_webp90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_webp100_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg100_224.yaml
+#CUDA_VISIBLE_DEVICES=2 python test_fusing.py --cfg cfgs/test/test_Fusing_jpeg90_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_webp90_224.yaml
+#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_Garm_jpg90_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_webp100_224.yaml
+#CUDA_VISIBLE_DEVICES=2 python test_lgrad.py --cfg cfgs/test/test_LGrad_jpeg90_224.yaml
+
+CUDA_VISIBLE_DEVICES=2 python test_lnp.py --cfg cfgs/test/test_LNP_jpeg90_224.yaml

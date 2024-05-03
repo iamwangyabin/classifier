@@ -14,6 +14,12 @@ datasets:
   qf: 90
 
   source:
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                  "stylegan", "stylegan2", "whichfaceisreal" ]
+
+
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
@@ -62,10 +68,6 @@ datasets:
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
 
-    ForenSynths:
-      data_root: '${datasets.data_root}/ForenSynths'
-      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-                   "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'
