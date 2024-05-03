@@ -1,4 +1,3 @@
-
 arch: "freqnet"
 resume: 'networks/weights/freqnet.pth'
 test_name: "Freqnet_jpg100_224"

@@ -124,18 +124,18 @@ def validate_multicls(model, loader):
 
 
 def validate_arp(model, loader):
-    # from networks.SPrompts.arprompts import load_clip_to_cpu
-    # clip_model = load_clip_to_cpu(model.cfg)
-    # token_embedding = clip_model.token_embedding
+    from networks.SPrompts.arprompts import load_clip_to_cpu
+    clip_model = load_clip_to_cpu(model.cfg)
+    token_embedding = clip_model.token_embedding
     with torch.no_grad():
         y_true, y_pred, y_logits = [], [], []
         print("Length of dataset: %d" % (len(loader)))
         for img, label in tqdm(loader):
             in_tens = img.cuda()
 
-            # logits = model.forward_binary_classnames(in_tens, ['face'], token_embedding)
-
-            logits = model.forward_binary(in_tens)
+            logits = model.forward_binary_classnames(in_tens, ['face'], token_embedding)
+            #
+            # logits = model.forward_binary(in_tens)
             y_logits.extend(logits.flatten().tolist())
             y_pred.extend(F.softmax(logits, 1)[:,1].flatten().tolist())
             y_true.extend(label.flatten().tolist())

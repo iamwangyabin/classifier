@@ -1,22 +1,19 @@
-arch: "Fusing"
-resume: 'networks/weights/PSM.pth'
-test_name: "Fusing_224"
+arch: "cnn"
+resume: 'networks/weights/LGrad.pth'
+test_name: "LGrad_jpg90_224"
+
+LGrad_modelpath: 'networks/weights/karras2019stylegan-bedrooms-256x256_discriminator.pth'
+
 
 datasets:
-  batch_size: 32
+  batch_size: 4 # 绝对要使用这个值，否则会出问题，原因是stylegan discriminator的minibatch计算有个min groupsize，大于4可能出现不能整除的batch
   loader_workers: 16
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
-  CropSize: 224
-
+  qf: 90
 
   source:
-    ForenSynths:
-      data_root: '${datasets.data_root}/ForenSynths'
-      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-                  "stylegan", "stylegan2", "whichfaceisreal" ]
-
-
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
@@ -65,6 +62,10 @@ datasets:
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
 
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                   "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

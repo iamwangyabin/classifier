@@ -170,3 +170,4 @@ class DenoiseNet(nn.Module):
         x = self.body(x)
         x = self.tail(x)
         return -x
+

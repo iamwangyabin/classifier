@@ -8,7 +8,7 @@ datasets:
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   CropSize: 224
-
+  qf: 90
 
   source:
     ForenSynths:

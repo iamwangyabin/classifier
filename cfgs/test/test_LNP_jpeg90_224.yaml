@@ -1,20 +1,36 @@
-arch: "Fusing"
-resume: 'networks/weights/PSM.pth'
-test_name: "Fusing_224"
+arch: "cnn"
+resume: 'networks/weights/LNP.pth'
+test_name: "LNP_jpg90_224"
+
+LNP_modelpath: 'networks/weights/sidd_rgb.pth'
+
 
 datasets:
-  batch_size: 32
+  batch_size: 8
   loader_workers: 16
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
-  CropSize: 224
-
+  qf: 90
 
   source:
     ForenSynths:
       data_root: '${datasets.data_root}/ForenSynths'
-      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-                  "stylegan", "stylegan2", "whichfaceisreal" ]
+      sub_sets: ["biggan", "san", "seeingdark", "stargan",
+                   "stylegan", "stylegan2", "whichfaceisreal"]
+
+    DiffusionForensics:
+      data_root: '${datasets.data_root}/DiffusionForensics'
+      sub_sets: [ 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
+                  'celebahq_dalle2', 'celebahq_midjourney' ]
+
+    AIArt:
+      data_root: '${datasets.data_root}/AIArt'
+      sub_sets: [ 'dalle','imagen','mj','parti','sd','sdft' ]
+
+    Ojha:
+      data_root: '${datasets.data_root}/Ojha'
+      sub_sets: [ "dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg" ]
 
 
     GANGen-Detection:
@@ -35,9 +51,7 @@ datasets:
                  "stable_diffusion", "stylegan3", "cips", "denoising_diffusion_gan",
                  "gansformer", "pro_gan", "star_gan", "taming_transformer", "cyclegan"]
 
-    AIArt:
-      data_root: '${datasets.data_root}/AIArt'
-      sub_sets: [ 'dalle','imagen','mj','parti','sd','sdft' ]
+
 
     AI_recognition_dataset:
       data_root: '${datasets.data_root}/AI_recognition_dataset'
@@ -57,18 +71,6 @@ datasets:
       sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
 
 
-    DiffusionForensics:
-      data_root: '${datasets.data_root}/DiffusionForensics'
-      sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
-                 'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
-                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
-                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
-                 'celebahq_dalle2', 'celebahq_midjourney']
-
-
-    Ojha:
-      data_root: '${datasets.data_root}/Ojha'
-      sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
 
     AntifakePrompt:
       data_root: '${datasets.data_root}/AntifakePrompt'

@@ -402,22 +402,6 @@ for img in tqdm(os.listdir(img_dir)):
         file.write(caption)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #############################################选图######################################################
 
 import json
@@ -555,15 +539,15 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 
-diff_folders = ['0-500','1000-1500','1500-2000','2000-2500','2500-3000','3500-4000','4000-4500','500-1000',]
+diff_folders = ['arp-aug-ViTL-a1b1c1-221-ProGAN_20240430_18_23_16']
 
 for i in diff_folders:
     try:
         api.upload_folder(
-            folder_path=os.path.join('./cos2/', i),
-            path_in_repo=os.path.join('./supp',i),
-            repo_id="deepghs/cos5t_raw",
-            repo_type="dataset",
+            folder_path=os.path.join('./', i),
+            path_in_repo=os.path.join('./',i),
+            repo_id="nebula/testmodel",
+            repo_type="model",
         )
     except:
         print('failed')

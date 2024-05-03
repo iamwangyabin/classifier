@@ -1,9 +1,8 @@
 arch: "arp"
-resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
-#resume: '/home/yw26g23/classifier/logs/arpnpr23-ViTL-a1b1c1-221-ProGAN_20240430_00_27_55/epoch=00-val_acc_epoch=0.81.ckpt'
+#resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
+resume: './logs/arp_aug/epoch=05-val_acc_epoch=0.92.ckpt'
 
-
-test_name: "arp-nrp-ViTL-Progan"
+test_name: "arpaug-jpeg100-ViTL-Progan_3face"
 
 model:
   NAME: "ViT-L/14"
@@ -13,7 +12,6 @@ model:
   PROMPT_DEPTH_VISION: 2
   PROMPT_DEPTH_TEXT: 2
   PROMPT_NUM_TEXT: 1
-
 
 dataset:
   train:
@@ -29,7 +27,7 @@ datasets:
   trsf:
     - _target_: data.Compress
       method: "JPEG"
-      qf: 95
+      qf: 100
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
@@ -41,15 +39,21 @@ datasets:
 
 
   source:
-    GANGen-Detection:
-      data_root: '${datasets.data_root}/GANGen-Detection'
-      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
-
+#    ForenSynths:
+#      data_root: '${datasets.data_root}/ForenSynths'
+#      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+#                  "stylegan", "stylegan2", "whichfaceisreal" ]
+#
+#
+#    GANGen-Detection:
+#      data_root: '${datasets.data_root}/GANGen-Detection'
+#      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
+#
 #    Synthbuster:
 #      data_root: '${datasets.data_root}/synthbuster'
 #      sub_sets: ['dalle2','firefly','stable-diffusion-1-4','stable-diffusion-xl', 'dalle3','glide','midjourney-v5',
 #                 'stable-diffusion-1-3','stable-diffusion-2','real']
-#
+
 #    Artifact:
 #      data_root: '${datasets.data_root}/Artifact'
 #      sub_sets: ["afhq", "coco", "celebahq", "ffhq", "imagenet", "landscape", "lsun", "metfaces","real_cyclegan",
@@ -75,11 +79,10 @@ datasets:
 #    Fake2M:
 #      data_root: '${datasets.data_root}/Fake2M'
 #      sub_sets: ['cogview2-22K','IF-CC95K','Midjourneyv5-5K','SDv15-CC30K','SDv21-CC15K','stylegan3-60K']
-#
+
 #    GenImage:
 #      data_root: '${datasets.data_root}/AIGCDetect'
 #      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
-#
 #
 #    DiffusionForensics:
 #      data_root: '${datasets.data_root}/DiffusionForensics'
@@ -88,11 +91,6 @@ datasets:
 #                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
 #                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
 #                 'celebahq_dalle2', 'celebahq_midjourney']
-#
-#    ForenSynths:
-#      data_root: '${datasets.data_root}/ForenSynths'
-#      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-#                   "stylegan", "stylegan2", "whichfaceisreal"]
 #
 #    Ojha:
 #      data_root: '${datasets.data_root}/Ojha'
@@ -103,18 +101,17 @@ datasets:
 #      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
 #                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 #
-#    Celeb-DF-v1:
-#      data_root: '${datasets.data_root}/Celeb-DF-v1'
-#      sub_sets: [ 'all' ]
-#
-#    Celeb-DF-v2:
-#      data_root: '${datasets.data_root}/Celeb-DF-v2'
-#      sub_sets: [ 'all' ]
-#
-#    UADFV:
-#      data_root: '${datasets.data_root}/UADFV'
-#      sub_sets: [ 'all' ]
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
 
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]
 
 
 
