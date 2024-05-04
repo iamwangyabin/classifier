@@ -539,7 +539,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 
-diff_folders = ['arp-aug-ViTL-a1b1c1-221-ProGAN_20240430_18_23_16']
+diff_folders = ['SPrompts-ViTL-ProGAN_20240504_00_01_25']
 
 for i in diff_folders:
     try:

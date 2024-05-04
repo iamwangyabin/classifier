@@ -1,6 +1,6 @@
-arch: "arp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
+arch: "arp"
 resume: null
-name: "arp-aug-ViTL-a1b1c1-221-ProGAN"
+name: "arpaug-ViTL-a1b1c1-221-ProGAN"
 
 train:
   gpu_ids: [0]   # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
@@ -47,10 +47,10 @@ dataset:
     random_flip: true
     augment: True
     blur_prob: 0.1
-    blur_sig: [0.0, 3.0]
+    blur_sig: [0.0, 1.0]
     jpg_method: ['cv2', 'pil']
-    jpg_prob: 0.2
-    jpg_qual: [50, 100]
+    jpg_prob: 0.1
+    jpg_qual: [60, 100]
 
   val:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"

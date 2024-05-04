@@ -100,19 +100,25 @@ def validate_multicls(model, loader):
     y_true, y_pred, y_logits = np.array(y_true), np.array(y_pred), np.array(y_logits)
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
-    # best_thres = find_best_threshold(y_true, y_pred)
-    # r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
+
+    try:
+        auc = roc_auc_score(y_true, y_pred)
+    except:
+        auc = 0
+    try:
+        f1 = f1_score(y_true, y_pred>0.5)
+    except:
+        f1 = 0
+
     num_real = (y_true == 0).sum()
     num_fake = (y_true == 1).sum()
     result_dict = {
         'ap': ap,
+        'auc': auc,
+        'f1': f1,
         'r_acc0': r_acc0,
         'f_acc0': f_acc0,
         'acc0': acc0,
-        # 'r_acc1': r_acc1,
-        # 'f_acc1': f_acc1,
-        # 'acc1': acc1,
-        # 'best_thres': best_thres,
         'num_real': num_real,
         'num_fake': num_fake,
         'y_true': y_true,

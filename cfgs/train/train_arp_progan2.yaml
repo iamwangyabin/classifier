@@ -1,15 +1,14 @@
-arch: "arp"  # Architecture for binary classification, e.g., 'resnet50.tv_in1k' 'vit_base_patch16_224'
+arch: "arp"
 resume: null
-name: "arp-ViTL-a05b1c1-221-ProGAN"
-
+name: "arpaug-ViTL-a1b1c1-111-ProGAN"
 
 train:
   gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
-  train_epochs: 1  # Number of training epochs
+  train_epochs: 10  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
-  a: 0.5
+  a: 1
   b: 1
   c: 1
 
@@ -22,22 +21,22 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 1
+    T_max: 10
 
 model:
   NAME: "ViT-L/14"
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 2
-  PROMPT_DEPTH_TEXT: 2
+  PROMPT_DEPTH_VISION: 1
+  PROMPT_DEPTH_TEXT: 1
   PROMPT_NUM_TEXT: 1
 
 
 dataset:
   train:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
-#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
+#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
     subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
     multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                        "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
@@ -46,14 +45,21 @@ dataset:
     loadSize: 256
     cropSize: 224
     random_flip: true
-    augment: null
+    augment: True
+    blur_prob: 0.1
+    blur_sig: [0.0, 1.0]
+    jpg_method: ['cv2', 'pil']
+    jpg_prob: 0.1
+    jpg_qual: [60, 100]
 
   val:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/ForenSynths/test"
-    subfolder_names: ["biggan", "deepfake", "whichfaceisreal", "gaugan"]
-    multicalss_idx: [0, 0, 0, 0]
-    batch_size: 128
+#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
+#    subfolder_names: ["progan"]
+#    multicalss_idx: [1]
+    subfolder_names: [ "biggan", "deepfake", "whichfaceisreal", "gaugan" ]
+    multicalss_idx: [ 0, 0, 0, 0 ]
+    batch_size: 32
     loader_workers: 4
     loadSize: 256
     cropSize: 224

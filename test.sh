@@ -45,4 +45,6 @@ conda activate timm
 
 #CUDA_VISIBLE_DEVICES=2 python test_lgrad.py --cfg cfgs/test/test_LGrad_jpeg90_224.yaml
 
-CUDA_VISIBLE_DEVICES=2 python test_lnp.py --cfg cfgs/test/test_LNP_jpeg90_224.yaml
+CUDA_VISIBLE_DEVICES=1 python test_lnp.py --cfg cfgs/test/test_LNP_jpeg90_224.yaml
+
+CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_freqnet_jpg90_224.yaml

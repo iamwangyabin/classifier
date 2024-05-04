@@ -138,7 +138,7 @@ class ResNet(nn.Module):
         layers.extend(block(self.inplanes, planes) for _ in range(1, blocks))
         return nn.Sequential(*layers)
 
-    def forward(self, x, *args):
+    def forward(self, x, return_feature=False, *args):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -151,6 +151,10 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
+
+        if return_feature:
+            return self.fc(x), x
+
         x = self.fc(x)
 
         return x

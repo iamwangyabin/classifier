@@ -4,7 +4,7 @@ test_name: "Fusing_jpg90_224"
 
 datasets:
   batch_size: 32
-  loader_workers: 16
+  loader_workers: 8
 #  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
   data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
@@ -17,7 +17,6 @@ datasets:
       sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                   "stylegan", "stylegan2", "whichfaceisreal" ]
 
-
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
@@ -27,14 +26,14 @@ datasets:
       sub_sets: ['dalle2','firefly','stable-diffusion-1-4','stable-diffusion-xl', 'dalle3','glide','midjourney-v5',
                  'stable-diffusion-1-3','stable-diffusion-2','real']
 
-    Artifact:
-      data_root: '${datasets.data_root}/Artifact'
-      sub_sets: ["afhq", "coco", "celebahq", "ffhq", "imagenet", "landscape", "lsun", "metfaces","real_cyclegan",
-                 "diffusion_gan", "gau_gan", "lama", "mat", "projected_gan", "stylegan1",
-                 "vq_diffusion", "big_gan", "face_synthetics", "generative_inpainting",
-                 "sfhq", "stylegan2", "ddpm", "glide", "latent_diffusion", "palette",
-                 "stable_diffusion", "stylegan3", "cips", "denoising_diffusion_gan",
-                 "gansformer", "pro_gan", "star_gan", "taming_transformer", "cyclegan"]
+#    Artifact:
+#      data_root: '${datasets.data_root}/Artifact'
+#      sub_sets: ["afhq", "coco", "celebahq", "ffhq", "imagenet", "landscape", "lsun", "metfaces","real_cyclegan",
+#                 "diffusion_gan", "gau_gan", "lama", "mat", "projected_gan", "stylegan1",
+#                 "vq_diffusion", "big_gan", "face_synthetics", "generative_inpainting",
+#                 "sfhq", "stylegan2", "ddpm", "glide", "latent_diffusion", "palette",
+#                 "stable_diffusion", "stylegan3", "cips", "denoising_diffusion_gan",
+#                 "gansformer", "pro_gan", "star_gan", "taming_transformer", "cyclegan"]
 
     AIArt:
       data_root: '${datasets.data_root}/AIArt'
@@ -65,7 +64,6 @@ datasets:
                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
-
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

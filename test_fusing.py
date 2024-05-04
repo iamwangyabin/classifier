@@ -206,3 +206,6 @@ if __name__ == '__main__':
             writer.writerow(values)
 
 
+
+    with open(conf.test_name + '.pkl', 'wb') as file:
+        pickle.dump(save_raw_results, file)

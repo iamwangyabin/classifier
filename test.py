@@ -18,8 +18,6 @@ from utils.network_factory import get_model
 
 
 if __name__ == '__main__':
-
-
     parser = argparse.ArgumentParser(description='Testing')
     parser.add_argument('--cfg', type=str, default=None, required=True)
     args, cfg_args = parser.parse_known_args()
@@ -51,10 +49,6 @@ if __name__ == '__main__':
             r_acc0 = result['r_acc0']
             f_acc0 = result['f_acc0']
             acc0 = result['acc0']
-            # r_acc1 = result['r_acc1']
-            # f_acc1 = result['f_acc1']
-            # acc1 = result['acc1']
-            # best_thres = result['best_thres']
             num_real = result['num_real']
             num_fake = result['num_fake']
 
