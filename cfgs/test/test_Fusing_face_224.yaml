@@ -1,0 +1,24 @@
+arch: "Fusing"
+resume: 'networks/weights/PSM.pth'
+test_name: "Fusing_face_224"
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  CropSize: 224
+  qf: False
+
+  source:
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

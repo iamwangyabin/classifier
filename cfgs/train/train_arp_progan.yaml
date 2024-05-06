@@ -1,10 +1,10 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b1c1-221-ProGAN"
+name: "arpaug-ViTL-a1b1c1-331-ProGAN"
 
 train:
   gpu_ids: [0]   # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
-  train_epochs: 10  # Number of training epochs
+  train_epochs: 2  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
@@ -21,15 +21,15 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 10
+    T_max: 2
 
 model:
   NAME: "ViT-L/14"
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 2
-  PROMPT_DEPTH_TEXT: 2
+  PROMPT_DEPTH_VISION: 3
+  PROMPT_DEPTH_TEXT: 3
   PROMPT_NUM_TEXT: 1
 
 
@@ -54,11 +54,11 @@ dataset:
 
   val:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
-#    subfolder_names: ["progan"]
-#    multicalss_idx: [1]
-    subfolder_names: [ "biggan", "deepfake", "whichfaceisreal", "gaugan" ]
-    multicalss_idx: [ 0, 0, 0, 0 ]
+    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
+    subfolder_names: ["progan"]
+    multicalss_idx: [1]
+#    subfolder_names: [ "biggan", "deepfake", "whichfaceisreal", "gaugan" ]
+#    multicalss_idx: [ 0, 0, 0, 0 ]
     batch_size: 32
     loader_workers: 4
     loadSize: 256

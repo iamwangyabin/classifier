@@ -1,0 +1,27 @@
+arch: "cnn"
+resume: 'networks/weights/LGrad.pth'
+test_name: "LGrad_face_224"
+
+LGrad_modelpath: 'networks/weights/karras2019stylegan-bedrooms-256x256_discriminator.pth'
+
+
+datasets:
+  batch_size: 4 # 绝对要使用这个值，否则会出问题，原因是stylegan discriminator的minibatch计算有个min groupsize，大于4可能出现不能整除的batch
+  loader_workers: 16
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  qf: False
+
+  source:
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

@@ -1,16 +1,17 @@
 arch: "arp"
-resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
 #resume: './logs/arp_aug/epoch=05-val_acc_epoch=0.92.ckpt'
-#
-test_name: "arpaug-jpeg100-ViTL-Progan_3face"
+resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
+
+test_name: "arpaug_ViTL_Progan_face"
+specific_cls: False
 
 model:
   NAME: "ViT-L/14"
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 2
-  PROMPT_DEPTH_TEXT: 2
+  PROMPT_DEPTH_VISION: 3
+  PROMPT_DEPTH_TEXT: 3
   PROMPT_NUM_TEXT: 1
 
 dataset:
@@ -27,7 +28,7 @@ datasets:
   trsf:
     - _target_: data.Compress
       method: "JPEG"
-      qf: 100
+      qf: 90
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
@@ -38,6 +39,7 @@ datasets:
       std: [0.26862954, 0.26130258, 0.27577711]
 
 
+
   source:
 #    ForenSynths:
 #      data_root: '${datasets.data_root}/ForenSynths'
@@ -45,9 +47,9 @@ datasets:
 #                  "stylegan", "stylegan2", "whichfaceisreal" ]
 #
 #
-#    GANGen-Detection:
-#      data_root: '${datasets.data_root}/GANGen-Detection'
-#      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
+    GANGen-Detection:
+      data_root: '${datasets.data_root}/GANGen-Detection'
+      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
 #
 #    Synthbuster:
 #      data_root: '${datasets.data_root}/synthbuster'
@@ -101,17 +103,20 @@ datasets:
 #      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
 #                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 #
-    Celeb-DF-v1:
-      data_root: '${datasets.data_root}/Celeb-DF-v1'
-      sub_sets: [ 'all' ]
+#    Celeb-DF-v1:
+#      data_root: '${datasets.data_root}/Celeb-DF-v1'
+#      sub_sets: [ 'all' ]
+#
+#    Celeb-DF-v2:
+#      data_root: '${datasets.data_root}/Celeb-DF-v2'
+#      sub_sets: [ 'all' ]
+#
+#    UADFV:
+#      data_root: '${datasets.data_root}/UADFV'
+#      sub_sets: [ 'all' ]
 
-    Celeb-DF-v2:
-      data_root: '${datasets.data_root}/Celeb-DF-v2'
-      sub_sets: [ 'all' ]
 
-    UADFV:
-      data_root: '${datasets.data_root}/UADFV'
-      sub_sets: [ 'all' ]
+
 
 
 

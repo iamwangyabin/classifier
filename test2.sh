@@ -18,34 +18,15 @@ conda activate timm
 
 
 #python test.py --cfg cfgs/test/test_CNNSpot0.1_224.yaml
-#
-#python test.py --cfg cfgs/test/test_CNNSpot0.5_224.yaml
-#
-#python test.py --cfg cfgs/test/test_Ojha_224.yaml
-#
-#python test.py --cfg cfgs/test/test_FreDect_224.yaml
 
-
-#python test_fusing.py --cfg cfgs/test/test_Fusing_224.yaml
-#
-#python test.py --cfg cfgs/test/test_Garm_224.yaml
-
-
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_NPR_224.yaml
-#
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_reimpleNPR_224.yaml
-#
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_freqnet_224.yaml
-
-
-#CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/test_reimplefreqnet_224.yaml
-
-#python test.py --cfg cfgs/test/test_arp.yaml
-
-python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg90_224.yaml
-
-python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg100_224.yaml
-
-python test.py --cfg cfgs/test/test_CNNSpot0.5_webp90_224.yaml
-
-python test.py --cfg cfgs/test/test_CNNSpot0.5_webp100_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_FreDect_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_sprompts_face_224.yaml
+#CUDA_VISIBLE_DEVICES=2 python test_lgrad.py --cfg cfgs/test/test_LGrad_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_NPR_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_freqnet_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_CNNSpot0.5_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_Garm_face_224.yaml
+#CUDA_VISIBLE_DEVICES=2 python test_lnp.py --cfg cfgs/test/test_LNP_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_Ojha_face_224.yaml
+CUDA_VISIBLE_DEVICES=1 python test_fusing.py --cfg cfgs/test/test_Fusing_face_224.yaml
+#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_CNNSpot0.1_face_224.yaml

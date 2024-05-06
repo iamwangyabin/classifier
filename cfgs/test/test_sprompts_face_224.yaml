@@ -1,0 +1,41 @@
+arch: "vlp"
+resume: './logs/sprompts/last.ckpt'
+test_name: "SPrompts_face_ViTL_ProGAN"
+
+model:
+  NAME: "ViT-L/14"
+  N_CTX_VISION: 16
+  N_CTX_TEXT: 16
+  CTX_INIT: False
+  PROMPT_DEPTH_VISION: 1
+  PROMPT_DEPTH_TEXT: 1
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  trsf:
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+  source:
+
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

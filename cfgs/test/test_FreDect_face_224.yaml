@@ -1,0 +1,28 @@
+arch: "FreDect"
+resume: 'networks/weights/DCTAnalysis.pth'
+test_name: "FreDect_face_224"
+
+datasets:
+  batch_size: 32
+  loader_workers: 16
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  trsf:
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: data.DCTTransform
+
+  source:
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

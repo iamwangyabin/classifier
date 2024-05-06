@@ -65,10 +65,11 @@ class BinaryJsonDatasets(Dataset):
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
-        outputIoStream = io.BytesIO()
-        image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
-        outputIoStream.seek(0)
-        image = Image.open(outputIoStream)
+        if self.qf:
+            outputIoStream = io.BytesIO()
+            image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
+            outputIoStream.seek(0)
+            image = Image.open(outputIoStream)
         image = self.transform(image)
         label = self.labels[idx]
         return image, label, img_path

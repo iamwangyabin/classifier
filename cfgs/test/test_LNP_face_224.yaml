@@ -1,0 +1,26 @@
+arch: "cnn"
+resume: 'networks/weights/LNP.pth'
+test_name: "LNP_face_224"
+
+LNP_modelpath: 'networks/weights/sidd_rgb.pth'
+
+datasets:
+  batch_size: 8
+  loader_workers: 16
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  qf: False
+
+  source:
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]

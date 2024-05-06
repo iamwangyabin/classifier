@@ -20,6 +20,7 @@ from scipy.fftpack import dct
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
+from sklearn.metrics import confusion_matrix, classification_report, roc_curve, roc_auc_score, f1_score
 from copy import deepcopy
 from tqdm import tqdm
 
@@ -58,11 +59,11 @@ class BinaryJsonDatasets(Dataset):
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
-
-        outputIoStream = io.BytesIO()
-        image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
-        outputIoStream.seek(0)
-        image = Image.open(outputIoStream)
+        if self.qf:
+            outputIoStream = io.BytesIO()
+            image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
+            outputIoStream.seek(0)
+            image = Image.open(outputIoStream)
 
         height, width = image.height, image.width
 
@@ -118,7 +119,7 @@ def calculate_acc(y_true, y_pred, thres):
 
 
 def validate_PSM(model, data_loader):
-    y_true, y_pred = [], []
+    y_true, y_pred, y_logits = [], [], []
     i = 0
     with torch.no_grad():
         for data in data_loader:
@@ -132,30 +133,34 @@ def validate_PSM(model, data_loader):
             y_pred.extend(logits.sigmoid().flatten().tolist())
             y_true.extend(label.flatten().tolist())
 
-    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    y_true, y_pred, y_logits = np.array(y_true), np.array(y_pred), np.array(y_logits)
     ap = average_precision_score(y_true, y_pred)
     r_acc0, f_acc0, acc0 = calculate_acc(y_true, y_pred, 0.5)
-    best_thres = find_best_threshold(y_true, y_pred)
-    r_acc1, f_acc1, acc1 = calculate_acc(y_true, y_pred, best_thres)
+    try:
+        auc = roc_auc_score(y_true, y_pred)
+    except:
+        auc = 0
+    try:
+        f1 = f1_score(y_true, y_pred>0.5)
+    except:
+        f1 = 0
+
     num_real = (y_true == 0).sum()
     num_fake = (y_true == 1).sum()
     result_dict = {
         'ap': ap,
+        'auc': auc,
+        'f1': f1,
         'r_acc0': r_acc0,
         'f_acc0': f_acc0,
         'acc0': acc0,
-        'r_acc1': r_acc1,
-        'f_acc1': f_acc1,
-        'acc1': acc1,
-        'best_thres': best_thres,
         'num_real': num_real,
         'num_fake': num_fake,
         'y_true': y_true,
         'y_pred': y_pred,
+        'y_logits': y_logits
     }
     return result_dict
-
-
 
 if __name__ == '__main__':
 
@@ -179,33 +184,27 @@ if __name__ == '__main__':
                                         collate_fn=patch_collate_test, num_workers=conf.datasets.loader_workers)
 
             result = validate_PSM(model, data_loader)
+
             ap = result['ap']
+            auc = result['auc']
+            f1 = result['f1']
             r_acc0 = result['r_acc0']
             f_acc0 = result['f_acc0']
             acc0 = result['acc0']
-            r_acc1 = result['r_acc1']
-            f_acc1 = result['f_acc1']
-            acc1 = result['acc1']
-            best_thres = result['best_thres']
             num_real = result['num_real']
             num_fake = result['num_fake']
 
             print(f"{set_name} {subset}")
-            print(f"AP: {ap:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
-            all_results.append([set_name, subset, ap, r_acc0, f_acc0, acc0, r_acc1, f_acc1, acc1, best_thres,
-                                num_real, num_fake])
+            print(
+                f"AP: {ap:.4f},\tF1: {f1:.4f},\tAUC: {auc:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
+            all_results.append([set_name, subset, ap, auc, f1, r_acc0, f_acc0, acc0, num_real, num_fake])
             save_raw_results[f"{set_name} {subset}"] = result
 
-
-    columns = ['dataset', 'sub_set', 'ap', 'r_acc0', 'f_acc0', 'acc0', 'r_acc1', 'f_acc1', 'acc1', 'best_thres',
-               'num_real', 'num_fake']
-    with open(conf.test_name+'_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    columns = ['dataset', 'sub_set', 'ap', 'auc', 'f1', 'r_acc0', 'f_acc0', 'acc0', 'num_real', 'num_fake']
+    with open(conf.test_name + '_results.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(columns)
         for values in all_results:
             writer.writerow(values)
-
-
-
     with open(conf.test_name + '.pkl', 'wb') as file:
         pickle.dump(save_raw_results, file)

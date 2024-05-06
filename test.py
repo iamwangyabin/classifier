@@ -39,7 +39,7 @@ if __name__ == '__main__':
             if conf.arch == 'vlp' or conf.arch == 'coop':
                 result = validate_multicls(model, data_loader)
             elif conf.arch == 'arp':
-                result = validate_arp(model, data_loader)
+                result = validate_arp(model, data_loader, conf.specific_cls)
             else:
                 result = validate(model, data_loader)
 
@@ -54,8 +54,7 @@ if __name__ == '__main__':
 
             print(f"{set_name} {subset}")
             print(f"AP: {ap:.4f},\tF1: {f1:.4f},\tAUC: {auc:.4f},\tACC: {acc0:.4f},\tR_ACC: {r_acc0:.4f},\tF_ACC: {f_acc0:.4f}")
-            all_results.append([set_name, subset, ap, auc, f1, r_acc0, f_acc0, acc0, #r_acc1, f_acc1, acc1, best_thres,
-                                num_real, num_fake])
+            all_results.append([set_name, subset, ap, auc, f1, r_acc0, f_acc0, acc0, num_real, num_fake])
             save_raw_results[f"{set_name} {subset}"] = result
 
 

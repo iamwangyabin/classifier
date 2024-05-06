@@ -23,9 +23,8 @@ conda activate timm
 #python train.py --cfg cfgs/train_coop_progan_b.yaml
 
 #python train.py --cfg cfgs/train_vlp_progan.yaml
-#
-#python train.py --cfg cfgs/train_vlp_progan_b.yaml
 
+#python train.py --cfg cfgs/train_vlp_progan_b.yaml
 #python train.py --cfg cfgs/train_clip_sd15.yaml
 #python train.py --cfg cfgs/train/train_sp_progan.yaml
 
@@ -35,12 +34,12 @@ python train.py --cfg cfgs/train/train_arp_progan.yaml
 python train.py --cfg cfgs/train/train_arp_progan2.yaml
 
 python train.py --cfg cfgs/train/train_arp_progan3.yaml
-#
-#python train.py --cfg cfgs/train/train_arp_progan4.yaml
-#
-#python train.py --cfg cfgs/train/train_arp_progan5.yaml
-#
-#python train.py --cfg cfgs/train/train_arp_progan6.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan4.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan5.yaml
+
+python train.py --cfg cfgs/train/train_arp_progan6.yaml
 #
 #python train.py --cfg cfgs/train/train_arp_progan7.yaml
 
