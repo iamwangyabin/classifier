@@ -54,7 +54,7 @@ dataset:
 
   val:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
-    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
+#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
     subfolder_names: ["progan"]
     multicalss_idx: [1]
 #    subfolder_names: [ "biggan", "deepfake", "whichfaceisreal", "gaugan" ]
