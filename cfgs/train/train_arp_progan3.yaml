@@ -1,9 +1,9 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b1c1-551-ProGAN"
+name: "arpaug-ViTL-a1b1c1-331-ProGAN"
 
 train:
-  gpu_ids: [0]  # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
+  gpu_ids: [0]   # GPU IDs to use for training, e.g., '0' for single GPU or '0,1,2,3' for multiple GPUs
   train_epochs: 1  # Number of training epochs
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
@@ -15,7 +15,7 @@ train:
   optimizer:
     _target_: torch.optim.AdamW
     _partial_: True
-    lr: 1e-4
+    lr: 1e-2
     weight_decay: 1e-3
 
   scheduler:
@@ -28,8 +28,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 5
-  PROMPT_DEPTH_TEXT: 5
+  PROMPT_DEPTH_VISION: 3
+  PROMPT_DEPTH_TEXT: 3
   PROMPT_NUM_TEXT: 1
 
 

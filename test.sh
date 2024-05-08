@@ -16,29 +16,49 @@ eval "$(conda shell.bash hook)"
 conda init bash
 conda activate timm
 
-python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg90_224.yaml
+#python test.py --cfg cfgs/test/test_CNNSpot0.1_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_FreDect_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_NPR_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_Ojha_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_sprompts_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_freqnet_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_Garm_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_arp_jpg90_224.yaml
+#
+#python test.py --cfg cfgs/test/test_arp2_jpg90_224.yaml
 
-python test.py --cfg cfgs/test/test_CNNSpot0.5_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan.yaml
 
-python test.py --cfg cfgs/test/test_FreDect_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan2.yaml
 
-python test.py --cfg cfgs/test/test_NPR_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan3.yaml
 
-python test.py --cfg cfgs/test/test_Ojha_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan4.yaml
 
-python test.py --cfg cfgs/test/test_sprompts_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan5.yaml
 
-python test.py --cfg cfgs/test/test_freqnet_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan6.yaml
 
-python test.py --cfg cfgs/test/test_Garm_jpg90_224.yaml
+python train.py --cfg cfgs/train/train_arp_progan7.yaml
 
-python test.py --cfg cfgs/test/test_arp_jpg90_224.yaml
-
-python test.py --cfg cfgs/test/test_arp2_jpg90_224.yaml
 
 python test_fusing.py --cfg cfgs/test/test_Fusing_jpeg90_224.yaml
 
-python test_lgrad.py --cfg cfgs/test/test_LGrad_jpeg90_224.yaml
+#python test_lgrad.py --cfg cfgs/test/test_LGrad_jpeg90_224.yaml
 
 python test_lnp.py --cfg cfgs/test/test_LNP_jpeg90_224.yaml
+
+
+
+
+
 

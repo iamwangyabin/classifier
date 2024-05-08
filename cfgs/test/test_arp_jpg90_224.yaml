@@ -1,7 +1,10 @@
 arch: "arp"
-resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240506_16_32_18/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240506_16_32_18/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=02-val_acc_epoch=0.90.ckpt'
 
-test_name: "arpaug_ViTL_a1b1c1-331_Progan"
+test_name: "arpaug_ViTL_a1b1c1-331_92
+"
 specific_cls: False
 
 model:
@@ -21,8 +24,8 @@ dataset:
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
     - _target_: data.Compress

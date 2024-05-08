@@ -539,7 +539,8 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 
-diff_folders = ['arpaug-ViTL-a1b1c1-331-ProGAN_20240506_03_53_39',]
+diff_folders = ['weights',
+                ]
 
 for i in diff_folders:
     try:
