@@ -1,8 +1,8 @@
 arch: "arp"
-resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
-#resume: './logs/arp_aug/epoch=05-val_acc_epoch=0.92.ckpt'
-#
-test_name: "arpaug-jpeg100-ViTL-Progan_3face"
+resume: './logs/arp_aug/epoch=05-val_acc_epoch=0.92.ckpt'
+specific_cls: False
+
+test_name: "test"
 
 model:
   NAME: "ViT-L/14"
@@ -27,7 +27,7 @@ datasets:
   trsf:
     - _target_: data.Compress
       method: "JPEG"
-      qf: 100
+      qf: 90
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
@@ -71,10 +71,10 @@ datasets:
 #      data_root: '${datasets.data_root}/AI_recognition_dataset'
 #      sub_sets: [ 'all' ]
 #
-#    DIF:
-#      data_root: '${datasets.data_root}/DIF_testset'
-#      sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
-#                 'stargan',  'stylegan',  'stylegan2']
+    DIF:
+      data_root: '${datasets.data_root}/DIF_testset'
+      sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
+                 'stargan',  'stylegan',  'stylegan2']
 #
 #    Fake2M:
 #      data_root: '${datasets.data_root}/Fake2M'
@@ -101,17 +101,17 @@ datasets:
 #      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
 #                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
 #
-    Celeb-DF-v1:
-      data_root: '${datasets.data_root}/Celeb-DF-v1'
-      sub_sets: [ 'all' ]
-
-    Celeb-DF-v2:
-      data_root: '${datasets.data_root}/Celeb-DF-v2'
-      sub_sets: [ 'all' ]
-
-    UADFV:
-      data_root: '${datasets.data_root}/UADFV'
-      sub_sets: [ 'all' ]
+#    Celeb-DF-v1:
+#      data_root: '${datasets.data_root}/Celeb-DF-v1'
+#      sub_sets: [ 'all' ]
+#
+#    Celeb-DF-v2:
+#      data_root: '${datasets.data_root}/Celeb-DF-v2'
+#      sub_sets: [ 'all' ]
+#
+#    UADFV:
+#      data_root: '${datasets.data_root}/UADFV'
+#      sub_sets: [ 'all' ]
 
 
 

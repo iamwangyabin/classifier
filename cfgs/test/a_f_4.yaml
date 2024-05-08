@@ -1,10 +1,14 @@
 arch: "arp"
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_02_20_23/last.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_04_35_48/last.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_03_28_16/last.ckpt'
-resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_05_43_32/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-111/epoch=00-val_acc_epoch=0.95.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=00-val_acc_epoch=0.91.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-441/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-551/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881/last.ckpt'
 
-test_name: "arpaug_ViTL_a1b1c1_331_face_Progan_0508_05_43_32"
+
+test_name: "arpaug_ViTL_a1b1c1_331_face"
 
 specific_cls: ['face']
 #specific_cls: False
@@ -26,8 +30,8 @@ dataset:
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
     - _target_: torchvision.transforms.Resize

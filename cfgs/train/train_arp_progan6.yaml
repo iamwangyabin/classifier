@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b1c1-331-4cls2-ProGAN"
+name: "arpaug-ViTL-a1b1c1-811-ProGAN"
 
 train:
   gpu_ids: [0]
@@ -28,8 +28,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 3
-  PROMPT_DEPTH_TEXT: 3
+  PROMPT_DEPTH_VISION: 8
+  PROMPT_DEPTH_TEXT: 1
   PROMPT_NUM_TEXT: 1
 
 
@@ -37,8 +37,9 @@ dataset:
   train:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
 #    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
-    subfolder_names: "ForenSynths"
-    multicalss_names: ["chair", "diningtable", "horse", "person"]
+    subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
     batch_size: 128
     loader_workers: 32
     loadSize: 256
