@@ -1,0 +1,58 @@
+arch: "arp"
+resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_02_20_23/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_04_35_48/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_03_28_16/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_05_43_32/last.ckpt'
+
+test_name: "arpaug_ViTL_a1b1c1_331_face_0508_02_20_23"
+
+specific_cls: ['face']
+#specific_cls: False
+
+model:
+  NAME: "ViT-L/14"
+  N_CTX_VISION: 16
+  N_CTX_TEXT: 16
+  CTX_INIT: False
+  PROMPT_DEPTH_VISION: 3
+  PROMPT_DEPTH_TEXT: 3
+  PROMPT_NUM_TEXT: 1
+
+dataset:
+  train:
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+
+  trsf:
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
+
+  source:
+#
+    Celeb-DF-v1:
+      data_root: '${datasets.data_root}/Celeb-DF-v1'
+      sub_sets: [ 'all' ]
+
+    Celeb-DF-v2:
+      data_root: '${datasets.data_root}/Celeb-DF-v2'
+      sub_sets: [ 'all' ]
+#
+    UADFV:
+      data_root: '${datasets.data_root}/UADFV'
+      sub_sets: [ 'all' ]
+
+
+
+

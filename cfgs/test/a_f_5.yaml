@@ -1,20 +1,14 @@
 arch: "arp"
 #resume: './logs/arpaug-ViTL-a1b1c1-111/epoch=00-val_acc_epoch=0.95.ckpt'
 #resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=00-val_acc_epoch=0.91.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=02-val_acc_epoch=0.90.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=03-val_acc_epoch=0.90.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=04-val_acc_epoch=0.92.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=05-val_acc_epoch=0.90.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=05-val_acc_epoch=0.93.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=1.00.ckpt'
 #resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-441/epoch=01-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
+resume: './logs/arpaug-ViTL-a1b1c1-441/epoch=00-val_acc_epoch=1.00.ckpt'
 #resume: './logs/arpaug-ViTL-a1b1c1-551/epoch=00-val_acc_epoch=1.00.ckpt'
 #resume: './logs/arpaug-ViTL-a1b1c1-881/last.ckpt'
-#resume: '/home/jwang/ybwork/classifier/logs/arp-ViTL-3loss-ProGAN_20240421_18_26_47/last.ckpt'     # current main results
 
-test_name: "our_a1b1c1_331_face"
+
+test_name: "arpaug_ViTL_a1b1c1_441_face"
 
 specific_cls: ['face']
 #specific_cls: False
@@ -24,8 +18,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 3
-  PROMPT_DEPTH_TEXT: 3
+  PROMPT_DEPTH_VISION: 4
+  PROMPT_DEPTH_TEXT: 4
   PROMPT_NUM_TEXT: 1
 
 dataset:
