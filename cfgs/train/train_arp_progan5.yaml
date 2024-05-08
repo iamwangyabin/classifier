@@ -4,7 +4,7 @@ name: "arpaug-ViTL-a1b1c1-211-ProGAN"
 
 train:
   gpu_ids: [0]
-  train_epochs: 1
+  train_epochs: 2
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
@@ -21,7 +21,7 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 1
+    T_max: 2
 
 model:
   NAME: "ViT-L/14"
