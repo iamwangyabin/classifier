@@ -1,14 +1,13 @@
 arch: "arp"
-#resume: './logs/arpaug-ViTL-a1b1c1-111/epoch=00-val_acc_epoch=0.95.ckpt'
-resume: './logs/arpaug-ViTL-a1b1c1-221/epoch=00-val_acc_epoch=0.91.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331/epoch=01-val_acc_epoch=0.92.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-441/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-551/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-881/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-10101-ProGAN_20240509_03_16_22/last.ckpt'
+resume: './logs/arpaug-ViTL-a1b1c1-771-ProGAN_20240509_05_29_14/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-211-ProGAN_20240509_09_53_49/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-811-ProGAN_20240509_12_06_00/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-311-ProGAN_20240509_07_41_49/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-991-ProGAN_20240509_01_02_52/last.ckpt'
 
 
-test_name: "arpaug_ViTL_a1b1c1_221_face"
+test_name: "arpaug_ViTL_a1b1c1_771_face"
 
 specific_cls: ['face']
 #specific_cls: False
@@ -18,8 +17,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 2
-  PROMPT_DEPTH_TEXT: 2
+  PROMPT_DEPTH_VISION: 7
+  PROMPT_DEPTH_TEXT: 7
   PROMPT_NUM_TEXT: 1
 
 dataset:

@@ -1,10 +1,12 @@
 arch: "arp"
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_02_20_23/last.ckpt'
-resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_04_35_48/last.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_03_28_16/last.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-331-ProGAN_20240508_05_43_32/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-10101-ProGAN_20240509_03_16_22/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-771-ProGAN_20240509_05_29_14/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-211-ProGAN_20240509_09_53_49/last.ckpt'
+resume: './logs/arpaug-ViTL-a1b1c1-811-ProGAN_20240509_12_06_00/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-311-ProGAN_20240509_07_41_49/last.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-991-ProGAN_20240509_01_02_52/last.ckpt'
 
-test_name: "arpaug_ViTL_a1b1c1_331_0508_04_35_48"
+test_name: "arpaug_ViTL_a1b1c1_811"
 specific_cls: False
 
 model:
@@ -12,8 +14,8 @@ model:
   N_CTX_VISION: 16
   N_CTX_TEXT: 16
   CTX_INIT: False
-  PROMPT_DEPTH_VISION: 3
-  PROMPT_DEPTH_TEXT: 3
+  PROMPT_DEPTH_VISION: 8
+  PROMPT_DEPTH_TEXT: 1
   PROMPT_NUM_TEXT: 1
 
 dataset:

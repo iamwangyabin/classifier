@@ -540,10 +540,12 @@ api = HfApi()
 
 
 diff_folders = [
-                'arpaug-ViTL-a1b1c1-331-ProGAN_20240508_02_20_23',
-                'arpaug-ViTL-a1b1c1-331-ProGAN_20240508_04_35_48',
-                'arpaug-ViTL-a1b1c1-331-ProGAN_20240508_03_28_16',
-                'arpaug-ViTL-a1b1c1-331-ProGAN_20240508_05_43_32',
+                'arpaug-ViTL-a1b1c1-10101-ProGAN_20240509_03_16_22',
+                'arpaug-ViTL-a1b1c1-771-ProGAN_20240509_05_29_14',
+                'arpaug-ViTL-a1b1c1-211-ProGAN_20240509_09_53_49',
+                'arpaug-ViTL-a1b1c1-811-ProGAN_20240509_12_06_00',
+                'arpaug-ViTL-a1b1c1-311-ProGAN_20240509_07_41_49',
+                'arpaug-ViTL-a1b1c1-991-ProGAN_20240509_01_02_52',
                 ]
 
 for i in diff_folders:

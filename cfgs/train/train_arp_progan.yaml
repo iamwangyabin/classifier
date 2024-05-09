@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b1c1-991-ProGAN"
+name: "arpaug-ViTL-a1b1c1-331-ProGAN"
 
 train:
   gpu_ids: [0]
