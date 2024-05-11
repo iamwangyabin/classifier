@@ -9,6 +9,9 @@ resume: './logs/arpaug-ViTL-a1b1c1-211-ProGAN_20240509_09_53_49/last.ckpt'
 test_name: "arpaug_ViTL_a1b1c1_211"
 
 
+
+
+
 specific_cls: False
 
 model:

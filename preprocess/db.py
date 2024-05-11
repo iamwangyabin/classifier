@@ -538,14 +538,13 @@ import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
-
 diff_folders = [
-                'arpaug-ViTL-a1b1c1-10101-ProGAN_20240509_03_16_22',
-                'arpaug-ViTL-a1b1c1-771-ProGAN_20240509_05_29_14',
-                'arpaug-ViTL-a1b1c1-211-ProGAN_20240509_09_53_49',
-                'arpaug-ViTL-a1b1c1-811-ProGAN_20240509_12_06_00',
-                'arpaug-ViTL-a1b1c1-311-ProGAN_20240509_07_41_49',
-                'arpaug-ViTL-a1b1c1-991-ProGAN_20240509_01_02_52',
+                'arpaug-ViTL-a1b05c05-881-ProGAN_20240511_05_43_59',
+                'arpaug-ViTL-a1b2c2-881-ProGAN_20240511_01_16_45',
+                'arpaug-ViTL-a1b1c5-881-ProGAN_20240511_07_58_00',
+                'arpaug-ViTL-a1b5c1-881-ProGAN_20240511_10_11_56',
+                'arpaug-ViTL-a1b2c1-881-ProGAN_20240511_12_26_18',
+                'arpaug-ViTL-a1b5c5-881-ProGAN_20240511_03_30_22',
                 ]
 
 for i in diff_folders:

@@ -1,0 +1,64 @@
+arch: "arp"
+#resume: './logs/arpaug-ViTL-a1b05c05-881-ProGAN_20240511_05_43_59/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b2c2-881-ProGAN_20240511_01_16_45/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c5-881-ProGAN_20240511_07_58_00/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b5c1-881-ProGAN_20240511_10_11_56/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b2c1-881-ProGAN_20240511_12_26_18/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/arpaug-ViTL-a1b5c5-881-ProGAN_20240511_03_30_22/epoch=00-val_acc_epoch=1.00.ckpt'
+
+test_name: "arpaug_ab_ViTL_a1b5c5_881"
+
+specific_cls: False
+
+model:
+  NAME: "ViT-L/14"
+  N_CTX_VISION: 16
+  N_CTX_TEXT: 16
+  CTX_INIT: False
+  PROMPT_DEPTH_VISION: 8
+  PROMPT_DEPTH_TEXT: 8
+  PROMPT_NUM_TEXT: 1
+
+dataset:
+  train:
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+
+  trsf:
+    - _target_: data.Compress
+      method: "JPEG"
+      qf: 90
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
+
+  source:
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                  "stylegan", "stylegan2", "whichfaceisreal" ]
+
+    DIF:
+      data_root: '${datasets.data_root}/DIF_testset'
+      sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
+                 'stargan',  'stylegan',  'stylegan2']
+
+    GenImage:
+      data_root: '${datasets.data_root}/AIGCDetect'
+      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
+
+    Ojha:
+      data_root: '${datasets.data_root}/Ojha'
+      sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
+

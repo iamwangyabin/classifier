@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=ecsstaff
+#SBATCH --partition=a100
 #SBATCH --account=ecsstaff
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=32
@@ -17,16 +17,15 @@ conda init bash
 conda activate timm
 
 
-#python test.py --cfg cfgs/test/test_CNNSpot0.1_224.yaml
+python test.py --cfg cfgs/test/a_j90_ab1.yaml
+python test.py --cfg cfgs/test/a_j90_ab2.yaml
+python test.py --cfg cfgs/test/a_j90_ab3.yaml
+python test.py --cfg cfgs/test/a_j90_ab4.yaml
+python test.py --cfg cfgs/test/a_j90_ab5.yaml
+python test.py --cfg cfgs/test/a_j90_ab6.yaml
 
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_FreDect_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_sprompts_face_224.yaml
-#CUDA_VISIBLE_DEVICES=2 python test_lgrad.py --cfg cfgs/test/test_LGrad_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_NPR_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_freqnet_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_CNNSpot0.5_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_Garm_face_224.yaml
-#CUDA_VISIBLE_DEVICES=2 python test_lnp.py --cfg cfgs/test/test_LNP_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_Ojha_face_224.yaml
-CUDA_VISIBLE_DEVICES=1 python test_fusing.py --cfg cfgs/test/test_Fusing_face_224.yaml
-#CUDA_VISIBLE_DEVICES=1 python test.py --cfg cfgs/test/test_CNNSpot0.1_face_224.yaml
+
+
+
+
+
