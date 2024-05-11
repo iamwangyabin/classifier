@@ -1,16 +1,16 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b2c2-881-ProGAN"
+name: "arpaug-ViTL-a1b1c1-881-first4cls"
 
 train:
   gpu_ids: [0]
-  train_epochs: 2
+  train_epochs: 1
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
   a: 1
-  b: 2
-  c: 2
+  b: 1
+  c: 1
 
   optimizer:
     _target_: torch.optim.AdamW
@@ -21,7 +21,7 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 2
+    T_max: 1
 
 model:
   NAME: "ViT-L/14"
@@ -37,9 +37,8 @@ dataset:
   train:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
 #    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
-    subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
-    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
-                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+    subfolder_names: "ForenSynths"
+    multicalss_names: ["airplane", "bird", "bottle", "car"]
     batch_size: 128
     loader_workers: 32
     loadSize: 256

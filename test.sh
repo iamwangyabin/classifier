@@ -46,9 +46,9 @@ python train.py --cfg cfgs/train/train_arp_progan4.yaml
 
 python train.py --cfg cfgs/train/train_arp_progan5.yaml
 
-python train.py --cfg cfgs/train/train_arp_progan6.yaml
-
-python train.py --cfg cfgs/train/train_arp_progan7.yaml
+#python train.py --cfg cfgs/train/train_arp_progan6.yaml
+#
+#python train.py --cfg cfgs/train/train_arp_progan7.yaml
 
 #python test_fusing.py --cfg cfgs/test/test_Fusing_jpeg90_224.yaml
 

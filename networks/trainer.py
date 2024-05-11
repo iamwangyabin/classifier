@@ -130,7 +130,20 @@ class Trainer_multicls(L.LightningModule):
 
 
 
-mapping = {0: 0, 1: 20, 2: 1, 3: 21, 4: 2, 5: 22, 6: 3, 7: 23, 8: 4, 9: 24, 10: 5, 11: 25, 12: 6, 13: 26, 14: 7, 15: 27, 16: 8, 17: 28, 18: 9, 19: 29, 20: 10, 21: 30, 22: 11, 23: 31, 24: 12, 25: 32, 26: 13, 27: 33, 28: 14, 29: 34, 30: 15, 31: 35, 32: 16, 33: 36, 34: 17, 35: 37, 36: 18, 37: 38, 38: 19, 39: 39}
+mapping = {0: 0, 1: 20, 2: 1, 3: 21, 4: 2, 5: 22, 6: 3, 7: 23, 8: 4, 9: 24, 10: 5,
+           11: 25, 12: 6, 13: 26, 14: 7, 15: 27, 16: 8, 17: 28, 18: 9, 19: 29, 20: 10,
+           21: 30, 22: 11, 23: 31, 24: 12, 25: 32, 26: 13, 27: 33, 28: 14, 29: 34, 30: 15,
+           31: 35, 32: 16, 33: 36, 34: 17, 35: 37, 36: 18, 37: 38, 38: 19, 39: 39}
+
+def generate_mapping(base_number):
+    n = base_number*2
+    mapping = {}
+    for k in range(n):
+        if k % 2 == 0:
+            mapping[k] = k // 2
+        else:
+            mapping[k] = base_number + (k - 1) // 2
+    return mapping
 
 class Trainer_arpmulticls(L.LightningModule):
     # 这个实现相比较multicls是将每个类的real fake都堪称独立的类别
@@ -141,6 +154,8 @@ class Trainer_arpmulticls(L.LightningModule):
         self.model = get_model(opt)
         self.validation_step_outputs_gts, self.validation_step_outputs_preds = [], []
         self.celoss = nn.CrossEntropyLoss()
+
+        self.mapping = generate_mapping(len(opt.dataset.train.multicalss_names))
 
     def training_step(self, batch):
         x, y = batch
@@ -164,7 +179,7 @@ class Trainer_arpmulticls(L.LightningModule):
         # 主要问题是我们的y是0，1，2，3，4，5...38，39这样的，每个类都有两个label，分别表示real和fake，这样进行了20个类，表现为40个label，也就是每个类都有real和fake
         # 然而logits是0-19个real，之后是20-39个fake，（prompt=1时候），也就是先输出每个类的real再输出每个类的fake
         # 我们需要变换y，让它和logits对齐
-        new_y =  torch.tensor([mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
+        new_y =  torch.tensor([self.mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
         loss += self.opt.train.b * F.cross_entropy(logits, new_y)
 
         # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts加起来）
