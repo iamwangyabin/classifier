@@ -1,14 +1,14 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b2c1-881-ProGAN"
+name: "arpaug-ViTL-a2b2c1-881"
 
 train:
   gpu_ids: [0]
-  train_epochs: 2
+  train_epochs: 1
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
-  a: 1
+  a: 2
   b: 2
   c: 1
 
@@ -21,7 +21,7 @@ train:
   scheduler:
     _target_: torch.optim.lr_scheduler.CosineAnnealingLR
     _partial_: True
-    T_max: 2
+    T_max: 1
 
 model:
   NAME: "ViT-L/14"

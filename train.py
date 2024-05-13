@@ -46,12 +46,12 @@ if __name__ == '__main__':
                                job_type='train', group=conf.name)
 
     if os.getenv("LOCAL_RANK", '0') == '0':
-        archive_files(today_str, exclude_dirs=['logs', 'wandb', '.git'])
+        archive_files(today_str, exclude_dirs=['logs', 'wandb', '.git', 'weights'])
     checkpoint_callback = ModelCheckpoint(
         monitor='val_acc_epoch',
         dirpath=os.path.join('logs', today_str),
         filename='{epoch:02d}-{val_acc_epoch:.2f}',
-        save_top_k=5,
+        save_top_k=1,
         mode='max',
     )
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
-    trainer.save_checkpoint(os.path.join('logs', today_str, "last.ckpt"))
+    # trainer.save_checkpoint(os.path.join('logs', today_str, "last.ckpt"))
 
 
 

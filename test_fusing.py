@@ -132,6 +132,7 @@ def validate_PSM(model, data_loader):
             logits = model(input_img, cropped_img, scale)
             y_pred.extend(logits.sigmoid().flatten().tolist())
             y_true.extend(label.flatten().tolist())
+            y_logits.extend(logits.flatten().tolist())
 
     y_true, y_pred, y_logits = np.array(y_true), np.array(y_pred), np.array(y_logits)
     ap = average_precision_score(y_true, y_pred)

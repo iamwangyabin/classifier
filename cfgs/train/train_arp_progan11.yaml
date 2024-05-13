@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a1b0c1-881"
+name: "arpaug-ViTL-a1b2c1-881"
 
 train:
   gpu_ids: [0]
@@ -9,7 +9,7 @@ train:
   check_val_every_n_epoch: 1
 
   a: 1
-  b: 0
+  b: 0.1
   c: 1
 
   optimizer:
@@ -37,8 +37,9 @@ dataset:
   train:
     dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
 #    dataroot: "/home/jwang/ybwork/data/DFBenchmark/"
-    subfolder_names: "ForenSynths"
-    multicalss_names: ["airplane", "bird", "bottle", "car"]
+    subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
     batch_size: 128
     loader_workers: 32
     loadSize: 256
