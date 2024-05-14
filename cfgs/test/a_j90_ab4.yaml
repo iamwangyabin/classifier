@@ -1,12 +1,19 @@
 arch: "arp"
-#resume: './logs/arpaug-ViTL-a1b05c05-881-ProGAN_20240511_05_43_59/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b2c2-881-ProGAN_20240511_01_16_45/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c5-881-ProGAN_20240511_07_58_00/epoch=00-val_acc_epoch=1.00.ckpt'
-resume: './logs/arpaug-ViTL-a1b5c1-881-ProGAN_20240511_10_11_56/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b2c1-881-ProGAN_20240511_12_26_18/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b5c5-881-ProGAN_20240511_03_30_22/epoch=00-val_acc_epoch=1.00.ckpt'
 
-test_name: "arpaug_ab_ViTL_a1b5c1_881"
+#resume: './logs/arpaug-ViTL-a01b1c1-881_20240514_08_32_18/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a05b05c1-881_20240514_02_58_41/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a05b1c1-881_20240514_07_23_24/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/arpaug-ViTL-a0b1c1-881_20240514_02_47_45/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b05c1-881_20240514_06_15_04/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b0c1-881_20240514_02_30_25/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881-first12cls_20240514_03_28_50/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881-first16cls_20240514_04_11_21/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881-first2cls_20240511_23_01_23/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881-first4cls_20240511_22_43_55/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b1c1-881-first8cls_20240511_23_12_42/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a2b2c1-881_20240514_05_06_45/epoch=00-val_acc_epoch=1.00.ckpt'
+
+test_name: "arpaug_ab_a0b1c1_881"
 
 specific_cls: False
 

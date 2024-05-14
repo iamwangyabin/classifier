@@ -539,13 +539,19 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 api = HfApi()
 
 diff_folders = [
-                'arpaug-ViTL-a1b05c05-881-ProGAN_20240511_05_43_59',
-                'arpaug-ViTL-a1b2c2-881-ProGAN_20240511_01_16_45',
-                'arpaug-ViTL-a1b1c5-881-ProGAN_20240511_07_58_00',
-                'arpaug-ViTL-a1b5c1-881-ProGAN_20240511_10_11_56',
-                'arpaug-ViTL-a1b2c1-881-ProGAN_20240511_12_26_18',
-                'arpaug-ViTL-a1b5c5-881-ProGAN_20240511_03_30_22',
-                ]
+    "arpaug-ViTL-a01b1c1-881_20240514_08_32_18",
+    "arpaug-ViTL-a05b05c1-881_20240514_02_58_41",
+    "arpaug-ViTL-a05b1c1-881_20240514_07_23_24",
+    "arpaug-ViTL-a0b1c1-881_20240514_02_47_45",
+    "arpaug-ViTL-a1b05c1-881_20240514_06_15_04",
+    "arpaug-ViTL-a1b0c1-881_20240514_02_30_25",
+    "arpaug-ViTL-a1b1c1-881-first12cls_20240514_03_28_50",
+    "arpaug-ViTL-a1b1c1-881-first16cls_20240514_04_11_21",
+    "arpaug-ViTL-a1b1c1-881-first2cls_20240511_23_01_23",
+    "arpaug-ViTL-a1b1c1-881-first4cls_20240511_22_43_55",
+    "arpaug-ViTL-a1b1c1-881-first8cls_20240511_23_12_42",
+    "arpaug-ViTL-a2b2c1-881_20240514_05_06_45"
+]
 
 for i in diff_folders:
     try:

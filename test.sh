@@ -36,16 +36,16 @@ conda activate timm
 #
 #python test.py --cfg cfgs/test/test_arp2_jpg90_224.yaml
 
-python train.py --cfg cfgs/train/train_arp_progan.yaml
-python train.py --cfg cfgs/train/train_arp_progan2.yaml
-python train.py --cfg cfgs/train/train_arp_progan3.yaml
-python train.py --cfg cfgs/train/train_arp_progan4.yaml
-python train.py --cfg cfgs/train/train_arp_progan5.yaml
-python train.py --cfg cfgs/train/train_arp_progan6.yaml
-python train.py --cfg cfgs/train/train_arp_progan7.yaml
-python train.py --cfg cfgs/train/train_arp_progan8.yaml
-python train.py --cfg cfgs/train/train_arp_progan9.yaml
-python train.py --cfg cfgs/train/train_arp_progan10.yaml
+#python train.py --cfg cfgs/train/train_arp_progan.yaml
+#python train.py --cfg cfgs/train/train_arp_progan2.yaml
+#python train.py --cfg cfgs/train/train_arp_progan3.yaml
+#python train.py --cfg cfgs/train/train_arp_progan4.yaml
+#python train.py --cfg cfgs/train/train_arp_progan5.yaml
+#python train.py --cfg cfgs/train/train_arp_progan6.yaml
+#python train.py --cfg cfgs/train/train_arp_progan7.yaml
+#python train.py --cfg cfgs/train/train_arp_progan8.yaml
+#python train.py --cfg cfgs/train/train_arp_progan9.yaml
+#python train.py --cfg cfgs/train/train_arp_progan10.yaml
 
 #python train.py --cfg cfgs/train/train_arp_progan6.yaml
 #
@@ -80,16 +80,19 @@ python train.py --cfg cfgs/train/train_arp_progan10.yaml
 
 #CUDA_VISIBLE_DEVICES=2 python test.py --cfg cfgs/test/a_j90_3.yaml
 
-#python test.py --cfg cfgs/test/a_j90.yaml
-#python test.py --cfg cfgs/test/a_j90_2.yaml
-#python test.py --cfg cfgs/test/a_j90_3.yaml
-#python test.py --cfg cfgs/test/a_j90_4.yaml
-#python test.py --cfg cfgs/test/a_f.yaml
-#python test.py --cfg cfgs/test/a_f_2.yaml
-#python test.py --cfg cfgs/test/a_f_3.yaml
-#python test.py --cfg cfgs/test/a_f_4.yaml
-#python test.py --cfg cfgs/test/a_f_5.yaml
-#python test.py --cfg cfgs/test/a_f_6.yaml
+python test.py --cfg cfgs/test/a_j90.yaml
+python test.py --cfg cfgs/test/a_j90_2.yaml
+python test.py --cfg cfgs/test/a_j90_3.yaml
+python test.py --cfg cfgs/test/a_j90_4.yaml
+python test.py --cfg cfgs/test/a_j90_5.yaml
+python test.py --cfg cfgs/test/a_j90_ab1.yaml
+python test.py --cfg cfgs/test/a_j90_ab2.yaml
+python test.py --cfg cfgs/test/a_j90_ab3.yaml
+python test.py --cfg cfgs/test/a_j90_ab4.yaml
+python test.py --cfg cfgs/test/a_j90_ab5.yaml
+python test.py --cfg cfgs/test/a_j90_ab6.yaml
+python test.py --cfg cfgs/test/a_j90_ab7.yaml
+
 
 
 
