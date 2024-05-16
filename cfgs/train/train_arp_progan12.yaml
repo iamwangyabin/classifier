@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a2b2c1-881"
+name: "arpaug-ViTL-a2b1c1-881"
 
 train:
   gpu_ids: [0]
@@ -9,7 +9,7 @@ train:
   check_val_every_n_epoch: 1
 
   a: 2
-  b: 2
+  b: 1
   c: 1
 
   optimizer:

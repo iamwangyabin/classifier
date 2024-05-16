@@ -34,8 +34,8 @@ dataset:
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
-  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
     - _target_: data.Compress

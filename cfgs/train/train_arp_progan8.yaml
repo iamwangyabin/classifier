@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arpaug-ViTL-a05b1c1-881"
+name: "arpaug-ViTL-a1b01c1-881"
 
 train:
   gpu_ids: [0]
@@ -8,8 +8,8 @@ train:
   gradient_accumulation_steps: 1
   check_val_every_n_epoch: 1
 
-  a: 0.5
-  b: 1
+  a: 1
+  b: 0.1
   c: 1
 
   optimizer:
@@ -57,8 +57,6 @@ dataset:
 #    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
     subfolder_names: ["progan"]
     multicalss_idx: [1]
-#    subfolder_names: [ "biggan", "deepfake", "whichfaceisreal", "gaugan" ]
-#    multicalss_idx: [ 0, 0, 0, 0 ]
     batch_size: 32
     loader_workers: 4
     loadSize: 256

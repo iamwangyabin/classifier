@@ -173,7 +173,6 @@ class Trainer_arpmulticls(L.LightningModule):
         #     mask = i//2 == y % 2
         #     loss += 0.5*F.cross_entropy(logits_group[mask], cls_y[mask])
 
-        # import pdb;pdb.set_trace()
         # 在每个子空间做deepfake detection，也就是以类为单位进行deepfake detection
         # 0表示real，1表示fake，这是个deepfake detection任务，因此
         # 主要问题是我们的y是0，1，2，3，4，5...38，39这样的，每个类都有两个label，分别表示real和fake，这样进行了20个类，表现为40个label，也就是每个类都有real和fake
@@ -194,9 +193,6 @@ class Trainer_arpmulticls(L.LightningModule):
     def validation_step(self, batch):
         x, y = batch
         logits = self.model.forward_binary(x)
-
-        # import pdb;pdb.set_trace()
-
         self.validation_step_outputs_preds.append(F.softmax(logits, 1)[:,1])
         self.validation_step_outputs_gts.append(y)
 
