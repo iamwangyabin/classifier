@@ -76,12 +76,12 @@ transform = transforms.Compose([
 
 
 # model = CLIPModel('ViT-L/14')
-# model = CLIPModel('RN50')
+model = CLIPModel('RN50')
 # model = resnet50(pretrained=True)
 
-model = resnet50(num_classes=1)
-state_dict = torch.load('networks/weights/blur_jpg_prob0.1.pth', map_location='cpu')
-model.load_state_dict(state_dict['model'])
+# model = resnet50(num_classes=1)
+# state_dict = torch.load('networks/weights/blur_jpg_prob0.1.pth', map_location='cpu')
+# model.load_state_dict(state_dict['model'])
 
 
 # parser = argparse.ArgumentParser(description='Testing')
@@ -106,8 +106,6 @@ model.load_state_dict(state_dict['model'])
 model.cuda()
 model.eval()
 
-
-
 # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/val', transform=transform, selected_realfake='0_real')
 # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/val', transform=transform, selected_realfake='1_fake')
 
@@ -115,17 +113,14 @@ model.eval()
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/DiffusionForensics/lsun_bedroom/ldm', transform=transform)
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/DiffusionForensics/lsun_bedroom/midjourney', transform=transform)
 
-# dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/DiffusionForensics/celebahq/dalle2', transform=transform)
+dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/DiffusionForensics/celebahq/dalle2', transform=transform)
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/DiffusionForensics/celebahq/real', transform=transform)
 
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/ForenSynths/test/deepfake/0_real', transform=transform)
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/ForenSynths/test/deepfake/1_fake', transform=transform)
 
 # dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/AIGCDetect/stable_diffusion_v_1_5/1_fake', transform=transform)
-dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/AIGCDetect/stable_diffusion_v_1_5/0_real', transform=transform)
-
-
-
+# dataset = DeepfakeDataset(root_dir='../data/DFBenchmark/AIGCDetect/stable_diffusion_v_1_5/0_real', transform=transform)
 
 data_loader = DataLoader(dataset, batch_size=512, shuffle=False)
 
@@ -145,8 +140,17 @@ y_true = np.array(y_true)
 all_features['features'] = [subset_features, y_true]
 
 
-# with open('our881_DiffusionForensics_lsun_bedroom_mj_features.pkl', 'wb') as file:
+# with open('clip_ForenSynths_fake_features.pkl', 'wb') as file:
+#     pickle.dump(all_features, file)
+#
+# with open('clip_DiffusionForensics_bedroom_mj_features.pkl', 'wb') as file:
 #     pickle.dump(all_features, file)
 
-with open('cnndet_AIGCDetect_sd15_real_features.pkl', 'wb') as file:
+with open('clip_DiffusionForensics_celebahq_dalle2_features.pkl', 'wb') as file:
     pickle.dump(all_features, file)
+
+# with open('clip_ForenSynths_deepfake_real_features.pkl', 'wb') as file:
+#     pickle.dump(all_features, file)
+
+# with open('clip_AIGCDetect_sd15_fake_features.pkl', 'wb') as file:
+#     pickle.dump(all_features, file)

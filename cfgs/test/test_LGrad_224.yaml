@@ -1,21 +1,17 @@
-arch: "lnp"
-resume: 'weights/LNP.pth'
-test_name: "LNP_224"
+arch: "cnn"
+resume: 'weights/LGrad.pth'
+test_name: "LGrad_224"
+
+LGrad_modelpath: 'weights/karras2019stylegan-bedrooms-256x256_discriminator.pth'
+
 
 datasets:
-  batch_size: 32
-  loader_workers: 8
+  batch_size: 4 # 绝对要使用这个值，否则会出问题，原因是stylegan discriminator的minibatch计算有个min groupsize，大于4可能出现不能整除的batch
+  loader_workers: 16
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
-  trsf:
-    - _target_: torchvision.transforms.Resize
-      size: 256
-    - _target_: torchvision.transforms.CenterCrop
-      size: 224
-    - _target_: torchvision.transforms.ToTensor
-    - _target_: torchvision.transforms.Normalize
-      mean: [0.485, 0.456, 0.406]
-      std: [0.229, 0.224, 0.225]
+  qf: False
 
   source:
     ForenSynths:

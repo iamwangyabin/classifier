@@ -1,5 +1,5 @@
 arch: "cnn"
-resume: 'networks/weights/LGrad.pth'
+resume: 'weights/LGrad.pth'
 test_name: "LGrad_face_224"
 
 LGrad_modelpath: 'networks/weights/karras2019stylegan-bedrooms-256x256_discriminator.pth'

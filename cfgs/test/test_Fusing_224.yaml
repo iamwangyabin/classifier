@@ -1,5 +1,5 @@
 arch: "Fusing"
-resume: 'networks/weights/PSM.pth'
+resume: 'weights/PSM.pth'
 test_name: "Fusing_224"
 
 datasets:
@@ -8,7 +8,6 @@ datasets:
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   CropSize: 224
-
 
   source:
     ForenSynths:

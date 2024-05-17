@@ -1,31 +1,12 @@
 arch: "clip"
 resume: 'networks/UniversalFakeDetect/fc_weights.pth'
-##resume: 'logs/Ojha—ProganPart1_20240315_08_28_33/epoch=78-val_acc_epoch=0.79.ckpt' # part1
-##resume: 'logs/Ojha—ProganPart2_20240315_19_16_55/epoch=32-val_acc_epoch=0.82.ckpt' # part2
-##resume: 'logs/Ojha—ProganPart3_20240315_19_17_00/epoch=12-val_acc_epoch=0.81.ckpt' # part3
-##resume: 'logs/Ojha—Progan_less_20240324_19_24_35/epoch=12-val_acc_epoch=0.69-v1.ckpt' # less
-#resume: '/home/yw26g23/classifier/logs/Ojha-SD15_20240329_18_26_10/epoch=04-val_acc_epoch=0.71.ckpt' # 使用sd1.5作为base训练集
-test_name: "Ojha-224"
-
-dataset:
-  train:
-    mode: 'binary'
-#    dataroot: "/home/jwang/ybwork/data/deepfake_benchmark/"
-    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
-    subfolder_names: ["ForenSynths"]
-    multicalss_idx: [1]
-    batch_size: 256
-    loader_workers: 32
-    loadSize: 256
-    cropSize: 224
-    random_flip: true
-    augment: null
-
+test_name: "Ojha_224"
 
 datasets:
   batch_size: 32
   loader_workers: 8
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
   trsf:
     - _target_: torchvision.transforms.Resize
@@ -38,6 +19,12 @@ datasets:
       std: [0.26862954, 0.26130258, 0.27577711]
 
   source:
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                  "stylegan", "stylegan2", "whichfaceisreal" ]
+
+
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
@@ -77,7 +64,6 @@ datasets:
       data_root: '${datasets.data_root}/AIGCDetect'
       sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
 
-
     DiffusionForensics:
       data_root: '${datasets.data_root}/DiffusionForensics'
       sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
@@ -85,11 +71,6 @@ datasets:
                  'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
                  'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
                  'celebahq_dalle2', 'celebahq_midjourney']
-
-    ForenSynths:
-      data_root: '${datasets.data_root}/ForenSynths'
-      sub_sets: ["biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
-                   "stylegan", "stylegan2", "whichfaceisreal"]
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

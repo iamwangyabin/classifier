@@ -1,5 +1,5 @@
 arch: "Gram"
-resume: 'networks/weights/Gram.pth'
+resume: 'weights/Gram.pth'
 test_name: "Gram_224"
 
 datasets:
