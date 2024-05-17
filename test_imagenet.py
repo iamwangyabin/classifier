@@ -27,6 +27,7 @@ from data.general_dataset.imagenet_v2 import ImageNetV2
 from data.general_dataset.imagenet_r import ImageNetR
 from data.general_dataset.imagenet_sketch import ImageNetSketch
 from networks.SPrompts.arprompts import load_clip_to_cpu, ARPromptLearner
+from networks.SPrompts.zsclip import ZeroshotCLIP_PE, ZeroshotCLIP
 
 
 class DatasetWrapper(TorchDataset):
@@ -52,12 +53,7 @@ class DatasetWrapper(TorchDataset):
         return output
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Testing')
-    parser.add_argument('--cfg', type=str, default=None, required=True)
-    args, cfg_args = parser.parse_known_args()
-    conf = load_config_with_cli(args.cfg, args_list=cfg_args)
-    conf = hydra.utils.instantiate(conf)
+def test_arp(conf):
 
     model = get_model(conf)
     model.cuda()
@@ -120,3 +116,45 @@ if __name__ == '__main__':
         print(f"Real - Precision: {precision_real:.4f}")
         print(f"Real - Recall: {recall_real:.4f}")
         print(f"Real - F1 Score: {f1_real:.4f}")
+
+
+
+def test_zsclip(conf):
+    for data_source in [ImageNetA(conf), ImageNetV2(conf), ImageNetR(conf), ImageNetSketch(conf), ImageNet(conf)]:
+        print(data_source.dataset_dir)
+        model = ZeroshotCLIP_PE(conf, data_source._classnames, "cuda:0")
+        model.cuda()
+        model.eval()
+
+        dataset = DatasetWrapper(data_source, conf.DATASET.trsf)
+        data_loader = torch.utils.data.DataLoader(dataset, batch_size=8,num_workers=1)
+
+        with torch.no_grad():
+            y_true_real, y_pred_real = [], []
+            print("Length of dataset: %d" % (len(data_loader)))
+            for data in tqdm(data_loader):
+                in_tens = data['img'].cuda()
+                labels = data['label'].cuda()
+                logits = model(in_tens)
+                preds_real = logits.argmax(1)
+                y_pred_real.extend(preds_real.cpu().tolist())
+                y_true_real.extend(labels.cpu().tolist())
+
+        # Calculate evaluation metrics for real logits
+        accuracy_real = accuracy_score(y_true_real, y_pred_real)
+        precision_real = precision_score(y_true_real, y_pred_real, average='weighted')
+        recall_real = recall_score(y_true_real, y_pred_real, average='weighted')
+        f1_real = f1_score(y_true_real, y_pred_real, average='weighted')
+
+        print(f"Real - Accuracy: {accuracy_real:.4f}")
+        print(f"Real - Precision: {precision_real:.4f}")
+        print(f"Real - Recall: {recall_real:.4f}")
+        print(f"Real - F1 Score: {f1_real:.4f}")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Testing')
+    parser.add_argument('--cfg', type=str, default=None, required=True)
+    args, cfg_args = parser.parse_known_args()
+    conf = load_config_with_cli(args.cfg, args_list=cfg_args)
+    conf = hydra.utils.instantiate(conf)
+    test_zsclip(conf)

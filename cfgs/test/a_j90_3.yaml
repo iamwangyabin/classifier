@@ -1,19 +1,19 @@
 arch: "arp"
 
-#resume: './logs/arpaug-ViTL-a01b1c1-881_20240514_08_32_18/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a05b05c1-881_20240514_02_58_41/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a05b1c1-881_20240514_07_23_24/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a0b1c1-881_20240514_02_47_45/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b05c1-881_20240514_06_15_04/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b0c1-881_20240514_02_30_25/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-881-first12cls_20240514_03_28_50/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-881-first16cls_20240514_04_11_21/epoch=00-val_acc_epoch=1.00.ckpt'
-resume: './logs/arpaug-ViTL-a1b1c1-881-first2cls_20240511_23_01_23/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-881-first4cls_20240511_22_43_55/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b1c1-881-first8cls_20240511_23_12_42/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a2b2c1-881_20240514_05_06_45/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a01b01c1-881_20240517_02_17_22/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a05b1c1-881_20240517_09_25_06/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/arpaug-ViTL-a1b05c1-881_20240517_08_13_31/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a01b1c1-881_20240517_07_02_28/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a0b0c1-881_20240516_23_56_03/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b0c1-881_20240516_22_44_31/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a03b03c1-881_20240517_04_39_40/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a0b1c1-881_20240516_21_33_03/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a2b1c1-881_20240517_10_36_10/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a05b05c1-881_20240517_01_06_22/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a1b01c1-881_20240517_05_51_26/epoch=00-val_acc_epoch=1.00.ckpt'
+#resume: './logs/arpaug-ViTL-a2b2c1-881_20240517_03_28_27/epoch=00-val_acc_epoch=1.00.ckpt'
 
-test_name: "arpaug_ab_first2cls_881"
+test_name: "arpaug-ab-a1b05c1-881"
 
 specific_cls: False
 
@@ -28,7 +28,8 @@ model:
 
 dataset:
   train:
-    multicalss_names: ["airplane", "bird"]
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
 
 datasets:
   batch_size: 32
@@ -49,7 +50,6 @@ datasets:
       mean: [0.48145466, 0.4578275, 0.40821073]
       std: [0.26862954, 0.26130258, 0.27577711]
 
-
   source:
     ForenSynths:
       data_root: '${datasets.data_root}/ForenSynths'
@@ -60,10 +60,6 @@ datasets:
       data_root: '${datasets.data_root}/DIF_testset'
       sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
                  'stargan',  'stylegan',  'stylegan2']
-
-    GenImage:
-      data_root: '${datasets.data_root}/AIGCDetect'
-      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

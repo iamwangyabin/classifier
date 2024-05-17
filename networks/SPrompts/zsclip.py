@@ -43,8 +43,8 @@ class ZeroshotCLIP(nn.Module):
 class ZeroshotCLIP_PE(nn.Module):
     """Prompt ensembling."""
 
-    # templates = IMAGENET_TEMPLATES
-    templates = IMAGENET_TEMPLATES_SELECT
+    templates = IMAGENET_TEMPLATES
+    # templates = IMAGENET_TEMPLATES_SELECT
 
 
     def __init__(self, cfg, classnames, device):
