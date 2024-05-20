@@ -1,19 +1,8 @@
 arch: "arp"
 
-resume: './logs/arpaug-ViTL-a01b01c1-881_20240517_02_17_22/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a05b1c1-881_20240517_09_25_06/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b05c1-881_20240517_08_13_31/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a01b1c1-881_20240517_07_02_28/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a0b0c1-881_20240516_23_56_03/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b0c1-881_20240516_22_44_31/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a03b03c1-881_20240517_04_39_40/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a0b1c1-881_20240516_21_33_03/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a2b1c1-881_20240517_10_36_10/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a05b05c1-881_20240517_01_06_22/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a1b01c1-881_20240517_05_51_26/epoch=00-val_acc_epoch=1.00.ckpt'
-#resume: './logs/arpaug-ViTL-a2b2c1-881_20240517_03_28_27/epoch=00-val_acc_epoch=1.00.ckpt'
+resume: './logs/our/last.ckpt'
 
-test_name: "arpaug-ab-a01b01c1-881"
+test_name: "arpaug_881_jpg80_224"
 
 specific_cls: False
 
@@ -40,7 +29,7 @@ datasets:
   trsf:
     - _target_: data.Compress
       method: "JPEG"
-      qf: 90
+      qf: 80
     - _target_: torchvision.transforms.Resize
       size: 256
     - _target_: torchvision.transforms.CenterCrop
@@ -56,12 +45,37 @@ datasets:
       sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                   "stylegan", "stylegan2", "whichfaceisreal" ]
 
+
+    GANGen-Detection:
+      data_root: '${datasets.data_root}/GANGen-Detection'
+      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
+
     DIF:
       data_root: '${datasets.data_root}/DIF_testset'
       sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
                  'stargan',  'stylegan',  'stylegan2']
 
+    GenImage:
+      data_root: '${datasets.data_root}/AIGCDetect'
+      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
+
+
+    DiffusionForensics:
+      data_root: '${datasets.data_root}/DiffusionForensics'
+      sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
+                 'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
+                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
+                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
+                 'celebahq_dalle2', 'celebahq_midjourney']
+
     Ojha:
       data_root: '${datasets.data_root}/Ojha'
       sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
+
+    AntifakePrompt:
+      data_root: '${datasets.data_root}/AntifakePrompt'
+      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
+                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']
+
+
 

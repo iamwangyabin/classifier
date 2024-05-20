@@ -1,0 +1,60 @@
+arch: "clip"
+resume: 'networks/UniversalFakeDetect/fc_weights.pth'
+test_name: "Ojha_jpg80_224"
+
+datasets:
+  batch_size: 32
+  loader_workers: 8
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+
+  trsf:
+    - _target_: data.Compress
+      method: "JPEG"
+      qf: 80
+    - _target_: torchvision.transforms.Resize
+      size: 256
+    - _target_: torchvision.transforms.CenterCrop
+      size: 224
+    - _target_: torchvision.transforms.ToTensor
+    - _target_: torchvision.transforms.Normalize
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
+
+  source:
+    ForenSynths:
+      data_root: '${datasets.data_root}/ForenSynths'
+      sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                  "stylegan", "stylegan2", "whichfaceisreal" ]
+
+
+    GANGen-Detection:
+      data_root: '${datasets.data_root}/GANGen-Detection'
+      sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
+
+    DIF:
+      data_root: '${datasets.data_root}/DIF_testset'
+      sub_sets: ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21',
+                 'stargan',  'stylegan',  'stylegan2']
+
+    GenImage:
+      data_root: '${datasets.data_root}/AIGCDetect'
+      sub_sets: [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
+
+
+    DiffusionForensics:
+      data_root: '${datasets.data_root}/DiffusionForensics'
+      sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
+                 'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
+                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
+                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
+                 'celebahq_dalle2', 'celebahq_midjourney']
+
+    Ojha:
+      data_root: '${datasets.data_root}/Ojha'
+      sub_sets: ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
+
+    AntifakePrompt:
+      data_root: '${datasets.data_root}/AntifakePrompt'
+      sub_sets: ['COCO', 'Flickr', 'AdvAtk', 'DALLE2', 'Deeperforensics', 'IF', 'lte', 'SD2Inpaint', 'SDXL',
+                 'Backdoor', 'Control', 'DataPoison', 'Lama', 'SD2', 'SD2SuperRes', 'SGXL']

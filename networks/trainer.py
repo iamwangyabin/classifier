@@ -168,23 +168,21 @@ class Trainer_arpmulticls(L.LightningModule):
             loss += self.opt.train.a * F.cross_entropy(logits_group, cls_y)
 
         # 其次次级语义对齐：fake同fake的分类对齐 real同real的对齐 也是ce损失
-        # 实现为通过chunk和mask进行，将属于real的样本mask掉，
+        # 实现为通过chunk和mask进行，将属于real的样本mask掉， but useless..
         # for i, logits_group in enumerate(logits_groups):
         #     mask = i//2 == y % 2
         #     loss += 0.5*F.cross_entropy(logits_group[mask], cls_y[mask])
 
         # 在每个子空间做deepfake detection，也就是以类为单位进行deepfake detection
-        # 0表示real，1表示fake，这是个deepfake detection任务，因此
+        # 0表示real，1表示fake，这是个deepfake detection任务
         # 主要问题是我们的y是0，1，2，3，4，5...38，39这样的，每个类都有两个label，分别表示real和fake，这样进行了20个类，表现为40个label，也就是每个类都有real和fake
         # 然而logits是0-19个real，之后是20-39个fake，（prompt=1时候），也就是先输出每个类的real再输出每个类的fake
-        # 我们需要变换y，让它和logits对齐
+        # add a mask to make this a 'real' binary cross-entropy loss, but seems no difference to final results
+        # using mask is just like weighted cross-entropy, and we can't use real binary cross entropy for CLIP
         new_y =  torch.tensor([self.mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
         loss += self.opt.train.b * F.cross_entropy(logits, new_y)
 
-        # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts加起来）
-        # int(y % 2)
-        # general real prompt的logits
-        # general fake prompt的logits
+        # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts mean）
         loss += self.opt.train.c * F.cross_entropy(b_logits, y % 2)
         # loss = self.criterion(logits, y)
         self.log("train_loss", loss)
