@@ -50,39 +50,36 @@ conda activate timm
 #python test.py --cfg cfgs/test/test_Garm_224.yaml
 #python test.py --cfg cfgs/test/test_freqnet_224.yaml
 #python test.py --cfg cfgs/test/test_CNNSpot0.1_224.yaml
-
-
-
 # no resize
-python test.py --cfg cfgs/test/nocompre/test_sprompts_224.yaml
-python test.py --cfg cfgs/test/nocompre/test_FreDect_224.yaml
-python test_fusing.py --cfg cfgs/test/nocompre/test_Fusing_224.yaml
-python test_lnp.py --cfg cfgs/test/nocompre/test_LNP_224.yaml
-python test.py --cfg cfgs/test/nocompre/a.yaml
+#python test.py --cfg cfgs/test/nocompre/test_sprompts_224.yaml
+#python test.py --cfg cfgs/test/nocompre/test_FreDect_224.yaml
+#python test_fusing.py --cfg cfgs/test/nocompre/test_Fusing_224.yaml
+#python test_lnp.py --cfg cfgs/test/nocompre/test_LNP_224.yaml
+#python test.py --cfg cfgs/test/nocompre/a.yaml
 
 # jpeg 80
-python test.py --cfg cfgs/test/jpg80/test_Ojha_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_NPR_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_Garm_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_freqnet_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_CNNSpot0.1_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_sprompts_jpg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/test_FreDect_jpg80_224.yaml
-python test_lgrad.py --cfg cfgs/test/jpg80/test_LGrad_jpeg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_Ojha_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_NPR_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_Garm_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_freqnet_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_CNNSpot0.1_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_sprompts_jpg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/test_FreDect_jpg80_224.yaml
+#python test_lgrad.py --cfg cfgs/test/jpg80/test_LGrad_jpeg80_224.yaml
 python test_fusing.py --cfg cfgs/test/jpg80/test_Fusing_jpeg80_224.yaml
-python test_lnp.py --cfg cfgs/test/jpg80/test_LNP_jpeg80_224.yaml
-python test.py --cfg cfgs/test/jpg80/a_j80.yaml
+#python test_lnp.py --cfg cfgs/test/jpg80/test_LNP_jpeg80_224.yaml
+#python test.py --cfg cfgs/test/jpg80/a_j80.yaml
 
 # jpeg 70
-python test.py --cfg cfgs/test/jpg70/test_Ojha_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_NPR_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_Garm_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_freqnet_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_CNNSpot0.1_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_sprompts_jpg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/test_FreDect_jpg70_224.yaml
-python test_lgrad.py --cfg cfgs/test/jpg70/test_LGrad_jpeg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_Ojha_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_NPR_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_Garm_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_freqnet_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_CNNSpot0.1_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_sprompts_jpg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/test_FreDect_jpg70_224.yaml
+#python test_lgrad.py --cfg cfgs/test/jpg70/test_LGrad_jpeg70_224.yaml
 python test_fusing.py --cfg cfgs/test/jpg70/test_Fusing_jpeg70_224.yaml
-python test_lnp.py --cfg cfgs/test/jpg70/test_LNP_jpeg70_224.yaml
-python test.py --cfg cfgs/test/jpg70/a_j70.yaml
+#python test_lnp.py --cfg cfgs/test/jpg70/test_LNP_jpeg70_224.yaml
+#python test.py --cfg cfgs/test/jpg70/a_j70.yaml
 

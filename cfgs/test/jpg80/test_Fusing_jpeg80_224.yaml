@@ -5,8 +5,8 @@ test_name: "Fusing_jpg80_224"
 datasets:
   batch_size: 32
   loader_workers: 8
-#  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
-  data_root: "/home/jwang/ybwork/data/DFBenchmark"
+  data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
+#  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
   CropSize: 224
   qf: 80
