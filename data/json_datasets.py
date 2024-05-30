@@ -48,7 +48,7 @@ class RandomCompress:
 
     def __call__(self, image):
         outputIoStream = io.BytesIO()
-        quality_factor = randint(self.qf[0], self.qf[1])
+        quality_factor = randint(int(self.qf[0]), int(self.qf[1]))
         image.save(outputIoStream, self.method, quality=quality_factor, optimize=True)
         outputIoStream.seek(0)
         return Image.open(outputIoStream)
