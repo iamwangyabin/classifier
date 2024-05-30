@@ -75,7 +75,7 @@ class BinaryJsonDatasets(Dataset):
         if self.qf:
             if isinstance(self.qf, list) and len(self.qf) == 2:
                 outputIoStream = io.BytesIO()
-                quality_factor = randint(self.qf[0], self.qf[1])
+                quality_factor = randint(int(self.qf[0]), int(self.qf[1]))
                 image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)
                 outputIoStream.seek(0)
                 image = Image.open(outputIoStream)
