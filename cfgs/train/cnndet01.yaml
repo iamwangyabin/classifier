@@ -1,0 +1,59 @@
+arch: "arp"
+resume: null
+name: "cnndet_01"
+
+train:
+  gpu_ids: [0]
+  train_epochs: 1
+  gradient_accumulation_steps: 1
+  check_val_every_n_epoch: 1
+
+  a: 1
+  b: 0
+  c: 1
+
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: True
+    lr: 1e-4
+    weight_decay: 1e-3
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: True
+    T_max: 1
+
+#python train.py --name blur_jpg_prob0.5 --blur_prob 0.5 --blur_sig 0.0,3.0 --jpg_prob 0.5 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot ./dataset/ --classes airplane,bird,bicycle,boat,bottle,bus,car,cat,cow,chair,diningtable,dog,person,pottedplant,motorbike,tvmonitor,train,sheep,sofa,horse
+
+#python train.py --name blur_jpg_prob0.1 --blur_prob 0.1 --blur_sig 0.0,3.0 --jpg_prob 0.1 --jpg_method cv2,pil --jpg_qual 30,100 --dataroot ./dataset/ --classes airplane,bird,bicycle,boat,bottle,bus,car,cat,cow,chair,diningtable,dog,person,pottedplant,motorbike,tvmonitor,train,sheep,sofa,horse
+
+
+dataset:
+  train:
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/"
+    subfolder_names: "ForenSynths" #"GenImg_MJ" "GenImg_SD15"
+    multicalss_names: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+                       "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+    batch_size: 128
+    loader_workers: 32
+    loadSize: 256
+    cropSize: 224
+    random_flip: true
+    augment: True
+    blur_prob: 0.1
+    blur_sig: [0.0, 1.0]
+    jpg_method: ['cv2', 'pil']
+    jpg_prob: 0.1
+    jpg_qual: [60, 100]
+
+  val:
+    dataroot: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
+#    dataroot: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths/test"
+    subfolder_names: ["progan"]
+    multicalss_idx: [1]
+    batch_size: 32
+    loader_workers: 4
+    loadSize: 256
+    cropSize: 224
+
+

@@ -16,7 +16,7 @@ import torch
 import torchvision.transforms as transforms
 import torch.nn.functional as F
 from PIL import Image, ImageFile
-from random import choice, random
+from random import choice, random, randint
 from scipy.fftpack import dct
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
@@ -66,10 +66,17 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         if self.qf:
-            outputIoStream = io.BytesIO()
-            image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
-            outputIoStream.seek(0)
-            image = Image.open(outputIoStream)
+            if isinstance(self.qf, list) and len(self.qf) == 2:
+                outputIoStream = io.BytesIO()
+                quality_factor = randint(self.qf[0], self.qf[1])
+                image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
+            else:
+                outputIoStream = io.BytesIO()
+                image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
         image = self.transform(image)
         label = self.labels[idx]
         return image, label, img_path

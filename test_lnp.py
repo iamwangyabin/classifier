@@ -13,7 +13,7 @@ import numpy as np
 from collections import OrderedDict
 from PIL import Image, ImageFile
 from sklearn.metrics import average_precision_score, accuracy_score, roc_auc_score, f1_score
-
+from random import randint
 
 import torch
 from torch.utils.data import Dataset
@@ -73,10 +73,17 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         if self.qf:
-            outputIoStream = io.BytesIO()
-            image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
-            outputIoStream.seek(0)
-            image = Image.open(outputIoStream)
+            if isinstance(self.qf, list) and len(self.qf) == 2:
+                outputIoStream = io.BytesIO()
+                quality_factor = randint(self.qf[0], self.qf[1])
+                image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
+            else:
+                outputIoStream = io.BytesIO()
+                image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
 
         image = self.transform(image)
         label = self.labels[idx]

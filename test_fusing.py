@@ -15,7 +15,7 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 from PIL import Image, ImageFile
-from random import choice, random
+from random import choice, random, randint
 from scipy.fftpack import dct
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
@@ -30,7 +30,6 @@ sys.path.append(current_dir)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 warnings.filterwarnings("ignore", category=UserWarning, module='PIL')
-
 
 from utils.util import load_config_with_cli, archive_files
 from utils.network_factory import get_model
@@ -60,10 +59,17 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         if self.qf:
-            outputIoStream = io.BytesIO()
-            image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
-            outputIoStream.seek(0)
-            image = Image.open(outputIoStream)
+            if isinstance(self.qf, list) and len(self.qf) == 2:
+                outputIoStream = io.BytesIO()
+                quality_factor = randint(self.qf[0], self.qf[1])
+                image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
+            else:
+                outputIoStream = io.BytesIO()
+                image.save(outputIoStream, "JPEG", quality=self.qf, optimice=True)
+                outputIoStream.seek(0)
+                image = Image.open(outputIoStream)
 
         height, width = image.height, image.width
 

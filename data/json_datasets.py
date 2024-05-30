@@ -5,7 +5,7 @@ import json
 import warnings
 import numpy as np
 import torchvision.transforms as transforms
-from random import random, choice
+from random import random, choice, randint
 from io import BytesIO
 from scipy.ndimage.filters import gaussian_filter
 from scipy.fftpack import dct
@@ -39,6 +39,19 @@ class DCTTransform:
         image = (image - self.dct_mean) / np.sqrt(self.dct_var)
         image = torch.from_numpy(image).permute(2, 0, 1).to(dtype=torch.float)
         return image
+
+
+class RandomCompress:
+    def __init__(self, method="JPEG", qf=[60, 100]):
+        self.qf = qf
+        self.method = method
+
+    def __call__(self, image):
+        outputIoStream = io.BytesIO()
+        quality_factor = randint(self.qf[0], self.qf[1])
+        image.save(outputIoStream, self.method, quality=quality_factor, optimize=True)
+        outputIoStream.seek(0)
+        return Image.open(outputIoStream)
 
 
 

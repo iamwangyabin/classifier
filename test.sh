@@ -66,7 +66,7 @@ conda activate timm
 #python test.py --cfg cfgs/test/jpg80/test_sprompts_jpg80_224.yaml
 #python test.py --cfg cfgs/test/jpg80/test_FreDect_jpg80_224.yaml
 #python test_lgrad.py --cfg cfgs/test/jpg80/test_LGrad_jpeg80_224.yaml
-python test_fusing.py --cfg cfgs/test/jpg80/test_Fusing_jpeg80_224.yaml
+#python test_fusing.py --cfg cfgs/test/jpg80/test_Fusing_jpeg80_224.yaml
 #python test_lnp.py --cfg cfgs/test/jpg80/test_LNP_jpeg80_224.yaml
 #python test.py --cfg cfgs/test/jpg80/a_j80.yaml
 
@@ -79,7 +79,19 @@ python test_fusing.py --cfg cfgs/test/jpg80/test_Fusing_jpeg80_224.yaml
 #python test.py --cfg cfgs/test/jpg70/test_sprompts_jpg70_224.yaml
 #python test.py --cfg cfgs/test/jpg70/test_FreDect_jpg70_224.yaml
 #python test_lgrad.py --cfg cfgs/test/jpg70/test_LGrad_jpeg70_224.yaml
-python test_fusing.py --cfg cfgs/test/jpg70/test_Fusing_jpeg70_224.yaml
+#python test_fusing.py --cfg cfgs/test/jpg70/test_Fusing_jpeg70_224.yaml
 #python test_lnp.py --cfg cfgs/test/jpg70/test_LNP_jpeg70_224.yaml
 #python test.py --cfg cfgs/test/jpg70/a_j70.yaml
 
+# jpeg rand
+python test.py --cfg cfgs/test/jpgrand/test_Ojha_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_NPR_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_Garm_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_freqnet_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_CNNSpot0.1_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_sprompts_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/test_FreDect_jpgrand_224.yaml
+python test_lgrad.py --cfg cfgs/test/jpgrand/test_LGrad_jpgrand_224.yaml
+python test_fusing.py --cfg cfgs/test/jpgrand/test_Fusing_jpgrand_224.yaml
+python test_lnp.py --cfg cfgs/test/jpgrand/test_LNP_jpgrand_224.yaml
+python test.py --cfg cfgs/test/jpgrand/a_jpegrand.yaml
