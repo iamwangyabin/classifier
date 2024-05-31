@@ -19,6 +19,7 @@ import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 import torch.nn.functional as F
+from omegaconf import ListConfig
 
 from utils.util import load_config_with_cli
 from utils.network_factory import get_model
@@ -73,7 +74,7 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         if self.qf:
-            if isinstance(self.qf, list) and len(self.qf) == 2:
+            if isinstance(self.qf, ListConfig) and len(self.qf) == 2:
                 outputIoStream = io.BytesIO()
                 quality_factor = randint(int(self.qf[0]), int(self.qf[1]))
                 image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)

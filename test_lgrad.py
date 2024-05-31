@@ -9,7 +9,6 @@ import copy
 import pickle
 import sys
 import warnings
-import cv2
 import hydra
 import numpy as np
 import torch
@@ -17,13 +16,9 @@ import torchvision.transforms as transforms
 import torch.nn.functional as F
 from PIL import Image, ImageFile
 from random import choice, random, randint
-from scipy.fftpack import dct
-from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset
-from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
-from sklearn.metrics import confusion_matrix, classification_report, roc_curve, roc_auc_score, f1_score
-from copy import deepcopy
-from tqdm import tqdm
+from sklearn.metrics import average_precision_score, accuracy_score, roc_auc_score, f1_score
+from omegaconf import ListConfig
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(current_dir)
@@ -66,7 +61,7 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         if self.qf:
-            if isinstance(self.qf, list) and len(self.qf) == 2:
+            if isinstance(self.qf, ListConfig) and len(self.qf) == 2:
                 outputIoStream = io.BytesIO()
                 quality_factor = randint(int(self.qf[0]), int(self.qf[1]))
                 image.save(outputIoStream, "JPEG", quality=quality_factor, optimize=True)
