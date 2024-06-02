@@ -26,11 +26,11 @@ class BinaryJsonDatasets(Dataset):
 
         for img_rel_path, label in data[subset].items():
             img_full_path = os.path.join(self.dataroot, img_rel_path)
-            if os.path.exists(img_full_path):
-                self.image_pathes.append(img_full_path)
-                self.labels.append(label)
-            else:
-                print('pass, not exit {}'.format(img_full_path) )
+            # if os.path.exists(img_full_path):
+            self.image_pathes.append(img_full_path)
+            self.labels.append(label)
+            # else:
+            #     print('pass, not exit {}'.format(img_full_path) )
 
         self.transform_chain = transforms.Compose(opt.trsf)
 
