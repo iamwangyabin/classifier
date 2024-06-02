@@ -1,1 +1,1 @@
-from .json_datasets import DCTTransform, Compress, RandomCompress
+from .augmentations import DCTTransform, Compress, RandomCompress, DataAugment

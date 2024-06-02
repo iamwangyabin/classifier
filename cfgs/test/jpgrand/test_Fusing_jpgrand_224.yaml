@@ -32,11 +32,11 @@ datasets:
 
     DiffusionForensics:
       data_root: '${datasets.data_root}/DiffusionForensics'
-      sub_sets: ['imagenet_sdv1', 'imagenet_adm', 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2',
-                 'lsun_bedroom_adm', 'lsun_bedroom_iddpm', 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm',
-                 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm', 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if',
-                 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney', 'celebahq_sdv2', 'celebahq_if',
-                 'celebahq_dalle2', 'celebahq_midjourney']
+      sub_sets: ['imagenet_sdv1', 'imagenet_adm',
+                 'lsun_bedroom_sdv1_new1', 'lsun_bedroom_sdv1_new2', 'lsun_bedroom_adm', 'lsun_bedroom_iddpm',
+                 'lsun_bedroom_ddpm', 'lsun_bedroom_pndm', 'lsun_bedroom_sdv2', 'lsun_bedroom_ldm',
+                 'lsun_bedroom_vqdiffusion', 'lsun_bedroom_if', 'lsun_bedroom_dalle2', 'lsun_bedroom_midjourney',
+                 'celebahq_sdv2', 'celebahq_if', 'celebahq_dalle2', 'celebahq_midjourney']
 
     Ojha:
       data_root: '${datasets.data_root}/Ojha'

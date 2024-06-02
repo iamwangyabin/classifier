@@ -7,15 +7,16 @@ import datetime
 import torch
 import torch.nn
 from torch.utils.data import DataLoader
+from torch.utils.data import ConcatDataset
 
 import lightning as L
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
 
+import engine
 from utils.util import load_config_with_cli, archive_files
-from data.binary_datasets import BinaryMultiDatasets
-from data.multicls_datasets import DeepfakeMultiDatasets
-# from networks.trainer import Trainer
+from data.json_datasets import BinaryJsonDatasets
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training')
@@ -25,20 +26,22 @@ if __name__ == '__main__':
     conf = hydra.utils.instantiate(conf)
     wandb.login(key = 'a4d3a740e939973b02ac59fbd8ed0d6a151df34b')
 
+    train_datasets = []
+    for subset in conf.datasets.train.sub_sets:
+        train_data = BinaryJsonDatasets(conf.datasets.train, conf.datasets.train.data_root, subset=subset, split='train_binary')
+        train_datasets.append(train_data)
+    train_datasets = ConcatDataset(train_datasets)
 
-    if conf.arch == 'arp':
-        train_dataset = DeepfakeMultiDatasets(conf.dataset.train, split='train')
-        val_dataset = DeepfakeMultiDatasets(conf.dataset.val, split='')
-    else:
-        train_dataset = BinaryMultiDatasets(conf.dataset.train, split='train')
-        # val_dataset = BinaryMultiDatasets(conf.dataset.val, split='val') # for cddb
-        val_dataset = BinaryMultiDatasets(conf.dataset.val, split='')
+    val_datasets = []
+    for subset in conf.datasets.train.sub_sets:
+        val_data = BinaryJsonDatasets(conf.datasets.val, conf.datasets.val.data_root, subset=subset, split='val')
+        val_datasets.append(val_data)
+    val_datasets = ConcatDataset(val_datasets)
 
-
-    train_loader = DataLoader(train_dataset, batch_size=conf.dataset.train.batch_size, shuffle=True,
-                              num_workers=conf.dataset.train.loader_workers)
-    val_loader = DataLoader(val_dataset, batch_size=conf.dataset.val.batch_size, shuffle=False,
-                            num_workers=conf.dataset.val.loader_workers)
+    train_loader = DataLoader(train_datasets, batch_size=conf.datasets.train.batch_size, shuffle=True,
+                              num_workers=conf.datasets.train.loader_workers)
+    val_loader = DataLoader(val_datasets, batch_size=conf.datasets.val.batch_size, shuffle=False,
+                            num_workers=conf.datasets.val.loader_workers)
 
     today_str = conf.name +"_"+ datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
 
@@ -46,7 +49,7 @@ if __name__ == '__main__':
                                job_type='train', group=conf.name)
 
     if os.getenv("LOCAL_RANK", '0') == '0':
-        archive_files(today_str, exclude_dirs=['logs', 'wandb', '.git', 'weights'])
+        archive_files(today_str, exclude_dirs=['logs', 'wandb', '.git', 'exp_results'])
 
     checkpoint_callback = ModelCheckpoint(
         monitor='val_acc_epoch',
@@ -56,17 +59,7 @@ if __name__ == '__main__':
         mode='max',
     )
 
-
-    # if conf.arch == 'vlp' or conf.arch == 'coop':
-    #     from networks.trainer import Trainer_multicls
-    #     model = Trainer_multicls(opt=conf)
-    # elif conf.arch == 'arp':
-    #     from networks.trainer import Trainer_arpmulticls
-    #     model = Trainer_arpmulticls(opt=conf)
-    # else:
-    #     model = Trainer(opt=conf)
-
-    model = Trainer(opt=conf)
+    model = eval(conf.train.pipeline)(opt=conf)
 
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],

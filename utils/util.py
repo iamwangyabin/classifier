@@ -1,11 +1,12 @@
 import os
-import torch
 from typing import Tuple, List, Iterable, Any
 from omegaconf import OmegaConf, ListConfig
 import shutil
 import tempfile
+from PIL import Image
 from sklearn.metrics import average_precision_score, precision_recall_curve, accuracy_score
-
+import torch
+from torchvision import transforms
 
 def mkdirs(paths):
     if isinstance(paths, list) and not isinstance(paths, str):
@@ -73,22 +74,22 @@ def archive_files(log_name, exclude_dirs):
     files_and_dirs = [f for f in os.listdir('.') if f not in exclude_dirs]
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        # Copy each file and directory to the temporary directory
         for f in files_and_dirs:
             f_path = os.path.join('.', f)
             tmp_f_path = os.path.join(tmpdirname, f)
-            # Check if it's a file or a directory
             if os.path.isdir(f_path):
                 shutil.copytree(f_path, tmp_f_path)
             else:
                 shutil.copy2(f_path, tmp_f_path)
 
-        # Create an archive of the temporary directory
+        for root, _, files in os.walk(tmpdirname):
+            for file in files:
+                if file.endswith(('.pth', '.pyc', '.npy', '.pt', '.gz')):
+                    os.remove(os.path.join(root, file))
+
+
         shutil.make_archive(archive_name, 'tar', tmpdirname)
 
-
-from torchvision import transforms
-from PIL import Image
 
 class ResizeToNearest14(object):
     def __call__(self, img):

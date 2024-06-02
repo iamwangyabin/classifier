@@ -1,77 +1,15 @@
 import os
-import cv2
 import warnings
-import numpy as np
-import torchvision.datasets as datasets
-import torchvision.transforms as transforms
-import torchvision.transforms.functional as TF
-from random import random, choice
-from io import BytesIO
 from PIL import ImageFile, Image
-from scipy.ndimage.filters import gaussian_filter
+
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
+
+from data.augmentations import data_augment
 
 warnings.filterwarnings("ignore", category=UserWarning, module='PIL')
-
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
-
-def sample_continuous(s):
-    if len(s) == 1:
-        return s[0]
-    if len(s) == 2:
-        rg = s[1] - s[0]
-        return random() * rg + s[0]
-    raise ValueError("Length of iterable s should be 1 or 2.")
-
-
-def sample_discrete(s):
-    if len(s) == 1:
-        return s[0]
-    return choice(s)
-
-
-def gaussian_blur(img, sigma):
-    gaussian_filter(img[:,:,0], output=img[:,:,0], sigma=sigma)
-    gaussian_filter(img[:,:,1], output=img[:,:,1], sigma=sigma)
-    gaussian_filter(img[:,:,2], output=img[:,:,2], sigma=sigma)
-
-
-def cv2_jpg(img, compress_val):
-    img_cv2 = img[:,:,::-1]
-    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), compress_val]
-    result, encimg = cv2.imencode('.jpg', img_cv2, encode_param)
-    decimg = cv2.imdecode(encimg, 1)
-    return decimg[:,:,::-1]
-
-
-def pil_jpg(img, compress_val):
-    out = BytesIO()
-    img = Image.fromarray(img)
-    img.save(out, format='jpeg', quality=compress_val)
-    img = Image.open(out)
-    # load from memory before ByteIO closes
-    img = np.array(img)
-    out.close()
-    return img
-
-def jpeg_from_key(img, compress_val, key):
-    jpeg_dict = {'cv2': cv2_jpg, 'pil': pil_jpg}
-    method = jpeg_dict[key]
-    return method(img, compress_val)
-
-def data_augment(img, opt):
-    img = np.array(img)
-    if random() < opt.blur_prob:
-        sig = sample_continuous(opt.blur_sig)
-        gaussian_blur(img, sig)
-
-    if random() < opt.jpg_prob:
-        method = sample_discrete(opt.jpg_method)
-        qual = sample_discrete(opt.jpg_qual)
-        img = jpeg_from_key(img, qual, method)
-
-    return Image.fromarray(img)
 
 
 class BinaryMultiDatasets(Dataset):
@@ -97,7 +35,7 @@ class BinaryMultiDatasets(Dataset):
                         if img_path.lower().endswith(image_extensions):
                             self.image_pathes.append(img_path)
                             self.labels.append(self.label_mapping[label]+id*2)
-        # import pdb;pdb.set_trace()
+
         if split == 'train':
             trsf = [
                 transforms.Resize(opt.loadSize),
@@ -117,10 +55,6 @@ class BinaryMultiDatasets(Dataset):
             ]
 
         self.transform_chain = transforms.Compose(trsf)
-
-
-
-        # self.transform_chain = transforms.Compose(opt.trsf)
 
 
     def __len__(self):
@@ -191,34 +125,3 @@ class BinarySingleDataset(Dataset):
         label = self.labels[idx]
         image = self.transform_chain(image)
         return image, label
-
-#
-# import os
-# import concurrent.futures
-# from PIL import Image, UnidentifiedImageError
-# from tqdm import tqdm
-#
-# def check_and_delete_image(file_path):
-#     try:
-#         with Image.open(file_path) as img:
-#             img.verify()  # This will raise an exception if the image is not valid
-#     except UnidentifiedImageError:
-#         print(f"Deleting corrupt image: {file_path}")
-#         os.remove(file_path)
-#     except Exception as e:
-#         print(f"An error occurred with {file_path}: {e}")
-#
-# def delete_corrupt_images(directory):
-#     files_to_check = [os.path.join(root, file)
-#                       for root, dirs, files in os.walk(directory)
-#                       for file in files if file.endswith('.png')]
-#     with tqdm(total=len(files_to_check), desc="Checking images") as progress_bar:
-#         with concurrent.futures.ThreadPoolExecutor() as executor:
-#             future_to_file = {executor.submit(check_and_delete_image, file_path): file_path for file_path in files_to_check}
-#             for future in concurrent.futures.as_completed(future_to_file):
-#                 future.result()  # Wait for the image to be processed
-#                 progress_bar.update(1)  # Update the progress bar
-#
-# # Replace the string below with the path to the directory containing your images
-# images_directory = '/scratch/yw26g23/datasets/deepfakebenchmark/GenImg_MJ/train/1_fake'
-# delete_corrupt_images(images_directory)

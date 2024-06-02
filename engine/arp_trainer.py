@@ -1,20 +1,12 @@
-import os
-import functools
-import timm
-import hydra
 import numpy as np
 
 import lightning as L
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-from torch.nn import init
-from torch.optim import lr_scheduler
 
 from utils.util import validate
 from utils.network_factory import get_model
-
-
 
 mapping = {0: 0, 1: 20, 2: 1, 3: 21, 4: 2, 5: 22, 6: 3, 7: 23, 8: 4, 9: 24, 10: 5,
            11: 25, 12: 6, 13: 26, 14: 7, 15: 27, 16: 8, 17: 28, 18: 9, 19: 29, 20: 10,
@@ -31,8 +23,7 @@ def generate_mapping(base_number):
             mapping[k] = base_number + (k - 1) // 2
     return mapping
 
-class Trainer_arpmulticls(L.LightningModule):
-    # 这个实现相比较multicls是将每个类的real fake都堪称独立的类别
+class Trainer_PoundNet(L.LightningModule):
     def __init__(self, opt):
         super().__init__()
         self.save_hyperparameters()
@@ -47,30 +38,31 @@ class Trainer_arpmulticls(L.LightningModule):
         x, y = batch
         logits, b_logits = self.model(x, return_binary=True)
         loss = 0
-        # 首先语义对齐：将y归为20个类，然后logits向这20类输出监督，无关real/fake  实现为对logits维度进行切分，每20个一组进行cross entropy
-        cls_y = y//2 #0~40类 -> 0~19类 如果prompt是2，如果是1，那么就是
+        # First, semantic alignment: classify y into 20 classes, then supervise the logits output to these 20 classes, regardless of real/fake.
+        # Implement by splitting the logits dimension, grouping every 20, and performing cross entropy.
+        cls_y = y//2 # 0~40 classes -> 0~19 classes. If prompt is 2, if it is 1, then it is...
         logits_groups = torch.chunk(logits, 2*self.opt.model.PROMPT_NUM_TEXT, dim=1)
         for i, logits_group in enumerate(logits_groups):
             loss += self.opt.train.a * F.cross_entropy(logits_group, cls_y)
 
-        # 其次次级语义对齐：fake同fake的分类对齐 real同real的对齐 也是ce损失
-        # 实现为通过chunk和mask进行，将属于real的样本mask掉， but useless..
+        # Secondly, secondary semantic alignment: align the classification of fake samples with fake and real samples with real, also using cross entropy loss.
+        # Implement this by chunking and masking, masking out the samples that belong to real, but it's useless...
         # for i, logits_group in enumerate(logits_groups):
         #     mask = i//2 == y % 2
         #     loss += 0.5*F.cross_entropy(logits_group[mask], cls_y[mask])
 
-        # 在每个子空间做deepfake detection，也就是以类为单位进行deepfake detection
-        # 0表示real，1表示fake，这是个deepfake detection任务
-        # 主要问题是我们的y是0，1，2，3，4，5...38，39这样的，每个类都有两个label，分别表示real和fake，这样进行了20个类，表现为40个label，也就是每个类都有real和fake
-        # 然而logits是0-19个real，之后是20-39个fake，（prompt=1时候），也就是先输出每个类的real再输出每个类的fake
+        # Perform deepfake detection within each subspace, i.e., perform deepfake detection at the class level.
+        # 0 indicates real, 1 indicates fake, which is a deepfake detection task.
+        # The main issue is that our y labels are 0, 1, 2, 3, 4, 5...38, 39 like this, where each class has two labels representing real and fake.
+        # This results in 20 classes with 40 labels, meaning each class has both real and fake labels.
+        # However, the logits are structured as 0-19 for real and then 20-39 for fake (when prompt=1), meaning it outputs the real for each class first, followed by the fake for each class.
         # add a mask to make this a 'real' binary cross-entropy loss, but seems no difference to final results
         # using mask is just like weighted cross-entropy, and we can't use real binary cross entropy for CLIP
         new_y =  torch.tensor([self.mapping[label.item()] for label in y], dtype=torch.long, device=y.device)
         loss += self.opt.train.b * F.cross_entropy(logits, new_y)
 
-        # 其次任务对齐： 把所有20个类统一成real/fake，然后所有logits也统一成real/fake（prompts mean）
+        # Secondly, task alignment: unify all 20 classes into real/fake, and then unify all logits into real/fake (prompts mean).
         loss += self.opt.train.c * F.cross_entropy(b_logits, y % 2)
-        # loss = self.criterion(logits, y)
         self.log("train_loss", loss)
         return loss
 

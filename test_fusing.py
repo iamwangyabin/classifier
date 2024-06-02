@@ -22,7 +22,6 @@ from copy import deepcopy
 from omegaconf import ListConfig
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
 sys.path.append(current_dir)
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
