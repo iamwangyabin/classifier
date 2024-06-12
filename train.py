@@ -33,7 +33,7 @@ if __name__ == '__main__':
     train_datasets = ConcatDataset(train_datasets)
 
     val_datasets = []
-    for subset in conf.datasets.train.sub_sets:
+    for subset in conf.datasets.val.sub_sets:
         val_data = BinaryJsonDatasets(conf.datasets.val, conf.datasets.val.data_root, subset=subset, split='val')
         val_datasets.append(val_data)
     val_datasets = ConcatDataset(val_datasets)
