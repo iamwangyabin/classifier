@@ -2,7 +2,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --partition=a100
+#SBATCH --partition=ecsstaff
 #SBATCH --account=ecsstaff
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=32
@@ -70,14 +70,17 @@ conda activate timm
 #python test.py --cfg cfgs/test/jpg70/a_j70.yaml
 
 # jpeg rand
-python test.py --cfg cfgs/test/jpgrand/test_Ojha_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_NPR_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_Garm_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_freqnet_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_CNNSpot0.1_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_sprompts_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/test_FreDect_jpgrand_224.yaml
-python test_lgrad.py --cfg cfgs/test/jpgrand/test_LGrad_jpgrand_224.yaml
-python test_fusing.py --cfg cfgs/test/jpgrand/test_Fusing_jpgrand_224.yaml
-python test_lnp.py --cfg cfgs/test/jpgrand/test_LNP_jpgrand_224.yaml
-python test.py --cfg cfgs/test/jpgrand/a_jpegrand.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_Ojha_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_NPR_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_Garm_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_freqnet_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_CNNSpot0.1_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_sprompts_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/test_FreDect_jpgrand_224.yaml
+#python test_lgrad.py --cfg cfgs/test/jpgrand/test_LGrad_jpgrand_224.yaml
+#python test_fusing.py --cfg cfgs/test/jpgrand/test_Fusing_jpgrand_224.yaml
+#python test_lnp.py --cfg cfgs/test/jpgrand/test_LNP_jpgrand_224.yaml
+#python test.py --cfg cfgs/test/jpgrand/a_jpegrand.yaml
+
+
+python test.py --cfg cfgs/test/test_Ojha_jpgrand_224.yaml

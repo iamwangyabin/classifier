@@ -26,13 +26,12 @@ def resume_lightning(model, conf):
 
 def get_model(conf):
     print("Model loaded..")
-
     if conf.arch == 'clip':
         from networks.UniversalFakeDetect.clip_models import CLIPModel
         model = CLIPModel('ViT-L/14')
         if conf.resume:
-            state_dict = torch.load(conf.resume, map_location='cpu')
-            model.fc.load_state_dict(state_dict)
+            # state_dict = torch.load(conf.resume, map_location='cpu')
+            # model.fc.load_state_dict(state_dict)
             resume_lightning(model, conf)
 
     elif conf.arch == 'cnn':
