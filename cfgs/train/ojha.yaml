@@ -1,5 +1,5 @@
 arch: "clip"
-resume: null
+resume: false
 name: "ojha_sd15"
 
 train:
