@@ -1,0 +1,66 @@
+arch: "vit_giant_patch14_dinov2.lvd142m"
+resume: null
+name: "dinov2_giant_progan"
+
+train:
+  pipeline: engine.base_trainer
+
+  gpu_ids: [0]
+  train_epochs: 2
+  gradient_accumulation_steps: 1
+  check_val_every_n_epoch: 1
+
+  optimizer:
+    _target_: torch.optim.AdamW
+    _partial_: True
+    lr: 1e-4
+    weight_decay: 1e-3
+
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+    _partial_: True
+    T_max: 2
+
+datasets:
+  train:
+#    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths"
+    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
+    sub_sets: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+               "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+    batch_size: 128
+    loader_workers: 32
+    trsf:
+      - _target_: torchvision.transforms.Resize
+        size: 518
+      - _target_: torchvision.transforms.RandomResizedCrop
+        size: 518
+      - _target_: torchvision.transforms.RandomHorizontalFlip
+      - _target_: data.DataAugment
+        blur_prob: 0.1
+        blur_sig: [0.0, 3.0]
+        jpg_prob: 0.1
+        jpg_method: ['cv2', 'pil']
+        jpg_qual: [30, 100]
+      - _target_: torchvision.transforms.ToTensor
+      - _target_: torchvision.transforms.Normalize
+        mean: [ 0.4850, 0.4560, 0.4060 ]
+        std: [ 0.2290, 0.2240, 0.2250 ]
+
+  val:
+    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
+#    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/test"
+    sub_sets: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+               "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+    batch_size: 128
+    loader_workers: 32
+    trsf:
+      - _target_: torchvision.transforms.Resize
+        size: 518
+      - _target_: torchvision.transforms.RandomResizedCrop
+        size: 518
+      - _target_: torchvision.transforms.ToTensor
+      - _target_: torchvision.transforms.Normalize
+        mean: [ 0.4850, 0.4560, 0.4060 ]
+        std: [ 0.2290, 0.2240, 0.2250 ]
+
+
