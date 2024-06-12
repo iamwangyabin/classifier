@@ -30,9 +30,10 @@ def get_model(conf):
     if conf.arch == 'clip':
         from networks.UniversalFakeDetect.clip_models import CLIPModel
         model = CLIPModel('ViT-L/14')
-        state_dict = torch.load(conf.resume, map_location='cpu')
-        model.fc.load_state_dict(state_dict)
-        # resume_lightning(model, conf)
+        if conf.resume:
+            state_dict = torch.load(conf.resume, map_location='cpu')
+            model.fc.load_state_dict(state_dict)
+            resume_lightning(model, conf)
 
     elif conf.arch == 'cnn':
         model = resnet50(num_classes=1)
@@ -55,7 +56,7 @@ def get_model(conf):
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict)
 
-    elif conf.arch == 'FreDect':
+    elif conf.arch == 'FreDect': 
         model = torchvision.models.resnet50()
         model.fc = torch.nn.Linear(2048, 1)
         if conf.resume:
