@@ -56,7 +56,7 @@ def get_model(conf):
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict)
 
-    elif conf.arch == 'FreDect': 
+    elif conf.arch == 'FreDect':
         model = torchvision.models.resnet50()
         model.fc = torch.nn.Linear(2048, 1)
         if conf.resume:

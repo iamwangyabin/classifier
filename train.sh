@@ -18,6 +18,6 @@ conda init bash
 conda activate timm
 
 
-python train.py --cfg cfgs/train/so400m.yaml
+python train.py --cfg cfgs/train/ojha.yaml
 
 
