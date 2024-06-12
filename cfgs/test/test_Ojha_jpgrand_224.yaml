@@ -1,5 +1,5 @@
 arch: "clip"
-resume: '/home/yw26g23/classifier/logs/ojha_sd15_20240612_17_37_38/epoch=06-val_acc_epoch=0.68.ckpt'
+resume: '/home/yw26g23/classifier/logs/ojha_sd15_20240612_17_37_38/epoch=09-val_acc_epoch=0.68.ckpt'
 test_name: "Ojha_jpgrand_sd15_224"
 
 datasets:
