@@ -516,10 +516,10 @@ for artist, images in top_10000_artist_images.items():
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-api = HfApi()
+api = HfApi(token="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")
 
 files_to_upload = [
-    "UADFV.tar",
+    "clipbased.tar",
 ]
 
 for filename in files_to_upload:
