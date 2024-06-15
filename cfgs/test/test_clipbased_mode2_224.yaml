@@ -1,6 +1,6 @@
 arch: "clipbased"
 resume: 'networks/weights/clipdet_latent10k_plus/weights.pth'
-test_name: "clipbased_jpegrand_224"
+test_name: "clipbased_224_2mode"
 
 datasets:
   batch_size: 32
@@ -9,12 +9,12 @@ datasets:
 #  data_root: "/home/jwang/ybwork/data/DFBenchmark"
 
   trsf:
-    - _target_: data.RandomCompress
-      method: "JPEG"
-      qf: [70, 100]
+#    - _target_: data.RandomCompress
+#      method: "JPEG"
+#      qf: [70, 100]
     - _target_: torchvision.transforms.Resize
       size: 224
-      interpolation: 3
+      interpolation: 2
     - _target_: torchvision.transforms.CenterCrop
       size: [224, 224]
     - _target_: torchvision.transforms.ToTensor

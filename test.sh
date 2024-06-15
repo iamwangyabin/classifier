@@ -84,3 +84,9 @@ conda activate timm
 
 
 python test.py --cfg cfgs/test/test_clipbased_jpgrand_224.yaml
+python test.py --cfg cfgs/test/test_clipbased_mode1_224.yaml
+python test.py --cfg cfgs/test/test_clipbased_mode2_224.yaml
+python test.py --cfg cfgs/test/test_clipbased_mode3_224.yaml
+
+
+
