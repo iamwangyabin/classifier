@@ -10,7 +10,6 @@ from networks.SPrompts.arprompts import ARPromptsCLIP
 
 def resume_lightning(model, conf):
     if conf.resume:
-        # for ojha fc weight
         # state_dict = torch.load(conf.resume, map_location='cpu')
         # model.fc.load_state_dict(state_dict)
         state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
@@ -81,12 +80,18 @@ def get_model(conf):
                 model.load_state_dict(state_dict['netC'], strict=True)
             except:
                 model.load_state_dict({k.replace('module.', ''): v for k, v in state_dict['netC'].items()})
+
     elif conf.arch == 'arp':
         model = ARPromptsCLIP(conf)
         resume_lightning(model, conf)
+
     elif conf.arch == 'vlp':
         model = IndepVLPCLIP(conf)
         resume_lightning(model, conf)
+
+    elif conf.arch == 'clipbased':
+        from networks.ClipBased.detector import CLIPBasedModel
+        model = CLIPBasedModel(pretrained_path=conf.resume)
 
     else:
         from networks.timm_detector import TIMMModel

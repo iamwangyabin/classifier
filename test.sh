@@ -83,4 +83,4 @@ conda activate timm
 #python test.py --cfg cfgs/test/jpgrand/a_jpegrand.yaml
 
 
-python test.py --cfg cfgs/test/test_Ojha_jpgrand_224.yaml
+python test.py --cfg cfgs/test/test_clipbased_jpgrand_224.yaml
