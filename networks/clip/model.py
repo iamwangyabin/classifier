@@ -251,6 +251,7 @@ class VisionTransformer(nn.Module):
 
         return x
 
+    # interplot input size to match various input size
     # def forward(self, x: torch.Tensor):
     #     x = self.conv1(x)  # shape = [*, width, grid, grid]
     #     x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]

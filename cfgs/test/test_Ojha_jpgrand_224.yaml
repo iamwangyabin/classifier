@@ -1,6 +1,6 @@
 arch: "clip"
-resume: '/home/yw26g23/classifier/logs/ojha_sd15_20240612_17_37_38/epoch=09-val_acc_epoch=0.68.ckpt'
-test_name: "Ojha_jpgrand_sd15_224"
+resume: '/home/yw26g23/classifier/logs/ojha_sd15_20240613_02_40_49/epoch=85-val_acc_epoch=0.74.ckpt'
+test_name: "Ojha_jpgrand_sd15_224_moretraining"
 
 datasets:
   batch_size: 32
