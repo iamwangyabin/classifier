@@ -14,8 +14,9 @@ datasets:
 #      qf: [70, 100]
     - _target_: torchvision.transforms.Resize
       size: 224
+      interpolation: torchvision.transforms.InterpolationMode.BICUBIC
     - _target_: torchvision.transforms.CenterCrop
-      size: 224
+      size: (224, 224)
     - _target_: torchvision.transforms.ToTensor
     - _target_: torchvision.transforms.Normalize
       mean: [0.48145466, 0.4578275, 0.40821073]
