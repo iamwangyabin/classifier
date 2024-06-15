@@ -303,7 +303,7 @@ class ARPromptsCLIP(nn.Module):
         self.cfg = cfg
         print(f"Loading CLIP (backbone: {cfg.model.NAME})")
         clip_model = load_clip_to_cpu(cfg)
-        classnames = cfg.dataset.train.multicalss_names
+        classnames = cfg.datasets.train.multicalss_names
         # import pdb;pdb.set_trace()
         self.prompt_learner = ARPromptLearner(cfg, classnames, clip_model)
         self.tokenized_prompts = self.prompt_learner.tokenized_prompts
