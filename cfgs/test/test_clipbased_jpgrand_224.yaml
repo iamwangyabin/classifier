@@ -13,7 +13,7 @@ datasets:
 #      method: "JPEG"
 #      qf: [70, 100]
     - _target_: torchvision.transforms.Resize
-      size: 256
+      size: 224
     - _target_: torchvision.transforms.CenterCrop
       size: 224
     - _target_: torchvision.transforms.ToTensor
