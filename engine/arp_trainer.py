@@ -80,13 +80,13 @@ class Trainer_PoundNet(L.LightningModule):
         all_gts = torch.cat(self.validation_step_outputs_gts, 0).to(torch.float32).cpu().numpy()
         acc, ap = validate(all_gts % 2, all_preds)[:2]
         self.log('val_acc_epoch', acc, logger=True, sync_dist=True)
-        for i, sub_task in enumerate(self.opt.dataset.val.subfolder_names):
-            mask = (all_gts >= i * 2) & (all_gts <= 1 + i * 2)
-            idxes = np.where(mask)[0]
-            if len(idxes) == 0:
-                continue
-            acc, ap = validate(all_gts[idxes] % 2, all_preds[idxes])[:2]
-            self.log(f'val_acc_{sub_task}', acc, logger=True, sync_dist=True)
+        # for i, sub_task in enumerate(self.opt.dataset.val.subfolder_names):
+        #     mask = (all_gts >= i * 2) & (all_gts <= 1 + i * 2)
+        #     idxes = np.where(mask)[0]
+        #     if len(idxes) == 0:
+        #         continue
+        #     acc, ap = validate(all_gts[idxes] % 2, all_preds[idxes])[:2]
+        #     self.log(f'val_acc_{sub_task}', acc, logger=True, sync_dist=True)
         self.validation_step_outputs_preds.clear()
         self.validation_step_outputs_gts.clear()
 
