@@ -28,13 +28,15 @@ if __name__ == '__main__':
 
     train_datasets = []
     for subset in conf.datasets.train.sub_sets:
-        train_data = BinaryJsonDatasets(conf.datasets.train, conf.datasets.train.data_root, subset=subset, split='train_binary')
+        train_data = BinaryJsonDatasets(conf.datasets.train, conf.datasets.train.data_root,
+                                        subset=subset, split=conf.datasets.train.split)
         train_datasets.append(train_data)
     train_datasets = ConcatDataset(train_datasets)
 
     val_datasets = []
     for subset in conf.datasets.val.sub_sets:
-        val_data = BinaryJsonDatasets(conf.datasets.val, conf.datasets.val.data_root, subset=subset, split='val')
+        val_data = BinaryJsonDatasets(conf.datasets.val, conf.datasets.val.data_root,
+                                      subset=subset, split=conf.datasets.val.split)
         val_datasets.append(val_data)
     val_datasets = ConcatDataset(val_datasets)
 

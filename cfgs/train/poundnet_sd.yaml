@@ -38,13 +38,15 @@ datasets:
   train:
     data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/our"
     sub_sets: ["all"]
+    split: 'train_binary'
     multicalss_names: [ "airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                         "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor" ]
-    batch_size: 128
+    batch_size: 256
     loader_workers: 32
     trsf:
       - _target_: torchvision.transforms.Resize
         size: 256
+        interpolation: 3
       - _target_: torchvision.transforms.RandomResizedCrop
         size: 224
       - _target_: torchvision.transforms.RandomHorizontalFlip
@@ -62,13 +64,18 @@ datasets:
 
   val:
     data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths"
-    sub_sets: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
-               "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
+    sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
+                "stylegan", "stylegan2", "whichfaceisreal" ]
+    split: 'test'
     batch_size: 128
     loader_workers: 32
     trsf:
+      - _target_: data.RandomCompress
+        method: "JPEG"
+        qf: [70, 100]
       - _target_: torchvision.transforms.Resize
         size: 256
+        interpolation: 3
       - _target_: torchvision.transforms.RandomResizedCrop
         size: 224
       - _target_: torchvision.transforms.ToTensor
