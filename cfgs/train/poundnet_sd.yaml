@@ -50,10 +50,10 @@ datasets:
       - _target_: torchvision.transforms.RandomHorizontalFlip
       - _target_: data.DataAugment
         blur_prob: 0.1
-        blur_sig: [0.0, 3.0]
+        blur_sig: [0.0, 1.0]
         jpg_prob: 0.1
         jpg_method: ['cv2', 'pil']
-        jpg_qual: [30, 100]
+        jpg_qual: [60, 100]
       - _target_: torchvision.transforms.ToTensor
       - _target_: torchvision.transforms.Normalize
         mean: [0.48145466, 0.4578275, 0.40821073]

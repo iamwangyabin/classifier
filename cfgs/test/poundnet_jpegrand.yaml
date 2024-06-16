@@ -1,6 +1,6 @@
 arch: "arp"
 resume: './logs/arp-ViTL-001-881_20240616_10_10_55/epoch=04-val_acc_epoch=0.92.ckpt'
-test_name: "poundnet_881_jpgrand_sd_224"
+test_name: "poundnet_881_sd_224"
 
 specific_cls: False
 
@@ -24,11 +24,8 @@ datasets:
   data_root: "/scratch/yw26g23/datasets/deepfakebenchmark"
 
   trsf:
-    - _target_: data.RandomCompress
-      method: "JPEG"
-      qf: [70, 100]
     - _target_: torchvision.transforms.Resize
-      size: 224
+      size: 256
       interpolation: 3
     - _target_: torchvision.transforms.CenterCrop
       size: 224
