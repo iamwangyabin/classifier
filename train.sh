@@ -18,6 +18,6 @@ conda init bash
 conda activate timm
 
 
-python train.py --cfg cfgs/train/poundnet_sd.yaml
+python train.py --cfg cfgs/train/cnndet01.yaml
 
 
