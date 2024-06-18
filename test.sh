@@ -9,6 +9,7 @@
 #SBATCH --time=60:00:00
 
 export WANDB_MODE="offline"
+export NO_ALBUMENTATIONS_UPDATE=1
 
 module load cuda/11.8
 module load anaconda/py3.10
