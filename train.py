@@ -24,7 +24,6 @@ if __name__ == '__main__':
     args, cfg_args = parser.parse_known_args()
     conf = load_config_with_cli(args.cfg, args_list=cfg_args)
     conf = hydra.utils.instantiate(conf)
-    wandb.login(key = 'a4d3a740e939973b02ac59fbd8ed0d6a151df34b')
 
     train_datasets = []
     for subset in conf.datasets.train.sub_sets:
@@ -46,6 +45,7 @@ if __name__ == '__main__':
                             num_workers=conf.datasets.val.loader_workers)
 
     today_str = conf.name +"_"+ datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
+
 
     wandb_logger = WandbLogger(name=today_str, project='DeepfakeDetection',
                                job_type='train', group=conf.name, mode="offline")

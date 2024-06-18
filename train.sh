@@ -10,6 +10,7 @@
 
 
 export WANDB_MODE="offline"
+export WANDB_API_KEY="a4d3a740e939973b02ac59fbd8ed0d6a151df34b"
 
 module load cuda/11.8
 module load anaconda/py3.10
