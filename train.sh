@@ -9,15 +9,14 @@
 #SBATCH --time=60:00:00
 
 
-export WANDB_MODE="offline"
-export WANDB_API_KEY="a4d3a740e939973b02ac59fbd8ed0d6a151df34b"
-
 module load cuda/11.8
 module load anaconda/py3.10
 eval "$(conda shell.bash hook)"
 conda init bash
 conda activate timm
 
+export WANDB_MODE="offline"
+export WANDB_API_KEY="a4d3a740e939973b02ac59fbd8ed0d6a151df34b"
 
 python train.py --cfg cfgs/train/cnndet01.yaml
 
