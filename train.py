@@ -48,7 +48,7 @@ if __name__ == '__main__':
     today_str = conf.name +"_"+ datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
 
     wandb_logger = WandbLogger(name=today_str, project='DeepfakeDetection',
-                               job_type='train', group=conf.name)
+                               job_type='train', group=conf.name, mode="offline")
 
     if os.getenv("LOCAL_RANK", '0') == '0':
         archive_files(today_str, exclude_dirs=['logs', 'wandb', '.git', 'exp_results'])
