@@ -1,12 +1,17 @@
 import io
-import cv2
-import numpy as np
 from io import BytesIO
+import cv2
+import numbers
+import numpy as np
+from collections.abc import Sequence
 from PIL import ImageFile, Image
 from random import random, choice, randint
 from scipy.fftpack import dct
 from scipy.ndimage.filters import gaussian_filter
+
 import torch
+import torch.nn.functional as F
+import torchvision.transforms as transforms
 
 
 def sample_continuous(s):
@@ -66,6 +71,35 @@ def data_augment(img, opt):
 
     return Image.fromarray(img)
 
+def _setup_size(size, error_msg):
+    if isinstance(size, numbers.Number):
+        return int(size), int(size)
+
+    if isinstance(size, Sequence) and len(size) == 1:
+        return size[0], size[0]
+
+    if len(size) != 2:
+        raise ValueError(error_msg)
+    return size
+
+class RandomInterpolationResize(torch.nn.Module):
+    def __init__(self, size, max_size=None, antialias=None):
+        super().__init__()
+        self.size = _setup_size(size, error_msg=" (h, w) as size.")
+        self.interpolation = [transforms.InterpolationMode.NEAREST, transforms.InterpolationMode.BILINEAR,
+                              transforms.InterpolationMode.BICUBIC, transforms.InterpolationMode.BOX,
+                              transforms.InterpolationMode.HAMMING, transforms.InterpolationMode.LANCZOS,]
+        if max_size is not None:
+            if not (isinstance(max_size, int) and max_size > 0):
+                raise ValueError("max_size must be an integer")
+        self.max_size = max_size
+        self.antialias = antialias
+
+    def forward(self, img):
+        interpolation = random.choice(self.interpolation)
+        return transforms.functional.resize(img, self.size, interpolation, self.max_size, self.antialias)
+
+
 
 class DataAugment:
     def __init__(self, blur_prob, blur_sig, jpg_prob, jpg_method, jpg_qual):
@@ -87,6 +121,84 @@ class DataAugment:
             image = jpeg_from_key(image, qual, method)
 
         return Image.fromarray(image)
+
+
+
+
+
+
+def make_aug(opt):
+    # AUG
+    transforms_list_aug = list()
+
+    if (opt.resize_size > 0) and (opt.resize_prob > 0):  # opt.resized_ratio
+        transforms_list_aug.append(
+            transforms.RandomApply(
+                [
+                    transforms.RandomResizedCrop(
+                        size=opt.resize_size,
+                        scale=(0.08, 1.0),
+                        ratio=(opt.resize_ratio, 1.0 / opt.resize_ratio),
+                        interpolation=rz_dict[sample_discrete(opt.rz_interp)],
+                    )
+                ],
+                opt.resize_prob,
+            )
+        )
+
+    if opt.jitter_prob > 0:
+        transforms_list_aug.append(
+            transforms.RandomApply(
+                [transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=opt.jitter_prob
+            )
+        )
+
+    if opt.colordist_prob > 0:
+        transforms_list_aug.append(transforms.RandomGrayscale(p=opt.colordist_prob))
+
+    if opt.cutout_prob > 0:
+        transforms_list_aug.append(create_cutout_transforms(opt.cutout_prob))
+
+    if opt.noise_prob > 0:
+        transforms_list_aug.append(create_noise_transforms(opt.noise_prob))
+
+    if opt.blur_prob > 0:
+        transforms_list_aug.append(
+            transforms.Lambda(
+                lambda img: data_augment_blur(img, opt.blur_prob, opt.blur_sig)
+            )
+        )
+
+    if opt.cmp_prob > 0:
+        transforms_list_aug.append(
+            transforms.Lambda(
+                lambda img: data_augment_cmp(
+                    img, opt.cmp_prob, opt.cmp_method, opt.cmp_qual
+                )
+            )
+        )
+
+    if opt.rot90_prob > 0:
+        transforms_list_aug.append(
+            transforms.Lambda(lambda img: data_augment_rot90(img, opt.rot90_prob))
+        )
+
+    if opt.hpf_prob > 0:
+        transforms_list_aug.append(transforms.ToTensor())
+        transforms_list_aug.append(
+            transforms.Lambda(
+                lambda img: data_augment_hpf(img, opt.hpf_prob, opt.blur_sig)
+            )
+        )
+
+    if not opt.no_flip:
+        transforms_list_aug.append(transforms.RandomHorizontalFlip())
+
+    if len(transforms_list_aug) > 0:
+        return transforms.Compose(transforms_list_aug)
+    else:
+        return None
+
 
 
 

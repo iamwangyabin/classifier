@@ -1,6 +1,6 @@
 arch: "cnn"
 resume: null
-name: "cnndet01_sd15"
+name: "cnndet01_progan"
 
 train:
   pipeline: engine.base_trainer
@@ -23,8 +23,12 @@ train:
 
 datasets:
   train:
-    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/our"
-    sub_sets: ["all"]
+#    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/our"
+#    sub_sets: [ "all" ]
+
+    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
+    sub_sets: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
+               "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
     split: 'train_binary'
     batch_size: 256
     loader_workers: 32
