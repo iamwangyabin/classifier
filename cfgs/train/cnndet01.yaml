@@ -26,7 +26,7 @@ datasets:
 #    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/our"
 #    sub_sets: [ "all" ]
 
-    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
+    data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths"
     sub_sets: ["airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor"]
     split: 'train_binary'
