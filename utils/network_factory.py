@@ -12,15 +12,18 @@ def resume_lightning(model, conf):
     if conf.resume:
         # state_dict = torch.load(conf.resume, map_location='cpu')
         # model.fc.load_state_dict(state_dict)
-        state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
-        new_state_dict = {}
-        for key, value in state_dict.items():
-            if key.startswith('model.'):
-                new_key = key[6:]  # remove `model.` from key
-                new_state_dict[new_key] = value
-            else:
-                new_state_dict[key] = value
-        model.load_state_dict(new_state_dict)
+        try:
+            state_dict = torch.load(conf.resume, map_location='cpu')['state_dict']
+            new_state_dict = {}
+            for key, value in state_dict.items():
+                if key.startswith('model.'):
+                    new_key = key[6:]  # remove `model.` from key
+                    new_state_dict[new_key] = value
+                else:
+                    new_state_dict[key] = value
+            model.load_state_dict(new_state_dict)
+        except:
+            model.backbone.load_state_dict(torch.load(conf.resume, map_location='cpu'), False)
 
 
 def get_model(conf):

@@ -2,7 +2,9 @@ import os
 import json
 import warnings
 import torchvision.transforms as transforms
+import albumentations as A
 
+import numpy as np
 from torch.utils.data import Dataset
 from PIL import ImageFile, Image
 
@@ -11,7 +13,14 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
 warnings.filterwarnings("ignore", category=UserWarning, module='PIL')
 
-
+def check_transform_lib(transform):
+    module_name = transform.__class__.__module__
+    if module_name.startswith('albumentations'):
+        return 'albumentations'
+    elif module_name.startswith('torchvision'):
+        return 'torchvision'
+    else:
+        return 'unknown'
 
 class BinaryJsonDatasets(Dataset):
     def __init__(self, opt, data_root, subset='all', split='train'):
@@ -32,7 +41,13 @@ class BinaryJsonDatasets(Dataset):
             # else:
             #     print('pass, not exit {}'.format(img_full_path) )
 
-        self.transform_chain = transforms.Compose(opt.trsf)
+        for idx, transform in enumerate(opt.trsf):
+            self.lib = check_transform_lib(transform)
+
+        if self.lib == 'albumentations':
+            self.transform_chain = A.Compose(opt.trsf)
+        elif self.lib == 'torchvision':
+            self.transform_chain = transforms.Compose(opt.trsf)
 
     def __len__(self):
         return len(self.image_pathes)
@@ -41,6 +56,10 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         image = Image.open(img_path).convert('RGB')
         label = self.labels[idx]
-        image = self.transform_chain(image)
+        if self.lib == 'albumentations':
+            image = np.array(image)
+            image = self.transform_chain(image=image)["image"]
+        elif self.lib == 'torchvision':
+            image = self.transform_chain(image)
         return image, label
 

@@ -62,7 +62,7 @@ if __name__ == '__main__':
     )
 
     model = eval(conf.train.pipeline)(opt=conf)
-
+    torch.set_float32_matmul_precision('high')
     trainer = L.Trainer(logger=wandb_logger, max_epochs=conf.train.train_epochs, accelerator="gpu", devices=conf.train.gpu_ids,
                         callbacks=[checkpoint_callback],
                         # val_check_interval=1,
