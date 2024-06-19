@@ -58,7 +58,9 @@ class BinaryJsonDatasets(Dataset):
         img_path = self.image_pathes[idx]
         label = self.labels[idx]
         if self.lib == 'albumentations':
-            image = cv2.imread(img_path) # this is BGR, different from PIL
+            image = Image.open(img_path).convert('RGB')
+            image = np.array(image)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             image = self.transform_chain(image=image)["image"].float()
         elif self.lib == 'torchvision':
             image = Image.open(img_path).convert('RGB')

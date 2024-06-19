@@ -20,6 +20,7 @@ datasets:
     - _target_: albumentations.pytorch.transforms.ToTensorV2
 
   source:
+
     ForenSynths:
       data_root: '${datasets.data_root}/ForenSynths'
       sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
