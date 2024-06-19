@@ -84,7 +84,7 @@ def archive_files(log_name, exclude_dirs):
 
         for root, _, files in os.walk(tmpdirname):
             for file in files:
-                if file.endswith(('.pth', '.pyc', '.npy', '.pt', '.gz')):
+                if file.endswith(('.pth', '.pyc', '.npy', '.pt', '.gz', '.pkl', '.csv')):
                     os.remove(os.path.join(root, file))
 
 
