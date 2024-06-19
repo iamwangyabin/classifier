@@ -8,7 +8,6 @@
 #SBATCH --gres=gpu:1
 #SBATCH --time=60:00:00
 
-
 module load cuda/11.8
 module load anaconda/py3.10
 eval "$(conda shell.bash hook)"
@@ -18,6 +17,6 @@ conda activate timm
 export WANDB_MODE="offline"
 export WANDB_API_KEY="a4d3a740e939973b02ac59fbd8ed0d6a151df34b"
 
-python train.py --cfg cfgs/train/cnndet01.yaml
+python train.py --cfg cfgs/train/poundnet_sd.yaml
 
 

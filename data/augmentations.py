@@ -101,6 +101,9 @@ class RandomInterpolationResize(torch.nn.Module):
 
 
 
+
+
+
 class DataAugment:
     def __init__(self, blur_prob, blur_sig, jpg_prob, jpg_method, jpg_qual):
         self.blur_prob = blur_prob
@@ -121,85 +124,6 @@ class DataAugment:
             image = jpeg_from_key(image, qual, method)
 
         return Image.fromarray(image)
-
-
-
-
-
-
-def make_aug(opt):
-    # AUG
-    transforms_list_aug = list()
-
-    if (opt.resize_size > 0) and (opt.resize_prob > 0):  # opt.resized_ratio
-        transforms_list_aug.append(
-            transforms.RandomApply(
-                [
-                    transforms.RandomResizedCrop(
-                        size=opt.resize_size,
-                        scale=(0.08, 1.0),
-                        ratio=(opt.resize_ratio, 1.0 / opt.resize_ratio),
-                        interpolation=rz_dict[sample_discrete(opt.rz_interp)],
-                    )
-                ],
-                opt.resize_prob,
-            )
-        )
-
-    if opt.jitter_prob > 0:
-        transforms_list_aug.append(
-            transforms.RandomApply(
-                [transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)], p=opt.jitter_prob
-            )
-        )
-
-    if opt.colordist_prob > 0:
-        transforms_list_aug.append(transforms.RandomGrayscale(p=opt.colordist_prob))
-
-    if opt.cutout_prob > 0:
-        transforms_list_aug.append(create_cutout_transforms(opt.cutout_prob))
-
-    if opt.noise_prob > 0:
-        transforms_list_aug.append(create_noise_transforms(opt.noise_prob))
-
-    if opt.blur_prob > 0:
-        transforms_list_aug.append(
-            transforms.Lambda(
-                lambda img: data_augment_blur(img, opt.blur_prob, opt.blur_sig)
-            )
-        )
-
-    if opt.cmp_prob > 0:
-        transforms_list_aug.append(
-            transforms.Lambda(
-                lambda img: data_augment_cmp(
-                    img, opt.cmp_prob, opt.cmp_method, opt.cmp_qual
-                )
-            )
-        )
-
-    if opt.rot90_prob > 0:
-        transforms_list_aug.append(
-            transforms.Lambda(lambda img: data_augment_rot90(img, opt.rot90_prob))
-        )
-
-    if opt.hpf_prob > 0:
-        transforms_list_aug.append(transforms.ToTensor())
-        transforms_list_aug.append(
-            transforms.Lambda(
-                lambda img: data_augment_hpf(img, opt.hpf_prob, opt.blur_sig)
-            )
-        )
-
-    if not opt.no_flip:
-        transforms_list_aug.append(transforms.RandomHorizontalFlip())
-
-    if len(transforms_list_aug) > 0:
-        return transforms.Compose(transforms_list_aug)
-    else:
-        return None
-
-
 
 
 class DCTTransform:

@@ -8,14 +8,35 @@ import torch
 import torch.nn
 from torch.utils.data import DataLoader
 from torch.utils.data import ConcatDataset
-
 import lightning as L
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
 
 import engine
+import data
 from utils.util import load_config_with_cli, archive_files
-from data.json_datasets import BinaryJsonDatasets
+
+def build_dataloader(conf):
+    train_datasets = []
+    for subset in conf.datasets.train.sub_sets:
+        train_data = eval(conf.datasets.train.target)(conf.datasets.train, conf.datasets.train.data_root,
+                                        subset=subset, split=conf.datasets.train.split)
+        train_datasets.append(train_data)
+    train_datasets = ConcatDataset(train_datasets)
+
+    val_datasets = []
+    for subset in conf.datasets.val.sub_sets:
+        val_data = eval(conf.datasets.val.target)(conf.datasets.val, conf.datasets.val.data_root,
+                                      subset=subset, split=conf.datasets.val.split)
+        val_datasets.append(val_data)
+    val_datasets = ConcatDataset(val_datasets)
+
+    train_loader = DataLoader(train_datasets, batch_size=conf.datasets.train.batch_size, shuffle=True,
+                              num_workers=conf.datasets.train.loader_workers)
+    val_loader = DataLoader(val_datasets, batch_size=conf.datasets.val.batch_size, shuffle=False,
+                            num_workers=conf.datasets.val.loader_workers)
+    return train_loader, val_loader
+
 
 
 if __name__ == '__main__':
@@ -25,24 +46,7 @@ if __name__ == '__main__':
     conf = load_config_with_cli(args.cfg, args_list=cfg_args)
     conf = hydra.utils.instantiate(conf)
 
-    train_datasets = []
-    for subset in conf.datasets.train.sub_sets:
-        train_data = BinaryJsonDatasets(conf.datasets.train, conf.datasets.train.data_root,
-                                        subset=subset, split=conf.datasets.train.split)
-        train_datasets.append(train_data)
-    train_datasets = ConcatDataset(train_datasets)
-
-    val_datasets = []
-    for subset in conf.datasets.val.sub_sets:
-        val_data = BinaryJsonDatasets(conf.datasets.val, conf.datasets.val.data_root,
-                                      subset=subset, split=conf.datasets.val.split)
-        val_datasets.append(val_data)
-    val_datasets = ConcatDataset(val_datasets)
-
-    train_loader = DataLoader(train_datasets, batch_size=conf.datasets.train.batch_size, shuffle=True,
-                              num_workers=conf.datasets.train.loader_workers)
-    val_loader = DataLoader(val_datasets, batch_size=conf.datasets.val.batch_size, shuffle=False,
-                            num_workers=conf.datasets.val.loader_workers)
+    train_loader, val_loader = build_dataloader(conf)
 
     today_str = conf.name +"_"+ datetime.datetime.now().strftime('%Y%m%d_%H_%M_%S')
 

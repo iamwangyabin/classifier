@@ -1,6 +1,6 @@
 arch: "arp"
 resume: null
-name: "arp-ViTL-001-881"
+name: "poundnet-ViTL-001-881-sd"
 
 train:
   pipeline: engine.poundnet_trainer
@@ -36,34 +36,87 @@ model:
 
 datasets:
   train:
+    target: data.BinaryJsonDatasets
     data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/our"
+#    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
+
     sub_sets: ["all"]
+
     split: 'train_binary'
     multicalss_names: [ "airplane", "bird", "bottle", "car", "chair", "diningtable", "horse", "person", "sheep", "train",
                         "bicycle", "boat", "bus", "cat", "cow", "dog", "motorbike", "pottedplant", "sofa", "tvmonitor" ]
     batch_size: 256
     loader_workers: 32
-    trsf:
-      - _target_: torchvision.transforms.Resize
-        size: 256
-        interpolation: 3
-      - _target_: torchvision.transforms.RandomResizedCrop
-        size: 224
-      - _target_: torchvision.transforms.RandomHorizontalFlip
-      - _target_: data.DataAugment
-        blur_prob: 0.1
-        blur_sig: [0.0, 1.0]
-        jpg_prob: 0.1
-        jpg_method: ['cv2', 'pil']
-        jpg_qual: [60, 100]
-      - _target_: torchvision.transforms.ToTensor
-      - _target_: torchvision.transforms.Normalize
-        mean: [0.48145466, 0.4578275, 0.40821073]
-        std: [0.26862954, 0.26130258, 0.27577711]
 
+    pollution_probability: 0.3
+
+#    trsf:
+#      - _target_: torchvision.transforms.Resize
+#        size: 256
+#        interpolation: 3
+#      - _target_: torchvision.transforms.RandomResizedCrop
+#        size: 224
+#      - _target_: torchvision.transforms.RandomHorizontalFlip
+#      - _target_: data.DataAugment
+#        blur_prob: 0.1
+#        blur_sig: [0.0, 1.0]
+#        jpg_prob: 0.1
+#        jpg_method: ['cv2', 'pil']
+#        jpg_qual: [60, 100]
+#      - _target_: torchvision.transforms.ToTensor
+#      - _target_: torchvision.transforms.Normalize
+#        mean: [0.48145466, 0.4578275, 0.40821073]
+#        std: [0.26862954, 0.26130258, 0.27577711]
+    trsf:
+      - _target_: albumentations.ImageCompression
+        quality_lower: 40
+        quality_upper: 100
+        p: 0.1
+      - _target_: albumentations.HorizontalFlip
+      - _target_: albumentations.GaussNoise
+        var_limit: 1
+        p: 0.1
+      - _target_: albumentations.GaussianBlur
+        blur_limit: 3
+        p: 0.1
+      - _target_: albumentations.MultiplicativeNoise
+        p: 0.1
+      - _target_: data.IsotropicResize
+        min_side: 224
+      - _target_: albumentations.RandomCrop
+        height: 224
+        width: 224
+      - _target_: albumentations.RandomBrightnessContrast
+        p: 0.1
+      - _target_: albumentations.FancyPCA
+        p: 0.1
+      - _target_: albumentations.HueSaturationValue
+        p: 0.1
+      - _target_: albumentations.CoarseDropout
+        p: 0.1
+      - _target_: albumentations.ToGray
+        p: 0.1
+      - _target_: albumentations.ToSepia
+        p: 0.05
+      - _target_: albumentations.RandomShadow
+        p: 0.05
+      - _target_: albumentations.RandomGamma
+        p: 0.1
+      - _target_: albumentations.ShiftScaleRotate
+        shift_limit: 0.1
+        scale_limit: 0.2
+        rotate_limit: 180
+        p: 0.2
+      - _target_: albumentations.Normalize
+        mean: [0.485, 0.456, 0.406]
+        std: [0.229, 0.224, 0.225]
+        p: 1.0
+      - _target_: albumentations.pytorch.transforms.ToTensorV2
 
   val:
+    target: data.BinaryJsonDatasets
     data_root: "/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths"
+#    data_root: "/home/jwang/ybwork/data/DFBenchmark/ForenSynths"
     sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                 "stylegan", "stylegan2", "whichfaceisreal" ]
     split: 'test'
