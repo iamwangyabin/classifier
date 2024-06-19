@@ -3,9 +3,6 @@ import timm
 import torchvision
 
 from networks.resnet import resnet50
-from networks.NPR.detector import NPRModel
-from networks.SPrompts.independentVL import IndepVLPCLIP
-from networks.SPrompts.arprompts import ARPromptsCLIP
 
 
 def resume_lightning(model, conf):
@@ -31,17 +28,16 @@ def get_model(conf):
     if conf.arch == 'clip':
         from networks.UniversalFakeDetect.clip_models import CLIPModel
         model = CLIPModel('ViT-L/14')
-        if conf.resume:
-            # state_dict = torch.load(conf.resume, map_location='cpu')
-            # model.fc.load_state_dict(state_dict)
-            resume_lightning(model, conf)
+        resume_lightning(model, conf)
 
     elif conf.arch == 'cnn':
         model = resnet50(num_classes=1)
         if conf.resume:
             state_dict = torch.load(conf.resume, map_location='cpu')
             model.load_state_dict(state_dict['model'])
+
     elif conf.arch == 'npr':
+        from networks.NPR.detector import NPRModel
         model = NPRModel(num_classes=1)
         if conf.resume:
             state_dict = torch.load(conf.resume, map_location='cpu')
@@ -50,6 +46,7 @@ def get_model(conf):
             except:
                 state_dict = {'module.' + k: v for k, v in state_dict.items()}
                 model.load_state_dict(state_dict)
+
     elif conf.arch == 'freqnet':
         from networks.FreqNet.freqnet import freqnet
         model = freqnet(num_classes=1)
@@ -85,10 +82,12 @@ def get_model(conf):
                 model.load_state_dict({k.replace('module.', ''): v for k, v in state_dict['netC'].items()})
 
     elif conf.arch == 'arp':
+        from networks.SPrompts.arprompts import ARPromptsCLIP
         model = ARPromptsCLIP(conf)
         resume_lightning(model, conf)
 
     elif conf.arch == 'vlp':
+        from networks.SPrompts.independentVL import IndepVLPCLIP
         model = IndepVLPCLIP(conf)
         resume_lightning(model, conf)
 
@@ -100,7 +99,14 @@ def get_model(conf):
         from networks.timm_detector import TIMMModel
         model = TIMMModel(conf.arch)
         resume_lightning(model, conf)
+
     return model
+
+
+
+
+
+
 
 
 # from networks.MultiscaleCLIP.clip_models import MultiscaleCLIPModel

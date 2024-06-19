@@ -506,13 +506,6 @@ for artist, images in top_10000_artist_images.items():
         shutil.copy(os.path.join(source_path, str(item)+'.webp'), os.path.join(destination_path, artist, str(item)+'.webp'))
 
 
-
-
-
-
-
-
-
 from huggingface_hub import HfApi
 import os
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
@@ -604,98 +597,16 @@ for artist_folder in os.listdir(root_dir):
                 file.write(caption)
 
 
+import json
 
+with open('vqdiffusion.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
 
-\begin{table}[]
-\caption{Main Results.}
-\centering
-\small
-\begin{tabular}{lrrrrrrrrrrrr}
-\hline
-\multicolumn{1}{c|}{\multirow{2}{*}{Method}} & \multicolumn{4}{c|}{ForenSynths~\cite{wang2020cnn}} & \multicolumn{4}{c|}{GenImage~\cite{zhu2023genimage}} & \multicolumn{4}{c}{GANGen-Detection~\cite{chuangchuangtan-GANGen-Detection}} \\ \cline{2-13}
-\multicolumn{1}{c|}{} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c}{ACC} \\ \hline
-\multicolumn{1}{l|}{CNNDet\cite{wang2020cnn}} & 89.00 & 89.53 & 54.04 & \multicolumn{1}{r|}{70.18} & 64.95 & 67.77 & 9.60 & \multicolumn{1}{r|}{52.04} & 82.69 & 82.50 & 37.28 & 62.15 \\
-\multicolumn{1}{l|}{FreDect\cite{frank2020leveraging}} & 67.07 & 65.86 & 59.86 & \multicolumn{1}{r|}{61.51} & 71.34 & 77.50 & \textbf{53.77} & \multicolumn{1}{r|}{{\ul 63.71}} & 62.54 & 63.12 & 21.10 & 53.51 \\
-\multicolumn{1}{l|}{GramNet\cite{liu2020global}} & 59.37 & 60.66 & 13.27 & \multicolumn{1}{r|}{50.05} & 66.70 & 69.92 & 26.73 & \multicolumn{1}{r|}{58.18} & 52.12 & 52.60 & 0.05 & 50.01 \\
-\multicolumn{1}{l|}{Fusing\cite{ju2022fusing}} & 91.21 & 91.18 & 42.63 & \multicolumn{1}{r|}{65.84} & 73.88 & 76.04 & 6.03 & \multicolumn{1}{r|}{51.64} & 90.55 & 90.46 & 58.54 & 71.55 \\
-\multicolumn{1}{l|}{LNP\cite{liu2022detecting}} & 66.31 & 68.20 & 12.50 & \multicolumn{1}{r|}{52.19} & 57.09 & 56.04 & 8.79 & \multicolumn{1}{r|}{51.84} & 63.03 & 64.51 & 3.49 & 50.70 \\
-\multicolumn{1}{l|}{SPrompts\cite{wang2022s}} & 90.06 & 89.35 & 32.33 & \multicolumn{1}{r|}{60.60} & 55.58 & 53.37 & 21.80 & \multicolumn{1}{r|}{53.69} & 48.23 & 46.74 & 47.65 & 49.97 \\
-\multicolumn{1}{l|}{UnivFD\cite{ojha2023towards}} & {\ul 92.96} & {\ul 92.31} & {\ul 60.49} & \multicolumn{1}{r|}{{\ul 74.69}} & {\ul 77.59} & {\ul 78.65} & 30.39 & \multicolumn{1}{r|}{60.22} & {\ul 91.91} & {\ul 91.26} & {\ul 79.95} & {\ul 83.68} \\
-\multicolumn{1}{l|}{LGrad\cite{tan2023learning}} & 55.01 & 55.31 & 4.62 & \multicolumn{1}{r|}{48.68} & 54.64 & 55.29 & 1.96 & \multicolumn{1}{r|}{50.29} & 55.63 & 56.84 & 0.05 & 50.00 \\
-\multicolumn{1}{l|}{NPR\cite{tan2023rethinking}  } & 48.26 & 45.22 & 12.98 & \multicolumn{1}{r|}{50.95} & 65.49 & 65.86 & 7.37 & \multicolumn{1}{r|}{51.64} & {\ul 88.83} & {\ul 87.78} & 17.15 & 54.89 \\
-\multicolumn{1}{l|}{Freqnet\cite{tan2024frequencyaware}} & 51.77 & 52.24 & 5.07 & \multicolumn{1}{r|}{49.52} & 56.52 & 56.86 & 2.47 & \multicolumn{1}{r|}{50.36} & 52.10 & 53.00 & 44.75 & 52.25 \\ \hline
-\multicolumn{1}{l|}{our881} & \textbf{94.09} & \textbf{94.06} & \textbf{79.21} & \textbf{80.37} & \textbf{80.98} & \textbf{82.12} & {\ul 47.77} & \textbf{68.02} & \textbf{93.22} & \textbf{93.39} & \textbf{85.79} & \textbf{84.49}  \\
+# 计算值为 1 的数量和总数
+count_1 = sum(value == 1 for value in data.values())
+total_count = len(data)
 
-\hline
+# 计算百分比
+percentage = (count_1 / total_count) * 100
 
- & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} \\ \hline
-\multicolumn{1}{c|}{\multirow{2}{*}{Method}} & \multicolumn{4}{c|}{DiffusionForensics~\cite{wang2023dire}} & \multicolumn{4}{c|}{Ojha~\cite{ojha2023towards}} & \multicolumn{4}{c}{DIF~\cite{Sinitsa_2024_WACV}} \\ \cline{2-13}
-\multicolumn{1}{c|}{} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c}{ACC} \\ \hline
-\multicolumn{1}{l|}{CNNDet\cite{wang2020cnn}} & 64.70 & 69.36 & 11.15 & \multicolumn{1}{r|}{57.31} & 63.41 & 65.80 & 6.78 & \multicolumn{1}{r|}{51.31} & 74.31 & 75.16 & 34.65 & 62.50 \\
-\multicolumn{1}{l|}{FreDect\cite{frank2020leveraging}} & 43.60 & 43.87 & {\ul 40.05} & \multicolumn{1}{r|}{43.20} & 66.31 & 71.39 & 57.26 & \multicolumn{1}{r|}{62.24} & 69.51 & 70.92 & {\ul 59.67} & 64.95 \\
-\multicolumn{1}{l|}{GramNet\cite{liu2020global}} & 78.42 & 80.96 & 26.16 & \multicolumn{1}{r|}{60.51} & 54.76 & 54.84 & 0.23 & \multicolumn{1}{r|}{49.91} & 50.06 & 45.21 & 5.85 & 44.82 \\
-\multicolumn{1}{l|}{Fusing\cite{ju2022fusing}} & 62.89 & 70.62 & 1.57 & \multicolumn{1}{r|}{56.23} & 73.61 & 73.92 & 7.71 & \multicolumn{1}{r|}{51.88} & 81.64 & 81.19 & 33.93 & 63.36 \\
-\multicolumn{1}{l|}{LNP\cite{liu2022detecting}} & {\ul 84.49} & \textbf{87.63} & 22.60 & \multicolumn{1}{r|}{{\ul 60.94}} & 49.37 & 47.58 & 4.41 & \multicolumn{1}{r|}{50.44} & 55.75 & 53.46 & 6.01 & 49.16 \\
-\multicolumn{1}{l|}{SPrompts\cite{wang2022s}} & 57.49 & 56.62 & 10.12 & \multicolumn{1}{r|}{53.26} & 45.08 & 36.47 & 4.95 & \multicolumn{1}{r|}{50.43} & 46.01 & 41.55 & 8.68 & 47.68 \\
-\multicolumn{1}{l|}{UnivFD\cite{ojha2023towards}} & 62.42 & 65.73 & 18.39 & \multicolumn{1}{r|}{60.68} & \textbf{93.88} & \textbf{93.40} & {\ul 67.45} & \multicolumn{1}{r|}{{\ul 76.19}} & {\ul 88.31} & {\ul 88.35} & 56.39 & {\ul 73.71} \\
-\multicolumn{1}{l|}{LGrad\cite{tan2023learning}} & 73.25 & 78.82 & 4.37 & \multicolumn{1}{r|}{56.69} & 44.39 & 39.01 & 0.32 & \multicolumn{1}{r|}{49.99} & 51.33 & 51.09 & 0.79 & 49.99 \\
-\multicolumn{1}{l|}{NPR\cite{tan2023rethinking}} & \textbf{86.06} & {\ul 87.38} & 12.25 & \multicolumn{1}{r|}{57.20} & 79.06 & 78.38 & 4.18 & \multicolumn{1}{r|}{51.02} & 76.68 & 75.93 & 19.19 & 55.82 \\
-\multicolumn{1}{l|}{Freqnet\cite{tan2024frequencyaware}} & 43.02 & 43.97 & 5.02 & \multicolumn{1}{r|}{55.18} & 54.68 & 49.09 & 1.80 & \multicolumn{1}{r|}{50.36} & 48.96 & 46.11 & 0.70 & 49.27 \\ \hline
-\multicolumn{1}{l|}{our881} & 63.48 & 72.38 & \textbf{42.91} & \textbf{67.24} & {\ul 91.98} & {\ul 91.78} & \textbf{81.79} & \textbf{82.90} & \textbf{88.76} & \textbf{89.47} & \textbf{70.32} & \textbf{79.23}  \\
-
-\hline
-
- & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} \\ \hline
-\multicolumn{1}{c|}{\multirow{2}{*}{Method}} & \multicolumn{4}{c|}{Celeb-DF-v1~\cite{Celeb_DF_cvpr20}} & \multicolumn{4}{c|}{Celeb-DF-v2~\cite{Celeb_DF_cvpr20}} & \multicolumn{4}{c}{UADFV~\cite{li2018ictu}} \\ \cline{2-13}
-\multicolumn{1}{c|}{} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c|}{ACC} & \multicolumn{1}{c}{AP} & \multicolumn{1}{c}{AUC} & \multicolumn{1}{c}{F1} & \multicolumn{1}{c}{ACC} \\ \hline
-\multicolumn{1}{l|}{CNNDet\cite{wang2020cnn}} & 64.40 & 50.08 & 0.14 & \multicolumn{1}{r|}{33.94} & 87.60 & 54.81 & 0.19 & \multicolumn{1}{r|}{13.57} & 61.65 & 63.42 & 0.13 & 50.42 \\
-\multicolumn{1}{l|}{FreDect\cite{frank2020leveraging}} & 72.54 & 60.38 & {\ul 53.93} & \multicolumn{1}{r|}{{\ul 51.88}} & 88.10 & 55.77 & {\ul 55.18} & \multicolumn{1}{r|}{{\ul 43.61}} & 62.42 & 65.15 & {\ul 52.11} & 60.03 \\
-\multicolumn{1}{l|}{GramNet\cite{liu2020global}} & 67.29 & 52.55 & 0.04 & \multicolumn{1}{r|}{33.94} & 88.36 & 56.11 & 0.08 & \multicolumn{1}{r|}{13.53} & 39.94 & 35.92 & 0.00 & 49.77 \\
-\multicolumn{1}{l|}{Fusing\cite{ju2022fusing}} & 61.87 & 46.05 & 0.21 & \multicolumn{1}{r|}{33.86} & 86.66 & 51.97 & 0.56 & \multicolumn{1}{r|}{13.70} & 53.18 & 54.43 & 0.65 & 50.49 \\
-\multicolumn{1}{l|}{LNP\cite{liu2022detecting}} & 64.16 & 48.24 & 1.66 & \multicolumn{1}{r|}{34.11} & 86.76 & 50.88 & 3.30 & \multicolumn{1}{r|}{14.75} & 44.87 & 35.74 & 10.18 & 51.73 \\
-\multicolumn{1}{l|}{SPrompts\cite{wang2022s}} & 66.38 & 49.87 & 1.75 & \multicolumn{1}{r|}{34.33} & 87.30 & 50.95 & 1.94 & \multicolumn{1}{r|}{14.29} & 46.20 & 48.37 & 11.72 & 48.01 \\
-\multicolumn{1}{l|}{UnivFD\cite{ojha2023towards}} & \textbf{83.73} & \textbf{74.19} & 16.64 & \multicolumn{1}{r|}{39.66} & {\ul 92.49} & {\ul67.08} & 10.28 & \multicolumn{1}{r|}{18.10} & \textbf{91.50} & \textbf{91.27} & 43.08 & {\ul63.87} \\
-\multicolumn{1}{l|}{LGrad\cite{tan2023learning}} & 65.98 & 51.64 & 0.14 & \multicolumn{1}{r|}{33.95} & 87.33 & 52.92 & 0.56 & \multicolumn{1}{r|}{13.71} & 44.47 & 43.54 & 0.13 & 49.90 \\
-\multicolumn{1}{l|}{NPR\cite{tan2023rethinking}} & 62.57 & 45.85 & 7.28 & \multicolumn{1}{r|}{34.45} & 86.07 & 50.42 & 7.48 & \multicolumn{1}{r|}{16.23} & 46.72 & 36.31 & 10.78 & 50.42 \\
-\multicolumn{1}{l|}{Freqnet\cite{tan2024frequencyaware}} & 64.66 & 50.47 & 18.85 & \multicolumn{1}{r|}{36.67} & 86.18 & 51.14 & 17.32 & \multicolumn{1}{r|}{20.41} & 44.58 & 45.22 & 11.44 & 45.05 \\
-\hline
-\multicolumn{1}{l|}{our441} & {\ul 83.69} & {\ul 73.77} & \textbf{71.28} & \textbf{65.93} & \textbf{93.16} & \textbf{70.19} & \textbf{76.95} & \textbf{65.69} & {\ul 85.92} & {\ul 85.35} & \textbf{79.17} & \textbf{77.86} \\
-
-\hline
-\end{tabular}
-\end{table}
-
-
-
-
-CNNDet\cite{wang2020cnn}
-FreDect\cite{frank2020leveraging}
-GramNet\cite{liu2020global}
-Fusing\cite{ju2022fusing}
-LNP\cite{liu2022detecting}
-SPrompts\cite{wang2022s}
-UnivFD\cite{ojha2023towards}
-LGrad\cite{tan2023learning}
-NPR\cite{tan2023rethinking}
-Freqnet\cite{tan2024frequencyaware}
-
-
-\begin{table}[]
-\small
-\begin{tabular}{c|l|rrrrrrrr}
-\hline
-& \multicolumn{1}{c|}{\textbf{Method}} & \multicolumn{1}{c}{$\mathbf{AP}$} & \multicolumn{1}{c}{$\mathbf{F1}$} & \multicolumn{1}{c}{$\mathbf{ACC_r}$} & \multicolumn{1}{c}{$\mathbf{ACC_f}$} & \multicolumn{1}{c}{$\mathbf{ACC}$} & \multicolumn{1}{c}{$\mathbf{AUC_{roc}}$} & \multicolumn{1}{c}{$\mathbf{AUC_{f1}}$} & \multicolumn{1}{c}{$\mathbf{AUC_{f2}}$} \\ \hline
-
-
-
-
-
-\end{tabular}
-\end{table}
-
-
-
-
-
-
-
+print(f"Percentage of values that are 1: {percentage:.2f}%")

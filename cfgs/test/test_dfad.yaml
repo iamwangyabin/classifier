@@ -14,9 +14,9 @@ datasets:
     - _target_: albumentations.PadIfNeeded
       min_height: 224
       min_width: 224
-    - _target_: data.DCT
-      mode: 1
-      p: 1
+#    - _target_: data.DCT
+#      mode: 1
+#      p: 1
     - _target_: albumentations.pytorch.transforms.ToTensorV2
 
   source:

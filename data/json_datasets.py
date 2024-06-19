@@ -1,10 +1,12 @@
 import os
+import cv2
 import json
 import warnings
 import torchvision.transforms as transforms
 import albumentations as A
 
 import numpy as np
+import torch
 from torch.utils.data import Dataset
 from PIL import ImageFile, Image
 
@@ -54,12 +56,12 @@ class BinaryJsonDatasets(Dataset):
 
     def __getitem__(self, idx):
         img_path = self.image_pathes[idx]
-        image = Image.open(img_path).convert('RGB')
         label = self.labels[idx]
         if self.lib == 'albumentations':
-            image = np.array(image)
-            image = self.transform_chain(image=image)["image"]
+            image = cv2.imread(img_path) # this is BGR, different from PIL
+            image = self.transform_chain(image=image)["image"].float()
         elif self.lib == 'torchvision':
+            image = Image.open(img_path).convert('RGB')
             image = self.transform_chain(image)
         return image, label
 
