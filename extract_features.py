@@ -166,7 +166,7 @@ for rf_tag in ['0_real', '1_fake']:
 
     BATCH_ACCUMULATION = 128
 
-    data_loader = DataLoader(dataset, batch_size=128, shuffle=False)
+    data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
 
     model = get_model('clipL14openai_next_to_last')
     model.cuda()
