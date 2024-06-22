@@ -42,9 +42,6 @@ model.head.fc = torch.nn.Linear(1024, 1)
 model.load_state_dict(torch.load(opt.model1_weights))
 
 
-
-
-
 test_dataset = DeepFakesDataset(test_paths, test_labels, config['model']['image-size'], methods=test_methods,
                                 mode='test')
 

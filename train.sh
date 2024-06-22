@@ -17,6 +17,7 @@ conda activate timm
 export WANDB_MODE="offline"
 export WANDB_API_KEY="a4d3a740e939973b02ac59fbd8ed0d6a151df34b"
 
-python train.py --cfg cfgs/train/poundnet_sd.yaml
+#python train.py --cfg cfgs/train/poundnet_sd.yaml
+python extract_features.py
 
 

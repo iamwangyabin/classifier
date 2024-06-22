@@ -88,15 +88,8 @@ if __name__ == '__main__':
     accuracy = correct_predictions / len(y_true)
     print(f'Accuracy: {accuracy:.4f}')
 
-# vit/l
-# Prompt ensemble: Accuracy: 0.9008 real    0.8413 fake
-# No ensempl: Accuracy:                    0.8370 fake
-# coop accuracy: real:0.922249972820282    fake: 0.8615000247    相比较人工设计的prompt都能提升一些，但是仅仅是拟合prompt
-#
 
-# vit/b
-# Prompt ensemble: Accuracy: 0.8980 real    0.8452 fake
-# pomp : 0.898500025 real 0.8447499871 fake
+
 
 
 
