@@ -159,8 +159,12 @@ def get_model(modelname):
 
 
 for rf_tag in ['0_real', '1_fake']:
+    # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/train', transform=transform, selected_realfake=rf_tag)
+    # parquet_file = os.path.join('.', r'clipL14openai_next_to_last_progan_train_multicls_{}_features.parquet'.format(rf_tag))
     dataset = ForenSynthsDataset(root_dir='/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/train', transform=transform, selected_realfake=rf_tag)
     parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_next_to_last_progan_train_multicls_{}_features.parquet'.format(rf_tag))
+
+    BATCH_ACCUMULATION = 50
 
     data_loader = DataLoader(dataset, batch_size=128, shuffle=False)
 
@@ -176,94 +180,58 @@ for rf_tag in ['0_real', '1_fake']:
     ])
 
     parquet_writer = None
+    accumulated_tables = []
+    accumulated_data = {
+        'label': [],
+        'cls_tokens': [],
+        'visual_tokens': []
+    }
 
     with torch.no_grad():
         print("Length of dataset: %d" % len(data_loader))
         for batch_index, (img, label) in enumerate(tqdm(data_loader)):
-            in_tens = img.cuda()
+            in_tens = img.cuda(non_blocking=True)
             cls_tokens, visual_tokens = model.forward_features(in_tens)
 
-            # Move tensors to CPU and convert to numpy
-            labels = label.cpu().numpy()
-            cls_tokens = cls_tokens.cpu().numpy()
-            visual_tokens = visual_tokens.cpu().numpy()
+            # Accumulate data without type conversion
+            accumulated_data['label'].append(label.numpy())
+            accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
+            accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
 
-            # Convert visual_tokens to a list of lists
-            visual_tokens_list = [vt.tolist() for vt in visual_tokens]
+            if (batch_index + 1) % BATCH_ACCUMULATION == 0:
+                # Convert accumulated data to PyArrow arrays
+                label_array = pa.array(np.concatenate(accumulated_data['label']))
+                cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+                visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
 
-            # Create a DataFrame
-            df = pd.DataFrame({
-                'label': labels,
-                'cls_tokens': list(cls_tokens),
-                'visual_tokens': visual_tokens_list
-            })
+                # Create a PyArrow Table
+                table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
+                                             schema=parquet_schema)
 
-            # Convert the DataFrame to a PyArrow Table
-            table = pa.Table.from_pandas(df, schema=parquet_schema)
+                # Write to Parquet file
+                if parquet_writer is None:
+                    parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+                parquet_writer.write_table(table)
 
-            # Write to Parquet file incrementally
+                # Clear accumulated data
+                for key in accumulated_data:
+                    accumulated_data[key] = []
+
+        # Write any remaining data
+        if any(accumulated_data.values()):
+            label_array = pa.array(np.concatenate(accumulated_data['label']))
+            cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+            visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+
+            table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
+                                         schema=parquet_schema)
+
             if parquet_writer is None:
                 parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
             parquet_writer.write_table(table)
 
     if parquet_writer:
         parquet_writer.close()
-
-
-
-
-
-
-
-
-
-
-# with torch.no_grad():
-#     print("Length of dataset: %d" % len(data_loader))
-#     for batch_index, (img, label) in enumerate(tqdm(data_loader)):
-#         in_tens = img.cuda()
-#         cls_tokens, visual_tokens = model.forward_features(in_tens)
-#         (Pdb)
-#         cls_tokens.shape
-#         torch.Size([128, 1024])
-#         (Pdb)
-#         visual_tokens.shape
-#         torch.Size([128, 256, 1024])
-#
-# so help me save all data in to a parquet file, which i can read later, each sample has its label, cls_tokens and visual_tokens
-
-
-
-# all_features = {}
-# all_cls_tokens = []
-# all_visual_tokens = []
-# y_true = []
-# with torch.no_grad():
-#     print("Length of dataset: %d" % (len(data_loader)))
-#     for img, label in tqdm(data_loader):
-#         in_tens = img.cuda()
-#         cls_tokens, visual_tokens = model.forward_features(in_tens)
-#         all_cls_tokens.append(cls_tokens.detach().cpu())
-#         all_visual_tokens.append(visual_tokens.detach().cpu())
-#         y_true.extend(label.tolist())
-#
-# all_cls_tokens = torch.cat(all_cls_tokens, dim=0)
-# all_visual_tokens = torch.cat(all_visual_tokens, dim=0)
-# cls_tokens_numpy = all_cls_tokens.cpu().numpy()
-# visual_tokens_numpy = all_visual_tokens.cpu().numpy()
-# y_true = np.array(y_true)
-# all_features['cls_tokens'] = cls_tokens_numpy
-# all_features['visual_tokens'] = visual_tokens_numpy
-# all_features['y_true'] = y_true
-# with open('clipL14openai_next_to_last_progan_train_multicls_fake_features.pkl', 'wb') as file:
-#     pickle.dump(all_features, file)
-
-
-
-
-
-
-
 
 
 
@@ -313,3 +281,4 @@ for rf_tag in ['0_real', '1_fake']:
 
 # with open('clip_AIGCDetect_sd15_fake_features.pkl', 'wb') as file:
 #     pickle.dump(all_features, file)
+
