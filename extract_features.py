@@ -111,7 +111,6 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
 ])
 
-
 def get_model(modelname):
     if modelname == 'clipvitl':
         model = CLIPModel('ViT-L/14')
@@ -232,6 +231,96 @@ for rf_tag in ['0_real', '1_fake']:
 
     if parquet_writer:
         parquet_writer.close()
+
+# subsets = ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21', 'stargan',  'stylegan',  'stylegan2']
+#
+# for subset in subsets:
+#     dataset = BinaryJsonDatasets("/home/jwang/ybwork/data/DFBenchmark/DIF_testset", transform=transform, subset=subset, split='test')
+#     parquet_file = os.path.join('.', r'clipL14openai_next_to_last_DIF_{}_features.parquet'.format(subset))
+#     # dataset = BinaryJsonDatasets("/scratch/yw26g23/datasets/DFBenchmark/DIF_testset", transform=transform, subset=subset, split='test')
+#     # parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_next_to_last_DIF_{}_features.parquet'.format(subset))
+#
+#     BATCH_ACCUMULATION = 128
+#
+#     data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
+#
+#     model = get_model('clipL14openai_next_to_last')
+#     model.cuda()
+#     model.to('cuda')
+#     model.eval()
+#
+#     parquet_schema = pa.schema([
+#         ('label', pa.int32()),
+#         ('cls_tokens', pa.list_(pa.float32())),
+#         ('visual_tokens', pa.list_(pa.list_(pa.float32()))),
+#     ])
+#
+#     parquet_writer = None
+#     accumulated_tables = []
+#     accumulated_data = {
+#         'label': [],
+#         'cls_tokens': [],
+#         'visual_tokens': []
+#     }
+#
+#     with torch.no_grad():
+#         print("Length of dataset: %d" % len(data_loader))
+#         for batch_index, (img, label) in enumerate(tqdm(data_loader)):
+#             in_tens = img.cuda(non_blocking=True)
+#             cls_tokens, visual_tokens = model.forward_features(in_tens)
+#
+#             # Accumulate data without type conversion
+#             accumulated_data['label'].append(label.numpy())
+#             accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
+#             accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
+#
+#             if (batch_index + 1) % BATCH_ACCUMULATION == 0:
+#                 # Convert accumulated data to PyArrow arrays
+#                 label_array = pa.array(np.concatenate(accumulated_data['label']))
+#                 cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+#                 visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+#
+#                 # Create a PyArrow Table
+#                 table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
+#                                              schema=parquet_schema)
+#
+#                 # Write to Parquet file
+#                 if parquet_writer is None:
+#                     parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+#                 parquet_writer.write_table(table)
+#
+#                 # Clear accumulated data
+#                 for key in accumulated_data:
+#                     accumulated_data[key] = []
+#
+#         # Write any remaining data
+#         if any(accumulated_data.values()):
+#             label_array = pa.array(np.concatenate(accumulated_data['label']))
+#             cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+#             visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+#
+#             table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
+#                                          schema=parquet_schema)
+#
+#             if parquet_writer is None:
+#                 parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+#             parquet_writer.write_table(table)
+#
+#     if parquet_writer:
+#         parquet_writer.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
