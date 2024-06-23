@@ -506,57 +506,6 @@ for artist, images in top_10000_artist_images.items():
         shutil.copy(os.path.join(source_path, str(item)+'.webp'), os.path.join(destination_path, artist, str(item)+'.webp'))
 
 
-from huggingface_hub import HfApi
-import os
-os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-api = HfApi(token="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")
-
-files_to_upload = [
-    "clipbased.tar",
-]
-
-for filename in files_to_upload:
-    print(f"Uploading {filename}...")
-    response = api.upload_file(
-        path_or_fileobj=f"./{filename}",
-        path_in_repo=f"{filename}",
-        repo_id="nebula/dfbenchmark",
-        repo_type="dataset"
-    )
-
-
-#  upload a folder
-from huggingface_hub import HfApi
-import os
-os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-api = HfApi()
-
-diff_folders = [
-    "arpaug-ViTL-a01b1c1-881_20240514_08_32_18",
-    "arpaug-ViTL-a05b05c1-881_20240514_02_58_41",
-    "arpaug-ViTL-a05b1c1-881_20240514_07_23_24",
-    "arpaug-ViTL-a0b1c1-881_20240514_02_47_45",
-    "arpaug-ViTL-a1b05c1-881_20240514_06_15_04",
-    "arpaug-ViTL-a1b0c1-881_20240514_02_30_25",
-    "arpaug-ViTL-a1b1c1-881-first12cls_20240514_03_28_50",
-    "arpaug-ViTL-a1b1c1-881-first16cls_20240514_04_11_21",
-    "arpaug-ViTL-a1b1c1-881-first2cls_20240511_23_01_23",
-    "arpaug-ViTL-a1b1c1-881-first4cls_20240511_22_43_55",
-    "arpaug-ViTL-a1b1c1-881-first8cls_20240511_23_12_42",
-    "arpaug-ViTL-a2b2c1-881_20240514_05_06_45"
-]
-
-for i in diff_folders:
-    try:
-        api.upload_folder(
-            folder_path=os.path.join('../preprocess/', i),
-            path_in_repo=os.path.join('../preprocess/', i),
-            repo_id="nebula/testmodel",
-            repo_type="model",
-        )
-    except:
-        print('failed')
-
 
 #################################final for artists caption###############################
 
@@ -574,9 +523,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 Image.MAX_IMAGE_PIXELS = None
-
 from caption import make_caption_from_id
-
 from db import load_db
 
 db = load_db("danbooru2023.db")
@@ -597,16 +544,51 @@ for artist_folder in os.listdir(root_dir):
                 file.write(caption)
 
 
-import json
 
-with open('vqdiffusion.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
 
-# 计算值为 1 的数量和总数
-count_1 = sum(value == 1 for value in data.values())
-total_count = len(data)
 
-# 计算百分比
-percentage = (count_1 / total_count) * 100
 
-print(f"Percentage of values that are 1: {percentage:.2f}%")
+from huggingface_hub import HfApi
+import os
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+api = HfApi(token="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")
+
+files_to_upload = [
+    "clipL14openai_next_to_last_progan_train_multicls_0_real_features.parquet",
+    "clipL14openai_next_to_last_progan_train_multicls_1_fake_features.parquet",
+]
+
+for filename in files_to_upload:
+    print(f"Uploading {filename}...")
+    response = api.upload_file(
+        path_or_fileobj=f"./{filename}",
+        path_in_repo=f"{filename}",
+        repo_id="nebula/dfbenchmark",
+        repo_type="dataset"
+    )
+
+
+#  upload a folder
+from huggingface_hub import HfApi
+import os
+os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+api = HfApi()
+
+diff_folders = [
+    "clipL14openai_next_to_last_progan_train_multicls_0_real_features.parquet",
+    "clipL14openai_next_to_last_progan_train_multicls_1_fake_features.parquet",
+
+]
+
+for i in diff_folders:
+    try:
+        api.upload_folder(
+            folder_path=os.path.join('../preprocess/', i),
+            path_in_repo=os.path.join('../preprocess/', i),
+            repo_id="nebula/testmodel",
+            repo_type="model",
+        )
+    except:
+        print('failed')
+
+
