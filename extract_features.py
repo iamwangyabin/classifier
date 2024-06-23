@@ -161,13 +161,13 @@ for rf_tag in ['0_real', '1_fake']:
     # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/train', transform=transform, selected_realfake=rf_tag)
     # parquet_file = os.path.join('.', r'clipL14openai_last_progan_train_multicls_{}_features.parquet'.format(rf_tag))
     dataset = ForenSynthsDataset(root_dir='/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/val', transform=transform, selected_realfake=rf_tag)
-    parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_last_progan_val_multicls_{}_features.parquet'.format(rf_tag))
+    parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_next_to_last_progan_val_multicls_{}_features.parquet'.format(rf_tag))
 
     BATCH_ACCUMULATION = 128
 
     data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
 
-    model = get_model('clipL14openai_last')
+    model = get_model('clipL14openai_next_to_last')
     model.cuda()
     model.to('cuda')
     model.eval()
