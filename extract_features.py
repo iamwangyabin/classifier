@@ -338,8 +338,8 @@ def get_model(modelname):
 #         parquet_writer.close()
 
 
-dataset = ImageDirDatasets(data_root='/scratch/yw26g23/dataset_generator/lsun20_lowquality', transform=transform, label=1)
-parquet_file = os.path.join('.', r'clipL14openai_last_our_{}_features.parquet'.format('lowqualitiylsun'))
+dataset = ImageDirDatasets(data_root='/scratch/yw26g23/dataset_generator/lsun20_squarelowquality', transform=transform, label=1)
+parquet_file = os.path.join('.', r'clipL14openai_last_our_{}_features.parquet'.format('squarelowquality'))
 BATCH_ACCUMULATION = 128
 data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
 
@@ -363,7 +363,7 @@ accumulated_data = {
 }
 
 with torch.no_grad():
-    print("Length of dataset: %d" % len(data_loader))
+    print("Length of dataset: %d" % len(dataset))
     for batch_index, (img, label) in enumerate(tqdm(data_loader)):
         in_tens = img.cuda(non_blocking=True)
         cls_tokens, visual_tokens = model.forward_features(in_tens)
