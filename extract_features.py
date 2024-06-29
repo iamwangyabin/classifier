@@ -373,25 +373,6 @@ with torch.no_grad():
         accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
         # accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
 
-        if (batch_index + 1) % BATCH_ACCUMULATION == 0:
-            # Convert accumulated data to PyArrow arrays
-            label_array = pa.array(np.concatenate(accumulated_data['label']))
-            cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
-            # visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
-
-            # Create a PyArrow Table
-            # table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array], schema=parquet_schema)
-            table = pa.Table.from_arrays([label_array, cls_tokens_array], schema=parquet_schema)
-
-            # Write to Parquet file
-            if parquet_writer is None:
-                parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
-            parquet_writer.write_table(table)
-
-            # Clear accumulated data
-            for key in accumulated_data:
-                accumulated_data[key] = []
-
     # Write any remaining data
     if any(accumulated_data.values()):
         label_array = pa.array(np.concatenate(accumulated_data['label']))
