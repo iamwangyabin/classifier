@@ -48,6 +48,30 @@ class ForenSynthsDataset(Dataset):
 
 
 
+class ImageDirDatasets(Dataset):
+    def __init__(self, data_root, transform=None, label=1):
+        self.dataroot = data_root
+        self.image_pathes = []
+        self.labels = []
+        self.transform = transform
+
+        for img_rel_path in os.listdir(data_root):
+            img_full_path = os.path.join(self.dataroot, img_rel_path)
+            self.image_pathes.append(img_full_path)
+            self.labels.append(label)
+
+    def __len__(self):
+        return len(self.image_pathes)
+
+    def __getitem__(self, idx):
+        img_path = self.image_pathes[idx]
+        label = self.labels[idx]
+        image = Image.open(img_path).convert('RGB')
+        image = self.transform(image)
+        return image, label
+
+
+
 class BinaryJsonDatasets(Dataset):
     def __init__(self, data_root, transform=None, subset='all', split='train'):
         self.dataroot = data_root
@@ -157,93 +181,17 @@ def get_model(modelname):
     return model
 
 
-for rf_tag in ['0_real', '1_fake']:
-    # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/train', transform=transform, selected_realfake=rf_tag)
-    # parquet_file = os.path.join('.', r'clipL14openai_last_progan_train_multicls_{}_features.parquet'.format(rf_tag))
-    dataset = ForenSynthsDataset(root_dir='/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/val', transform=transform, selected_realfake=rf_tag)
-    parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_next_to_last_progan_val_multicls_{}_features.parquet'.format(rf_tag))
-
-    BATCH_ACCUMULATION = 128
-
-    data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
-
-    model = get_model('clipL14openai_next_to_last')
-    model.cuda()
-    model.to('cuda')
-    model.eval()
-
-    parquet_schema = pa.schema([
-        ('label', pa.int32()),
-        ('cls_tokens', pa.list_(pa.float32())),
-        ('visual_tokens', pa.list_(pa.list_(pa.float32()))),
-    ])
-
-    parquet_writer = None
-    accumulated_tables = []
-    accumulated_data = {
-        'label': [],
-        'cls_tokens': [],
-        'visual_tokens': []
-    }
-
-    with torch.no_grad():
-        print("Length of dataset: %d" % len(data_loader))
-        for batch_index, (img, label) in enumerate(tqdm(data_loader)):
-            in_tens = img.cuda(non_blocking=True)
-            cls_tokens, visual_tokens = model.forward_features(in_tens)
-            # Accumulate data without type conversion
-            accumulated_data['label'].append(label.numpy())
-            accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
-            accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
-
-            if (batch_index + 1) % BATCH_ACCUMULATION == 0:
-                # Convert accumulated data to PyArrow arrays
-                label_array = pa.array(np.concatenate(accumulated_data['label']))
-                cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
-                visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
-
-                # Create a PyArrow Table
-                table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
-                                             schema=parquet_schema)
-
-                # Write to Parquet file
-                if parquet_writer is None:
-                    parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
-                parquet_writer.write_table(table)
-
-                # Clear accumulated data
-                for key in accumulated_data:
-                    accumulated_data[key] = []
-
-        # Write any remaining data
-        if any(accumulated_data.values()):
-            label_array = pa.array(np.concatenate(accumulated_data['label']))
-            cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
-            visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
-
-            table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array],
-                                         schema=parquet_schema)
-
-            if parquet_writer is None:
-                parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
-            parquet_writer.write_table(table)
-
-    if parquet_writer:
-        parquet_writer.close()
-#
-# subsets = ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21', 'stargan',  'stylegan',  'stylegan2']
-#
-# for subset in subsets:
-#     # dataset = BinaryJsonDatasets("/home/jwang/ybwork/data/DFBenchmark/DIF_testset", transform=transform, subset=subset, split='test')
-#     # parquet_file = os.path.join('.', r'clipL14openai_last_DIF_{}_features.parquet'.format(subset))
-#     dataset = BinaryJsonDatasets("/scratch/yw26g23/datasets/deepfakebenchmark/DIF_testset", transform=transform, subset=subset, split='test')
-#     parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_last_DIF_{}_features.parquet'.format(subset))
+# for rf_tag in ['0_real', '1_fake']:
+#     # dataset = ForenSynthsDataset(root_dir='../data/DFBenchmark/ForenSynths/train', transform=transform, selected_realfake=rf_tag)
+#     # parquet_file = os.path.join('.', r'clipL14openai_last_progan_train_multicls_{}_features.parquet'.format(rf_tag))
+#     dataset = ForenSynthsDataset(root_dir='/scratch/yw26g23/datasets/deepfakebenchmark/ForenSynths/val', transform=transform, selected_realfake=rf_tag)
+#     parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_next_to_last_progan_val_multicls_{}_features.parquet'.format(rf_tag))
 #
 #     BATCH_ACCUMULATION = 128
 #
 #     data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
 #
-#     model = get_model('clipL14openai_last')
+#     model = get_model('clipL14openai_next_to_last')
 #     model.cuda()
 #     model.to('cuda')
 #     model.eval()
@@ -267,7 +215,6 @@ for rf_tag in ['0_real', '1_fake']:
 #         for batch_index, (img, label) in enumerate(tqdm(data_loader)):
 #             in_tens = img.cuda(non_blocking=True)
 #             cls_tokens, visual_tokens = model.forward_features(in_tens)
-#
 #             # Accumulate data without type conversion
 #             accumulated_data['label'].append(label.numpy())
 #             accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
@@ -308,13 +255,158 @@ for rf_tag in ['0_real', '1_fake']:
 #     if parquet_writer:
 #         parquet_writer.close()
 
+# subsets = ['biggan',  'cyclegan',  'dalle_2',  'dalle_mini',  'gaugan',  'glide',  'mj',  'progan',  'sd14',  'sd21', 'stargan',  'stylegan',  'stylegan2']
+# subsets = [ 'wukong', 'biggan', 'Midjourney', 'stable_diffusion_v_1_5', 'ADM',  'Glide','stable_diffusion_v_1_4', 'VQDM' ]
+# subsets = [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan", "stylegan", "stylegan2", "whichfaceisreal"  ]
+# subsets = ["dalle", "glide_100_10", "glide_100_27", "glide_50_27", "guided", "ldm_100", "ldm_200", "ldm_200_cfg"]
+# subsets = ['dalle', 'imagen', 'mj', 'parti', 'sd', 'sdft']
+# subsets = ['Midjourneyv5-5K', 'SDv15-CC30K', 'SDv21-CC15K', 'stylegan3-60K']
+#
+# for subset in subsets:
+#     dataset = BinaryJsonDatasets("/home/jwang/ybwork/data/DFBenchmark/Fake2M", transform=transform, subset=subset, split='test')
+#     parquet_file = os.path.join('.', r'clipL14openai_last_Fake2M_{}_features.parquet'.format(subset))
+#     # dataset = BinaryJsonDatasets("/scratch/yw26g23/datasets/deepfakebenchmark/DIF_testset", transform=transform, subset=subset, split='test')
+#     # parquet_file = os.path.join('/scratch/yw26g23', r'clipL14openai_last_DIF_{}_features.parquet'.format(subset))
+#
+#     BATCH_ACCUMULATION = 128
+#
+#     data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
+#
+#     model = get_model('clipL14openai_last')
+#     model.cuda()
+#     model.to('cuda')
+#     model.eval()
+#
+#     parquet_schema = pa.schema([
+#         ('label', pa.int32()),
+#         ('cls_tokens', pa.list_(pa.float32())),
+#         # ('visual_tokens', pa.list_(pa.list_(pa.float32()))),
+#     ])
+#
+#     parquet_writer = None
+#     accumulated_tables = []
+#     accumulated_data = {
+#         'label': [],
+#         'cls_tokens': [],
+#         # 'visual_tokens': []
+#     }
+#
+#     with torch.no_grad():
+#         print("Length of dataset: %d" % len(data_loader))
+#         for batch_index, (img, label) in enumerate(tqdm(data_loader)):
+#             in_tens = img.cuda(non_blocking=True)
+#             cls_tokens, visual_tokens = model.forward_features(in_tens)
+#
+#             # Accumulate data without type conversion
+#             accumulated_data['label'].append(label.numpy())
+#             accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
+#             # accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
+#
+#             if (batch_index + 1) % BATCH_ACCUMULATION == 0:
+#                 # Convert accumulated data to PyArrow arrays
+#                 label_array = pa.array(np.concatenate(accumulated_data['label']))
+#                 cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+#                 # visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+#
+#                 # Create a PyArrow Table
+#                 # table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array], schema=parquet_schema)
+#                 table = pa.Table.from_arrays([label_array, cls_tokens_array], schema=parquet_schema)
+#
+#                 # Write to Parquet file
+#                 if parquet_writer is None:
+#                     parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+#                 parquet_writer.write_table(table)
+#
+#                 # Clear accumulated data
+#                 for key in accumulated_data:
+#                     accumulated_data[key] = []
+#
+#         # Write any remaining data
+#         if any(accumulated_data.values()):
+#             label_array = pa.array(np.concatenate(accumulated_data['label']))
+#             cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+#             # visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+#
+#             table = pa.Table.from_arrays([label_array, cls_tokens_array], schema=parquet_schema)
+#             # table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array], schema=parquet_schema)
+#
+#             if parquet_writer is None:
+#                 parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+#             parquet_writer.write_table(table)
+#
+#     if parquet_writer:
+#         parquet_writer.close()
 
 
+dataset = ImageDirDatasets(data_root='/scratch/yw26g23/dataset_generator/lsun20_lowquality', transform=transform, label=1)
+parquet_file = os.path.join('.', r'clipL14openai_last_our_{}_features.parquet'.format('lowqualitiylsun'))
+BATCH_ACCUMULATION = 128
+data_loader = DataLoader(dataset, batch_size=128, shuffle=False, num_workers=32)
 
+model = get_model('clipL14openai_last')
+model.cuda()
+model.to('cuda')
+model.eval()
 
+parquet_schema = pa.schema([
+    ('label', pa.int32()),
+    ('cls_tokens', pa.list_(pa.float32())),
+    # ('visual_tokens', pa.list_(pa.list_(pa.float32()))),
+])
 
+parquet_writer = None
+accumulated_tables = []
+accumulated_data = {
+    'label': [],
+    'cls_tokens': [],
+    # 'visual_tokens': []
+}
 
+with torch.no_grad():
+    print("Length of dataset: %d" % len(data_loader))
+    for batch_index, (img, label) in enumerate(tqdm(data_loader)):
+        in_tens = img.cuda(non_blocking=True)
+        cls_tokens, visual_tokens = model.forward_features(in_tens)
 
+        # Accumulate data without type conversion
+        accumulated_data['label'].append(label.numpy())
+        accumulated_data['cls_tokens'].append(cls_tokens.cpu().numpy())
+        # accumulated_data['visual_tokens'].append(visual_tokens.cpu().numpy())
+
+        if (batch_index + 1) % BATCH_ACCUMULATION == 0:
+            # Convert accumulated data to PyArrow arrays
+            label_array = pa.array(np.concatenate(accumulated_data['label']))
+            cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+            # visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+
+            # Create a PyArrow Table
+            # table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array], schema=parquet_schema)
+            table = pa.Table.from_arrays([label_array, cls_tokens_array], schema=parquet_schema)
+
+            # Write to Parquet file
+            if parquet_writer is None:
+                parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+            parquet_writer.write_table(table)
+
+            # Clear accumulated data
+            for key in accumulated_data:
+                accumulated_data[key] = []
+
+    # Write any remaining data
+    if any(accumulated_data.values()):
+        label_array = pa.array(np.concatenate(accumulated_data['label']))
+        cls_tokens_array = pa.array(np.concatenate(accumulated_data['cls_tokens']).tolist())
+        # visual_tokens_array = pa.array(np.concatenate(accumulated_data['visual_tokens']).tolist())
+
+        table = pa.Table.from_arrays([label_array, cls_tokens_array], schema=parquet_schema)
+        # table = pa.Table.from_arrays([label_array, cls_tokens_array, visual_tokens_array], schema=parquet_schema)
+
+        if parquet_writer is None:
+            parquet_writer = pq.ParquetWriter(parquet_file, table.schema)
+        parquet_writer.write_table(table)
+
+if parquet_writer:
+    parquet_writer.close()
 
 
 

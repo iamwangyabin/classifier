@@ -26,7 +26,6 @@ datasets:
       sub_sets: [ "biggan", "crn", "cyclegan", "deepfake", "gaugan", "imle", "progan", "san", "seeingdark", "stargan",
                   "stylegan", "stylegan2", "whichfaceisreal" ]
 
-
     GANGen-Detection:
       data_root: '${datasets.data_root}/GANGen-Detection'
       sub_sets: ["AttGAN", "BEGAN", "CramerGAN", "GANimation", "InfoMaxGAN", "MMDGAN", "RelGAN", "S3GAN", "SNGAN", "STGAN" ]
