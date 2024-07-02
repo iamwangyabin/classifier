@@ -51,20 +51,22 @@ class ForenSynthsDataset(Dataset):
 class ImageDirDatasets(Dataset):
     def __init__(self, data_root, transform=None, label=1):
         self.dataroot = data_root
-        self.image_pathes = []
+        self.image_paths = []
         self.labels = []
         self.transform = transform
 
-        for img_rel_path in os.listdir(data_root):
-            img_full_path = os.path.join(self.dataroot, img_rel_path)
-            self.image_pathes.append(img_full_path)
-            self.labels.append(label)
+        for root, _, files in os.walk(self.dataroot):
+            for file in files:
+                if file.lower().endswith(('png', 'jpg', 'jpeg', 'webp')):
+                    img_full_path = os.path.join(root, file)
+                    self.image_paths.append(img_full_path)
+                    self.labels.append(label)
 
     def __len__(self):
-        return len(self.image_pathes)
+        return len(self.image_paths)
 
     def __getitem__(self, idx):
-        img_path = self.image_pathes[idx]
+        img_path = self.image_paths[idx]
         label = self.labels[idx]
         image = Image.open(img_path).convert('RGB')
         image = self.transform(image)
@@ -129,7 +131,7 @@ class DeepfakeDataset(Dataset):
 
 
 transform = transforms.Compose([
-    transforms.Resize(224),
+    transforms.Resize(224, interpolation=1),
     transforms.CenterCrop((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.48145466, 0.4578275, 0.40821073], std=[0.26862954, 0.26130258, 0.27577711]),
